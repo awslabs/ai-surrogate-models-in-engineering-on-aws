@@ -1,0 +1,6 @@
+﻿mlsimkit.common.cli.options\_from\_schema
+=========================================
+
+.. currentmodule:: mlsimkit.common.cli
+
+.. autofunction:: options_from_schema

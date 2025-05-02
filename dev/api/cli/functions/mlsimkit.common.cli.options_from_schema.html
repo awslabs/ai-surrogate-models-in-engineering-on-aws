@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>mlsimkit.common.cli.options_from_schema &#8212; AI Surrogate Models for Engineering on AWS 0.1.dev1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/basic.css?v=9de7e953" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css?v=06097142" />
+    <script src="../../../../_static/documentation_options.js?v=6aee1ebc"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="mlsimkit.common.cli.options_from_schema_shorthand" href="mlsimkit.common.cli.options_from_schema_shorthand.html" />
+    <link rel="prev" title="mlsimkit.common.cli.options" href="mlsimkit.common.cli.options.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="mlsimkit-common-cli-options-from-schema">
+<h1>mlsimkit.common.cli.options_from_schema<a class="headerlink" href="#mlsimkit-common-cli-options-from-schema" title="Link to this heading">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="mlsimkit.common.cli.options_from_schema">
+<span class="sig-prename descclassname"><span class="pre">mlsimkit.common.cli.</span></span><span class="sig-name descname"><span class="pre">options_from_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><span class="pre">BaseModel</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../learn/common/index.html#mlsimkit.learn.common.training.ModelIO.None" title="mlsimkit.learn.common.training.ModelIO.None"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help_group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../learn/common/index.html#mlsimkit.learn.common.training.ModelIO.None" title="mlsimkit.learn.common.training.ModelIO.None"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yaml_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#mlsimkit.common.cli.options_from_schema" title="Link to this definition">¶</a></dt>
+<dd><p>Decorator to generate Click options for all fields in a Pydantic model.</p>
+<p>This decorator generates Click options based on the fields of a given Pydantic
+model. The generated options can be used to parse command-line arguments and
+instantiate the model with the parsed values.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MySettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">level</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="nb">bool</span>
+
+<span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="n">BaseCommand</span><span class="p">)</span>
+<span class="nd">@options_from_schema</span><span class="p">(</span><span class="n">MySettings</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;settings&#39;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cmd</span><span class="p">(</span><span class="n">settings</span><span class="p">:</span> <span class="n">MySettings</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>Type</em><em>[</em><em>BaseModel</em><em>]</em>) – The Pydantic model class to generate options for.</p></li>
+<li><p><strong>dest</strong> (<em>str</em>) – The attribute name to store the instantiated model object on the
+command context.</p></li>
+<li><p><strong>prefix</strong> (<em>str</em><em>, </em><em>optional</em>) – An optional prefix to add to each option name. Use
+this if duplicately named fields exist across different models used in
+the same command.</p></li>
+<li><p><strong>help_group</strong> (<em>str</em><em>, </em><em>optional</em>) – The help group text to display in the CLI.</p></li>
+<li><p><strong>yaml_file</strong> (<em>Union</em><em>[</em><em>bool</em><em>, </em><em>Dict</em><em>]</em><em>, </em><em>optional</em>) – Whether to add a hidden option for
+overriding the nested field from a YAML file. If set to <cite>True</cite>, a
+hidden option will be added with the default name. If set to a
+dictionary, it should contain the keys <cite>name</cite> (for the option name) and
+<cite>hidden</cite> (boolean indicating whether the option should be hidden).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A decorator function that takes a command function and returns a</dt><dd><p>decorated version with the specified options.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Callable</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If multiple Pydantic models are used in the same command, any duplicate
+option names across models will be detected. Use the <cite>prefix</cite> argument to
+differentiate such options.</p>
+</div>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><!--
+<p class="logo">
+  <a href="../../../../index.html">
+    <img class="logo" src="../../../../_static/mlsimkit-sidebar.png" alt="MLSimKit logo" />
+  </a>
+</p>
+-->
+
+<h4><a href="../../../../index.html">AI Surrogate Models in Engineering on AWS</a></h4>
+<p>
+  Tools to develop and use ML predictive models as surrogates for physics-based simulations.
+</p>
+
+<h4>Useful Links</h4>
+<ul>
+  <li><a href="../../../../user/install.html">Install</a></li>
+  <li><a href="../../../../user/quickstart-kpi.html">Quickstart KPI</a></li>
+  <li><a href="../../../../user/quickstart-slices.html">Quickstart Slices</a></li>
+  <li><a href="../../../../user/quickstart-surface.html">Quickstart Surfaces</a></li>
+  <li><a href="../../../../user/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+
+<div id="native-ribbon">
+</div>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/quickstart-kpi.html">Quickstart with KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/quickstart-surface.html">Quickstart with Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/quickstart-slices.html">Quickstart with Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/tutorial-kpi-windsor.html">KPI Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/tutorial-surface-ahmed.html">Surface Variable Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/tutorial-slices-windsor.html">Slice Prediction Tutorial</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../datasets/ahmed.html">AhmedML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../datasets/windsor.html">WindsorML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../datasets/drivaer.html">DrivAerML Dataset</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/user-guide-kpi.html">Model User Guide – KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/user-guide-surface.html">Model User Guide – Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/user-guide-slice.html">Model User Guide – Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/notebook-guide.html">Using the MLSimKit SDK Interactively (Notebooks, IPython)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/mlflow-guide.html">Tracking Experiments and Results with MLFLow</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.html">Code Structure and Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../learn.html">Learning Module (<code class="docutils literal notranslate"><span class="pre">mlsimkit.learn</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cli-toolkit.html">Creating Custom CLI Commands</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../api.html">MLSimKit SDK API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlsimkit.common.cli</span></code> – CLI Framework</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#command-decorators">Command Decorators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#option-types">Option Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#command-classes">Command Classes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/common/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlsimkit.learn.common</span></code> – MLSimKit Learn Common</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/manifest/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlsimkit.learn.manifest</span></code> – MLSimKit Learn Manifest</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../api.html">MLSimKit SDK API</a><ul>
+  <li><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlsimkit.common.cli</span></code> – CLI Framework</a><ul>
+      <li>Previous: <a href="mlsimkit.common.cli.options.html" title="previous chapter">mlsimkit.common.cli.options</a></li>
+      <li>Next: <a href="mlsimkit.common.cli.options_from_schema_shorthand.html" title="next chapter">mlsimkit.common.cli.options_from_schema_shorthand</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;Copyright 2025 Amazon.com, Inc. or its affiliates. All Rights Reserved..
+      
+      |
+      <a href="../../../../_sources/dev/api/cli/functions/mlsimkit.common.cli.options_from_schema.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

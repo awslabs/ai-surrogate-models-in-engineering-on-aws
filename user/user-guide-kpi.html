@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Model User Guide – KPI Prediction &#8212; AI Surrogate Models for Engineering on AWS 0.1.dev1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=9de7e953" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=06097142" />
+    <script src="../_static/documentation_options.js?v=6aee1ebc"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Model User Guide – Surface Variable Prediction" href="user-guide-surface.html" />
+    <link rel="prev" title="DrivAerML Dataset" href="../datasets/drivaer.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="model-user-guide-kpi-prediction">
+<span id="user-guide-kpi"></span><h1>Model User Guide – KPI Prediction<a class="headerlink" href="#model-user-guide-kpi-prediction" title="Link to this heading">¶</a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
+<p>MLSimKit uses a deep learning architecture inspired by MeshGraphNets to predict key performance indicators (KPIs) of unseen geometries. This user guide walks through how to build a model to predict KPIs of the <a class="reference internal" href="../datasets/windsor.html#datasets-windsor"><span class="std std-ref">WindsorML Dataset</span></a> geometries using MLSimKit.</p>
+<p>Key concepts:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Manifest: a JSON Lines file that links geometries to their KPIs, used in the preprocessing step.</p></li>
+<li><p>Config: a YAML file that can be used to specify preprocessing, training, and inference settings.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="how-to-build-a-kpi-model">
+<h2>How to Build a KPI Model<a class="headerlink" href="#how-to-build-a-kpi-model" title="Link to this heading">¶</a></h2>
+<section id="getting-the-data">
+<h3>Getting the Data<a class="headerlink" href="#getting-the-data" title="Link to this heading">¶</a></h3>
+<p>This user guide utilizes the WindsorML Body dataset. For detailed instructions on accessing and downloading the example dataset refer to <a class="reference internal" href="../datasets/windsor.html#datasets-windsor"><span class="std std-ref">WindsorML Dataset</span></a>. For this user guide we assume the data is downloaded at relative path of data/windsor/.</p>
+</section>
+<section id="creating-a-manifest-file-and-a-config-file">
+<h3>Creating a Manifest File and a Config File<a class="headerlink" href="#creating-a-manifest-file-and-a-config-file" title="Link to this heading">¶</a></h3>
+<section id="create-a-manifest-file">
+<span id="manifest-kpi"></span><h4>Create a Manifest File<a class="headerlink" href="#create-a-manifest-file" title="Link to this heading">¶</a></h4>
+<p>To preprocess your data for training and inference steps, you’ll need to create a manifest file. This manifest file should list the paths to the data files and the associated KPI values. The manifest file should be a JSON Lines (.jsonl) file, with each line representing a single data file entry. Each entry contains the following keys:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;geometry_files&quot;</span></code>: A list of STL or VTP file paths associated with a single geometry. If one STL or VTP file represents the entire geometry, put the path of that file to the list; if multiple STL or VTP files form one geometry, put the paths to all those files in the list. The file paths can be absolute paths or relative paths (relative to the parent folder of the manifest file).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;kpi&quot;</span></code>: A list of ground truth KPI values associated with the geometry (optional for inference manifest).</p></li>
+</ul>
+</div></blockquote>
+<p>Here are examples of the manifest file, one with ground truth KPIs included and one without:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;geometry_files&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;data/windsor/dataset/run_0/windsor_0.stl&quot;</span><span class="p">],</span> <span class="s2">&quot;kpi&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.2818169578178322</span><span class="p">,</span> <span class="mf">0.0008234405065462456</span><span class="p">,</span> <span class="mf">0.48822197919945154</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.07294317299334006</span><span class="p">]}</span>
+<span class="p">{</span><span class="s2">&quot;geometry_files&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;data/windsor/dataset/run_1/windsor_1.stl&quot;</span><span class="p">],</span> <span class="s2">&quot;kpi&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.32251110051821463</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.059431832381329826</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.061135997912917385</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.04094381732630274</span><span class="p">]}</span>
+ <span class="p">::</span>
+
+<span class="p">{</span><span class="s2">&quot;geometry_files&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;data/windsor/dataset/run_0/windsor_0.stl&quot;</span><span class="p">]}</span>
+<span class="p">{</span><span class="s2">&quot;geometry_files&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;data/windsor/dataset/run_1/windsor_1.stl&quot;</span><span class="p">]}</span>
+</pre></div>
+</div>
+<p>To automatically generate a manifest file for WindsorML dataset, you can use the following command:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w"> </span>mlsimkit-manifest<span class="w"> </span>create<span class="w"> </span>data/windsor/dataset/run_*<span class="w"> </span><span class="se">\</span>
+-m<span class="w"> </span><span class="s2">&quot;manifest.jsonl&quot;</span><span class="w"> </span><span class="se">\</span>
+-f<span class="w"> </span><span class="s2">&quot;name=geometry_files,file_glob=*.stl&quot;</span><span class="w"> </span><span class="se">\</span>
+-d<span class="w"> </span><span class="s2">&quot;name=kpi,file_regex=force_mom_\d+\.csv,columns=cd cs cl cmy&quot;</span>
+</pre></div>
+</div>
+<p>This produces <code class="docutils literal notranslate"><span class="pre">manifest.jsonl</span></code> at the current working directory.</p>
+</section>
+<section id="create-a-config-file">
+<span id="config-kpi"></span><h4>Create a Config File<a class="headerlink" href="#create-a-config-file" title="Link to this heading">¶</a></h4>
+<p>To run preprocessing, training, and inference, you can provide the configurations either in an input config file or via the command-line interface (CLI). Here is an example config file:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>logging:
+<span class="w">  </span>level:<span class="w"> </span>info
+
+output_dir:<span class="w"> </span>&lt;output_directory&gt;
+
+kpi:
+<span class="w">  </span>manifest_uri:<span class="w"> </span>&lt;manifest_file_path&gt;
+</pre></div>
+</div>
+<p>Replace <code class="docutils literal notranslate"><span class="pre">&lt;output_directory&gt;</span></code> with the directory where you want to save the outputs, and  <code class="docutils literal notranslate"><span class="pre">&lt;manifest_uri&gt;</span></code> with the path to your manifest file created in the <a class="reference internal" href="#manifest-kpi"><span class="std std-ref">previous step</span></a>. You can modify other configuration parameters discussed in the following sections by adding or updating their values in the configuration file. This allows you to override the default settings as per your requirements.</p>
+</section>
+</section>
+<section id="preprocessing">
+<span id="preprocess-kpi"></span><h3>Preprocessing<a class="headerlink" href="#preprocessing" title="Link to this heading">¶</a></h3>
+<p>KPI prediction model predicts KPIs directly from a 3D geometry mesh. The first step is to preprocess the geometry files and KPI values, converting them into data objects (<code class="docutils literal notranslate"><span class="pre">.pt</span></code>) that can be easily consumed by the PyTorch deep learning framework. MLSimKit supports preprocessing STL and VTP file formats.</p>
+<p>Run the following command to preprocess the data, replacing <code class="docutils literal notranslate"><span class="pre">&lt;config_file_path&gt;</span></code> with the path to the config file created in the <a class="reference internal" href="#config-kpi"><span class="std std-ref">previous step</span></a>:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-learn<span class="w"> </span>--config<span class="w"> </span>&lt;config_file_path&gt;<span class="w"> </span>kpi<span class="w"> </span>preprocess
+</pre></div>
+</div>
+<p>Preprocessing of the 355 runs takes around 3 minutes on AWS g5.2xlarge (cpu=8) instance. One <code class="docutils literal notranslate"><span class="pre">.pt</span></code> file per run is written to <code class="docutils literal notranslate"><span class="pre">&lt;output_directory&gt;/preprocessed_data/</span></code> . During preprocessing, logs are printed in the console and also saved to <code class="docutils literal notranslate"><span class="pre">preprocessing.log</span></code>. Preprocessing splits the processed data files into three datasets for training, validation and testing. These datasets are written to manifests in the <code class="docutils literal notranslate"><span class="pre">&lt;output_directory&gt;</span></code>. You can modify the percentage of data in each dataset via the split settings in the config or via command line arguments. For example,</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kpi:
+<span class="w">   </span>preprocess:
+<span class="w">     </span>train-size:<span class="w"> </span><span class="m">0</span>.7
+<span class="w">     </span>valid-size:<span class="w"> </span><span class="m">0</span>.1
+<span class="w">     </span>test-size:<span class="w"> </span><span class="m">0</span>.2
+</pre></div>
+</div>
+<p>After preprocessing the data, you can proceed to training or run inference with the KPI prediction model.</p>
+</section>
+<section id="training">
+<span id="train-kpi"></span><h3>Training<a class="headerlink" href="#training" title="Link to this heading">¶</a></h3>
+<p>The training step is where the machine learning model learns the relationship between geometries and KPIs. It takes the preprocessed data as input and produces PyTorch model files as output. The model files can then be used to make predictions in the <a class="reference internal" href="#inference-kpi"><span class="std std-ref">next step - inference</span></a>.</p>
+<p>There are a number of hyper-parameters associated with model training, and all of them have default values. If you choose to use values other than the default ones, you can specify them in the <a class="reference internal" href="#config-kpi"><span class="std std-ref">config file</span></a> or via command line arguments. To do it in the config file, simply add a “train” section along with the hyper-parameter names and values. Here is an example.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>train:
+<span class="w">    </span>output_kpi_indices:<span class="w"> </span><span class="s2">&quot;2&quot;</span>
+<span class="w">    </span>epochs:<span class="w"> </span><span class="m">100</span>
+<span class="w">    </span>pooling_type:<span class="w"> </span>max
+<span class="w">    </span>opt:
+<span class="w">      </span>learning_rate:<span class="w"> </span><span class="m">0</span>.003
+</pre></div>
+</div>
+<p>In this example, three hyper-parameters are adjusted:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">output_kpi_indices</span></code> is set to <code class="docutils literal notranslate"><span class="pre">&quot;2&quot;</span></code> to indicate the model would only learn to predict the third KPI provided in the <a class="reference internal" href="#manifest-kpi"><span class="std std-ref">manifest</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">epochs</span></code> determines the number of times the dataset is passed through the neural network during training. The larger the number of epochs, the longer the model training time. A value that is too small though may lead to models that have not fully learned.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pooling_type</span></code> controls the type of pooling that is done on the 2nd to last layer of the MGN model for graph level predictions.  There are two options (<code class="docutils literal notranslate"><span class="pre">mean</span></code> and <code class="docutils literal notranslate"><span class="pre">max</span></code>) with <code class="docutils literal notranslate"><span class="pre">mean</span></code> being the default.  Generally, <code class="docutils literal notranslate"><span class="pre">mean</span></code> is less prone to overfitting but can take longer to train (requires more epochs) than <code class="docutils literal notranslate"><span class="pre">max</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">learning_rate</span></code> stands for learning rate, which controls how fast the model learns. With a larger learning rate,  the number of epochs can typically be smaller, as the neural network makes bigger updates with every data point. A learning rate that is too large, however, can lead to poor performing models.  Note that <code class="docutils literal notranslate"><span class="pre">learning_rate</span></code> is one of the optimizer settings. Thus, it should be added under <code class="docutils literal notranslate"><span class="pre">opt</span></code>.</p></li>
+</ul>
+</div></blockquote>
+<p>To see the full list of training hyper-parameters and their definitions, run the command <code class="docutils literal notranslate"><span class="pre">mlsimkit-learn</span> <span class="pre">kpi</span> <span class="pre">train</span> <span class="pre">--help</span></code>.</p>
+<p>Once the config file is ready, run the following command to start training.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-learn<span class="w"> </span>--config<span class="w"> </span>&lt;config_file_path&gt;<span class="w"> </span>kpi<span class="w"> </span>train
+</pre></div>
+</div>
+<p>Training on the WindsorML dataset takes around 11 minutes on an AWS g5.2xlarge instance (355 simulation runs, 100 epochs at ~6.5s/epoch) and about 5 minutes using four GPUs on a g5.12xlarge instance (~3s/epoch). During training, the training loss and validation loss of each epoch are printed in the console and also saved in the log file located at <code class="docutils literal notranslate"><span class="pre">&lt;output_directory&gt;/logs/kpi/training.log</span></code>.</p>
+<p>The training step produces a number of output files (see the full list at the end of this section) in the folder <code class="docutils literal notranslate"><span class="pre">&lt;output_directory&gt;/training_output/</span></code>. Among them, there are model checkpoints including <code class="docutils literal notranslate"><span class="pre">best_model.pt</span></code> which by default will be used in the inference step to make predictions on unseen data. It is the model that has the lowest validation error.</p>
+<p>The model training loss plots (original scale: <code class="docutils literal notranslate"><span class="pre">model_loss.png</span></code>; log scale: <code class="docutils literal notranslate"><span class="pre">model_loss_log.png</span></code>) are typically useful to look at. Training losses and validation losses should be gradually decreasing until no longer decreasing. The gap between training losses and validation losses shouldn’t be too big. If it’s not the case, the model is likely not going to perform well, and hyper-parameter values and/or training data may need to be adjusted.</p>
+<a class="reference internal image-reference" href="../_images/windsor-kpi-loss-cs.png"><img alt="Figure 1. An example loss plot" src="../_images/windsor-kpi-loss-cs.png" style="width: 450px; height: 350px;" />
+</a>
+<p>The list of training output files will look something like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;training_output/model_loss.png&quot;</span><span class="p">,</span>
+<span class="s2">&quot;training_output/model_loss_log.png&quot;</span><span class="p">,</span>
+<span class="s2">&quot;training_output/model_loss.csv&quot;</span><span class="p">,</span>
+<span class="s2">&quot;training_output/best_model.pt&quot;</span><span class="p">,</span>
+<span class="s2">&quot;training_output/last_model.pt&quot;</span><span class="p">,</span>
+<span class="s2">&quot;training_output/best_model_predictions/predicted_vs_actual_kpi2.png&quot;</span><span class="p">,</span>
+<span class="s2">&quot;training_output/best_model_predictions/dataset_prediction_error_metrics.csv&quot;</span><span class="p">,</span>
+<span class="s2">&quot;training_output/best_model_predictions/prediction_results.csv&quot;</span><span class="p">,</span>
+<span class="s2">&quot;training_output/last_model_predictions/predicted_vs_actual_kpi2.png&quot;</span><span class="p">,</span>
+<span class="s2">&quot;training_output/last_model_predictions/dataset_prediction_error_metrics.csv&quot;</span><span class="p">,</span>
+<span class="s2">&quot;training_output/last_model_predictions/prediction_results.csv&quot;</span><span class="p">,</span>
+<span class="s2">&quot;training_output/checkpoint_models/model_epoch0.pt&quot;</span><span class="p">,</span>
+<span class="s2">&quot;training_output/checkpoint_models/model_epoch10.pt&quot;</span><span class="p">,</span>
+<span class="s2">&quot;training_output/checkpoint_models/model_epoch20.pt&quot;</span><span class="p">,</span>
+<span class="s2">&quot;training_output/checkpoint_models/model_epoch30.pt&quot;</span><span class="p">,</span>
+<span class="s2">&quot;training_output/checkpoint_models/model_epoch40.pt&quot;</span><span class="p">,</span>
+<span class="s2">&quot;training_output/checkpoint_models/model_epoch50.pt&quot;</span><span class="p">,</span>
+<span class="s2">&quot;training_output/checkpoint_models/model_epoch60.pt&quot;</span><span class="p">,</span>
+<span class="s2">&quot;training_output/checkpoint_models/model_epoch70.pt&quot;</span><span class="p">,</span>
+<span class="s2">&quot;training_output/checkpoint_models/model_epoch80.pt&quot;</span><span class="p">,</span>
+<span class="s2">&quot;training_output/checkpoint_models/model_epoch90.pt&quot;</span><span class="p">,</span>
+<span class="s2">&quot;training_output/checkpoint_models/model_epoch100.pt&quot;</span><span class="p">,</span>
+</pre></div>
+</div>
+</section>
+<section id="kpi-prediction-using-model-inference">
+<span id="inference-kpi"></span><h3>KPI Prediction using model inference<a class="headerlink" href="#kpi-prediction-using-model-inference" title="Link to this heading">¶</a></h3>
+<p>Once model training is complete, you can run inference to get model predictions. The inference step takes the preprocessed data produced by the <a class="reference internal" href="#preprocess-kpi"><span class="std std-ref">preprocessing step</span></a> as one of the inputs.
+By default, the toolkit will use the checkpoint <code class="docutils literal notranslate"><span class="pre">&lt;output_dir&gt;/training_output/best_model.pt</span></code> to make predictions and save the inference output in the folder <code class="docutils literal notranslate"><span class="pre">&lt;output_dir&gt;/predictions/</span></code>.
+You can overwrite the default by adding a section named “predict” to the <a class="reference internal" href="#config-kpi"><span class="std std-ref">config file</span></a> or via command line arguments.  The full list of inference related hyper-parameters can be accessed via <code class="docutils literal notranslate"><span class="pre">mlsimkit-learn</span> <span class="pre">kpi</span> <span class="pre">inference</span> <span class="pre">--help</span></code>.</p>
+<p>Run inference via the following command.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-learn<span class="w"> </span>--config<span class="w"> </span>&lt;config_file_path&gt;<span class="w"> </span>kpi<span class="w"> </span>predict
+</pre></div>
+</div>
+<p>The inference step produces the following output files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;predictions/prediction_results.csv&quot;</span><span class="p">,</span>
+<span class="s2">&quot;predictions/predicted_vs_actual_kpi2.png&quot;</span><span class="p">,</span>
+<span class="s2">&quot;predictions/dataset_prediction_error_metrics.csv&quot;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">prediction_results.csv</span></code> contains the predicted KPI(s) for each geometry in the inference data set. If the ground truth is available (which is the case here), the PNG file provides a direct view of how closely the predictions match the ground truth. The closer the dots to the line, the better the predictions. <code class="docutils literal notranslate"><span class="pre">dataset_prediction_error_metrics.csv</span></code> provides metrics such as MAPE, MAE, and MSE that quantify the differences between predictions and the ground truth.</p>
+<a class="reference internal image-reference" href="../_images/windsor-kpi-inference-cs.png"><img alt="Figure 2. An example plot comparing predictions with ground truth" src="../_images/windsor-kpi-inference-cs.png" style="width: 400px; height: 400px;" />
+</a>
+<p>To run inference on new geometries that do not have ground truth KPIs, first create a <a class="reference internal" href="#manifest-kpi"><span class="std std-ref">manifest file</span></a> based on the instructions provided and preprocess the data. To run preprocessing and inference with a single command, create a config file with the following structure:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>logging:
+<span class="w">  </span>level:<span class="w"> </span>info
+
+output_dir:<span class="w"> </span>&lt;output_directory&gt;
+
+kpi:
+<span class="w">  </span>manifest_uri:<span class="w"> </span>&lt;manifest_file_path&gt;
+<span class="w">  </span>preprocess:
+<span class="w">    </span>split-manifest:<span class="w"> </span>False
+
+<span class="w">  </span>predict:
+<span class="w">    </span>checkpoint_path:<span class="w"> </span>&lt;checkpoint_model_path&gt;
+<span class="w">    </span>compare-groundtruth:<span class="w"> </span>False
+</pre></div>
+</div>
+<p>Inference will automatically use the test manifest created during preprocessing. You can override this by passing <code class="docutils literal notranslate"><span class="pre">manifest-path</span></code> into the inference command.</p>
+<p>Now run preprocessing and inference via the following command:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-learn<span class="w"> </span>--config<span class="w"> </span>&lt;config_file_path&gt;<span class="w"> </span>kpi<span class="w"> </span>preprocess<span class="w"> </span>predict
+</pre></div>
+</div>
+<p>The inference step for the data without ground truth produces the <code class="docutils literal notranslate"><span class="pre">prediction_results.csv</span></code> file, which contains the predicted KPI(s) for each geometry in the inference data set.</p>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><!--
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/mlsimkit-sidebar.png" alt="MLSimKit logo" />
+  </a>
+</p>
+-->
+
+<h4><a href="../index.html">AI Surrogate Models in Engineering on AWS</a></h4>
+<p>
+  Tools to develop and use ML predictive models as surrogates for physics-based simulations.
+</p>
+
+<h4>Useful Links</h4>
+<ul>
+  <li><a href="install.html">Install</a></li>
+  <li><a href="quickstart-kpi.html">Quickstart KPI</a></li>
+  <li><a href="quickstart-slices.html">Quickstart Slices</a></li>
+  <li><a href="quickstart-surface.html">Quickstart Surfaces</a></li>
+  <li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul>
+
+<div id="native-ribbon">
+</div>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart-kpi.html">Quickstart with KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart-surface.html">Quickstart with Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart-slices.html">Quickstart with Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-kpi-windsor.html">KPI Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-surface-ahmed.html">Surface Variable Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-slices-windsor.html">Slice Prediction Tutorial</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/ahmed.html">AhmedML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/windsor.html">WindsorML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/drivaer.html">DrivAerML Dataset</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Model User Guide – KPI Prediction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-build-a-kpi-model">How to Build a KPI Model</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#getting-the-data">Getting the Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-a-manifest-file-and-a-config-file">Creating a Manifest File and a Config File</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#preprocessing">Preprocessing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#training">Training</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#kpi-prediction-using-model-inference">KPI Prediction using model inference</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide-surface.html">Model User Guide – Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide-slice.html">Model User Guide – Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook-guide.html">Using the MLSimKit SDK Interactively (Notebooks, IPython)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mlflow-guide.html">Tracking Experiments and Results with MLFLow</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/guide.html">Code Structure and Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/learn.html">Learning Module (<code class="docutils literal notranslate"><span class="pre">mlsimkit.learn</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/cli-toolkit.html">Creating Custom CLI Commands</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/api.html">MLSimKit SDK API</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../datasets/drivaer.html" title="previous chapter">DrivAerML Dataset</a></li>
+      <li>Next: <a href="user-guide-surface.html" title="next chapter">Model User Guide – Surface Variable Prediction</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;Copyright 2025 Amazon.com, Inc. or its affiliates. All Rights Reserved..
+      
+      |
+      <a href="../_sources/user/user-guide-kpi.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

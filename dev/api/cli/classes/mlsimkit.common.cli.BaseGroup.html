@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>mlsimkit.common.cli.BaseGroup &#8212; AI Surrogate Models for Engineering on AWS 0.1.dev1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/basic.css?v=9de7e953" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css?v=06097142" />
+    <script src="../../../../_static/documentation_options.js?v=6aee1ebc"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="mlsimkit.learn.common – MLSimKit Learn Common" href="../../learn/common/index.html" />
+    <link rel="prev" title="mlsimkit.common.cli.BaseCommand" href="mlsimkit.common.cli.BaseCommand.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="mlsimkit-common-cli-basegroup">
+<h1>mlsimkit.common.cli.BaseGroup<a class="headerlink" href="#mlsimkit-common-cli-basegroup" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlsimkit.common.cli.BaseGroup">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlsimkit.common.cli.</span></span><span class="sig-name descname"><span class="pre">BaseGroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../learn/common/index.html#mlsimkit.learn.common.training.ModelIO.None" title="mlsimkit.learn.common.training.ModelIO.None"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commands</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MutableMapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Command</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Command</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../learn/common/index.html#mlsimkit.learn.common.training.ModelIO.None" title="mlsimkit.learn.common.training.ModelIO.None"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">attrs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlsimkit.common.cli.BaseGroup" title="Link to this definition">¶</a></dt>
+<dd><p>A Click group that handles instantiating Pydantic models from flattened CLI params.</p>
+<p>This class extends the <code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code> class and overrides the <a class="reference internal" href="#id1" title="mlsimkit.common.cli.BaseGroup.format_options"><code class="xref py py-meth docutils literal notranslate"><span class="pre">format_options()</span></code></a>,
+<a class="reference internal" href="#id3" title="mlsimkit.common.cli.BaseGroup.parse_args"><code class="xref py py-meth docutils literal notranslate"><span class="pre">parse_args()</span></code></a>, <a class="reference internal" href="#id2" title="mlsimkit.common.cli.BaseGroup.invoke"><code class="xref py py-meth docutils literal notranslate"><span class="pre">invoke()</span></code></a>, and <a class="reference internal" href="#id0" title="mlsimkit.common.cli.BaseGroup.command"><code class="xref py py-meth docutils literal notranslate"><span class="pre">command()</span></code></a> methods to handle instantiating
+Pydantic models from the command-line parameters.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlsimkit.common.cli.BaseGroup.format_options">
+<span class="sig-name descname"><span class="pre">format_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">formatter</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlsimkit.common.cli.BaseGroup.format_options" title="Link to this definition">¶</a></dt>
+<dd><p>Format the group options for display.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlsimkit.common.cli.BaseGroup.parse_args">
+<span class="sig-name descname"><span class="pre">parse_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlsimkit.common.cli.BaseGroup.parse_args" title="Link to this definition">¶</a></dt>
+<dd><p>Parse the command-line arguments and detect if help was requested.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlsimkit.common.cli.BaseGroup.invoke">
+<span class="sig-name descname"><span class="pre">invoke</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlsimkit.common.cli.BaseGroup.invoke" title="Link to this definition">¶</a></dt>
+<dd><p>Invoke the group and instantiate Pydantic models from the parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlsimkit.common.cli.BaseGroup.command">
+<span class="sig-name descname"><span class="pre">command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlsimkit.common.cli.BaseGroup.command" title="Link to this definition">¶</a></dt>
+<dd><p>Decorate a command within the group with custom behavior.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlsimkit.common.cli.BaseGroup.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../learn/common/index.html#mlsimkit.learn.common.training.ModelIO.None" title="mlsimkit.learn.common.training.ModelIO.None"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commands</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MutableMapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Command</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Command</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../learn/common/index.html#mlsimkit.learn.common.training.ModelIO.None" title="mlsimkit.learn.common.training.ModelIO.None"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">attrs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../learn/common/index.html#mlsimkit.learn.common.training.ModelIO.None" title="mlsimkit.learn.common.training.ModelIO.None"><span class="pre">None</span></a></span></span><a class="headerlink" href="#mlsimkit.common.cli.BaseGroup.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mlsimkit.common.cli.BaseGroup.__init__" title="mlsimkit.common.cli.BaseGroup.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([name, commands])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_command</span></code>(cmd[, name])</p></td>
+<td><p>Registers another <code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code> with this group.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">collect_usage_pieces</span></code>(ctx)</p></td>
+<td><p>Returns all the pieces that go into the usage line and returns it as a list of strings.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#id0" title="mlsimkit.common.cli.BaseGroup.command"><code class="xref py py-obj docutils literal notranslate"><span class="pre">command</span></code></a>(*args, **kwargs)</p></td>
+<td><p>A shortcut decorator for declaring and attaching a command to the group.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">format_commands</span></code>(ctx, formatter)</p></td>
+<td><p>Extra format methods for multi methods that adds all the commands after the options.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">format_epilog</span></code>(ctx, formatter)</p></td>
+<td><p>Writes the epilog into the formatter if it exists.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">format_help</span></code>(ctx, formatter)</p></td>
+<td><p>Writes the help into the formatter if it exists.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">format_help_text</span></code>(ctx, formatter)</p></td>
+<td><p>Writes the help text to the formatter if it exists.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id1" title="mlsimkit.common.cli.BaseGroup.format_options"><code class="xref py py-obj docutils literal notranslate"><span class="pre">format_options</span></code></a>(ctx, formatter)</p></td>
+<td><p>Writes all the options into the formatter if they exist.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">format_usage</span></code>(ctx, formatter)</p></td>
+<td><p>Writes the usage line into the formatter.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_command</span></code>(ctx, cmd_name)</p></td>
+<td><p>Given a context and a command name, this returns a <code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code> object if it exists or returns <cite>None</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_help</span></code>(ctx)</p></td>
+<td><p>Formats the help into a string and returns it.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_help_option</span></code>(ctx)</p></td>
+<td><p>Returns the help option object.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_help_option_names</span></code>(ctx)</p></td>
+<td><p>Returns the names for the help option.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code>(ctx)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_short_help_str</span></code>([limit])</p></td>
+<td><p>Gets short help for the command or makes it by shortening the long help string.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_usage</span></code>(ctx)</p></td>
+<td><p>Formats the usage line into a string and returns it.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">group</span></code>(*args, **kwargs)</p></td>
+<td><p>A shortcut decorator for declaring and attaching a group to the group.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id2" title="mlsimkit.common.cli.BaseGroup.invoke"><code class="xref py py-obj docutils literal notranslate"><span class="pre">invoke</span></code></a>(ctx)</p></td>
+<td><p>Given a context, this invokes the attached callback (if it exists) in the right way.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_commands</span></code>(ctx)</p></td>
+<td><p>Returns a list of subcommand names in the order they should appear.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code>([args, prog_name, complete_var, ...])</p></td>
+<td><p>This is the way to invoke a script with all the bells and whistles as a command line application.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_context</span></code>(info_name, args[, parent])</p></td>
+<td><p>This function when given an info name and arguments will kick off the parsing and create a new <code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_parser</span></code>(ctx)</p></td>
+<td><p>Creates the underlying option parser for this command.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#id3" title="mlsimkit.common.cli.BaseGroup.parse_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_args</span></code></a>(ctx, args)</p></td>
+<td><p>Given a context and a list of arguments this creates the parser and parses the arguments, then modifies the context as necessary.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolve_command</span></code>(ctx, args)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">result_callback</span></code>([replace])</p></td>
+<td><p>Adds a result callback to the command.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">shell_complete</span></code>(ctx, incomplete)</p></td>
+<td><p>Return a list of completions for the incomplete value.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_info_dict</span></code>(ctx)</p></td>
+<td><p>Gather information that could be useful for a tool generating user-facing documentation.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">allow_extra_args</span></code></p></td>
+<td><p>the default for the <code class="xref py py-attr docutils literal notranslate"><span class="pre">Context.allow_extra_args</span></code> flag.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">allow_interspersed_args</span></code></p></td>
+<td><p>the default for the <code class="xref py py-attr docutils literal notranslate"><span class="pre">Context.allow_interspersed_args</span></code> flag.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">command_class</span></code></p></td>
+<td><p>If set, this is used by the group's <a class="reference internal" href="#id0" title="mlsimkit.common.cli.BaseGroup.command"><code class="xref py py-meth docutils literal notranslate"><span class="pre">command()</span></code></a> decorator as the default <code class="xref py py-class docutils literal notranslate"><span class="pre">Command</span></code> class.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">group_class</span></code></p></td>
+<td><p>If set, this is used by the group's <a class="reference internal" href="../functions/mlsimkit.common.cli.group.html#mlsimkit.common.cli.group" title="mlsimkit.common.cli.group"><code class="xref py py-meth docutils literal notranslate"><span class="pre">group()</span></code></a> decorator as the default <code class="xref py py-class docutils literal notranslate"><span class="pre">Group</span></code> class.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ignore_unknown_options</span></code></p></td>
+<td><p>the default for the <code class="xref py py-attr docutils literal notranslate"><span class="pre">Context.ignore_unknown_options</span></code> flag.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">commands</span></code></p></td>
+<td><p>The registered subcommands by their exported names.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">callback</span></code></p></td>
+<td><p>the callback to execute when the command fires.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">params</span></code></p></td>
+<td><p>the list of parameters for this command in the order they should show up in the help page and execute.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p>the name the command thinks it has.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">context_settings</span></code></p></td>
+<td><p>an optional dictionary with defaults passed to the context.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">command</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Command</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
+<dd><p>A shortcut decorator for declaring and attaching a command to
+the group. This takes the same arguments as <a class="reference internal" href="#id0" title="mlsimkit.common.cli.BaseGroup.command"><code class="xref py py-func docutils literal notranslate"><span class="pre">command()</span></code></a> and
+immediately registers the created command with this group by
+calling <code class="xref py py-meth docutils literal notranslate"><span class="pre">add_command()</span></code>.</p>
+<p>To customize the command class used, set the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">command_class</span></code> attribute.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 8.1: </span>This decorator can be applied without parentheses.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 8.0: </span>Added the <code class="xref py py-attr docutils literal notranslate"><span class="pre">command_class</span></code> attribute.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">format_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">formatter</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id1" title="Link to this definition">¶</a></dt>
+<dd><p>Writes all the options into the formatter if they exist.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">invoke</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id2" title="Link to this definition">¶</a></dt>
+<dd><p>Given a context, this invokes the attached callback (if it exists)
+in the right way.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">parse_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#id3" title="Link to this definition">¶</a></dt>
+<dd><p>Given a context and a list of arguments this creates the parser
+and parses the arguments, then modifies the context as necessary.
+This is automatically invoked by <code class="xref py py-meth docutils literal notranslate"><span class="pre">make_context()</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><!--
+<p class="logo">
+  <a href="../../../../index.html">
+    <img class="logo" src="../../../../_static/mlsimkit-sidebar.png" alt="MLSimKit logo" />
+  </a>
+</p>
+-->
+
+<h4><a href="../../../../index.html">AI Surrogate Models in Engineering on AWS</a></h4>
+<p>
+  Tools to develop and use ML predictive models as surrogates for physics-based simulations.
+</p>
+
+<h4>Useful Links</h4>
+<ul>
+  <li><a href="../../../../user/install.html">Install</a></li>
+  <li><a href="../../../../user/quickstart-kpi.html">Quickstart KPI</a></li>
+  <li><a href="../../../../user/quickstart-slices.html">Quickstart Slices</a></li>
+  <li><a href="../../../../user/quickstart-surface.html">Quickstart Surfaces</a></li>
+  <li><a href="../../../../user/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+
+<div id="native-ribbon">
+</div>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/quickstart-kpi.html">Quickstart with KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/quickstart-surface.html">Quickstart with Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/quickstart-slices.html">Quickstart with Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/tutorial-kpi-windsor.html">KPI Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/tutorial-surface-ahmed.html">Surface Variable Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/tutorial-slices-windsor.html">Slice Prediction Tutorial</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../datasets/ahmed.html">AhmedML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../datasets/windsor.html">WindsorML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../datasets/drivaer.html">DrivAerML Dataset</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/user-guide-kpi.html">Model User Guide – KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/user-guide-surface.html">Model User Guide – Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/user-guide-slice.html">Model User Guide – Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/notebook-guide.html">Using the MLSimKit SDK Interactively (Notebooks, IPython)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/mlflow-guide.html">Tracking Experiments and Results with MLFLow</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.html">Code Structure and Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../learn.html">Learning Module (<code class="docutils literal notranslate"><span class="pre">mlsimkit.learn</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cli-toolkit.html">Creating Custom CLI Commands</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../api.html">MLSimKit SDK API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlsimkit.common.cli</span></code> – CLI Framework</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../index.html#command-decorators">Command Decorators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#option-types">Option Types</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#command-classes">Command Classes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/common/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlsimkit.learn.common</span></code> – MLSimKit Learn Common</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/manifest/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlsimkit.learn.manifest</span></code> – MLSimKit Learn Manifest</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../api.html">MLSimKit SDK API</a><ul>
+  <li><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlsimkit.common.cli</span></code> – CLI Framework</a><ul>
+      <li>Previous: <a href="mlsimkit.common.cli.BaseCommand.html" title="previous chapter">mlsimkit.common.cli.BaseCommand</a></li>
+      <li>Next: <a href="../../learn/common/index.html" title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlsimkit.learn.common</span></code> – MLSimKit Learn Common</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;Copyright 2025 Amazon.com, Inc. or its affiliates. All Rights Reserved..
+      
+      |
+      <a href="../../../../_sources/dev/api/cli/classes/mlsimkit.common.cli.BaseGroup.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>mlsimkit.common.cli.ShorthandParamType &#8212; AI Surrogate Models for Engineering on AWS 0.1.dev1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/basic.css?v=9de7e953" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css?v=06097142" />
+    <script src="../../../../_static/documentation_options.js?v=6aee1ebc"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="mlsimkit.common.cli.ResourcePath" href="mlsimkit.common.cli.ResourcePath.html" />
+    <link rel="prev" title="mlsimkit.common.cli.ListParamType" href="mlsimkit.common.cli.ListParamType.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="mlsimkit-common-cli-shorthandparamtype">
+<h1>mlsimkit.common.cli.ShorthandParamType<a class="headerlink" href="#mlsimkit-common-cli-shorthandparamtype" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlsimkit.common.cli.ShorthandParamType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlsimkit.common.cli.</span></span><span class="sig-name descname"><span class="pre">ShorthandParamType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quotechar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'|'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlsimkit.common.cli.ShorthandParamType" title="Link to this definition">¶</a></dt>
+<dd><p>Click Parameter type for a Pydantic model that accepts shorthand notation.</p>
+<p>This parameter type allows users to specify values for a Pydantic model using a
+shorthand notation in the command line. It also supports loading values directly
+from a configuration file.</p>
+<p>Usage example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyOption</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">columns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+
+<span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span>
+    <span class="s2">&quot;-o&quot;</span><span class="p">,</span> <span class="s2">&quot;--option&quot;</span><span class="p">,</span>
+    <span class="nb">type</span><span class="o">=</span><span class="n">ShorthandParamType</span><span class="p">(</span><span class="n">MyOption</span><span class="p">),</span>
+    <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Specify an option in shorthand notation: &#39;name=value,columns=col1 col2&#39;&quot;</span>
+    <span class="n">callback</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ctx</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">value</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">my_command</span><span class="p">(</span><span class="n">option</span><span class="p">:</span> <span class="n">MyOption</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">my_command</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>From the command line:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>script.py<span class="w"> </span>-o<span class="w"> </span><span class="s2">&quot;name=my_option,columns=col1 col2&quot;</span>
+<span class="nv">name</span><span class="o">=</span><span class="s1">&#39;my_option&#39;</span><span class="w"> </span><span class="nv">columns</span><span class="o">=[</span><span class="s1">&#39;col1&#39;</span>,<span class="w"> </span><span class="s1">&#39;col2&#39;</span><span class="o">]</span>
+</pre></div>
+</div>
+<p>Alternatively, values can be loaded from a configuration file when using  <a class="reference internal" href="../functions/mlsimkit.common.cli.program.html#mlsimkit.common.cli.program" title="mlsimkit.common.cli.program"><code class="xref py py-func docutils literal notranslate"><span class="pre">program()</span></code></a>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># config.yaml</span>
+<span class="nt">option</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my_option</span>
+<span class="w">  </span><span class="nt">columns</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">col1</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">col2</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>script.py<span class="w"> </span>--config<span class="w"> </span>config.yaml
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model</strong> (<em>Type</em><em>[</em><em>BaseModel</em><em>]</em>) – The Pydantic model class to create an instance from
+the shorthand string or configuration file.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlsimkit.common.cli.ShorthandParamType.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quotechar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'|'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlsimkit.common.cli.ShorthandParamType.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id0" title="mlsimkit.common.cli.ShorthandParamType.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(model[, delimiter, quotechar])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mlsimkit.common.cli.ShorthandParamType.convert" title="mlsimkit.common.cli.ShorthandParamType.convert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert</span></code></a>(value, param, ctx)</p></td>
+<td><p>Convert to an instance of the Pydantic model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fail</span></code>(message[, param, ctx])</p></td>
+<td><p>Helper method to fail with an invalid value message.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_metavar</span></code>(param)</p></td>
+<td><p>Returns the metavar default for this param if it provides one.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_missing_message</span></code>(param)</p></td>
+<td><p>Optionally might return extra information about a missing parameter.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">shell_complete</span></code>(ctx, param, incomplete)</p></td>
+<td><p>Return a list of <code class="xref py py-class docutils literal notranslate"><span class="pre">CompletionItem</span></code> objects for the incomplete value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">split_envvar_value</span></code>(rv)</p></td>
+<td><p>Given a value from an environment variable this splits it up into small chunks depending on the defined envvar list splitter.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_info_dict</span></code>()</p></td>
+<td><p>Gather information that could be useful for a tool generating user-facing documentation.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">arity</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">envvar_list_splitter</span></code></p></td>
+<td><p>if a list of this type is expected and the value is pulled from a string environment variable, this is what splits it up.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_composite</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p>the descriptive name of this type</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quotechar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'|'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlsimkit.common.cli.ShorthandParamType.convert">
+<span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlsimkit.common.cli.ShorthandParamType.convert" title="Link to this definition">¶</a></dt>
+<dd><p>Convert to an instance of the Pydantic model.</p>
+<p>This method handles converting different types of values to an instance of the
+Pydantic model associated with this parameter type. It supports three main cases:</p>
+<ol class="arabic simple">
+<li><p>If the value is a list, it assumes that the parameter is marked as <cite>multiple=True</cite>.
+In this case, it recursively converts each element of the list to the Pydantic
+model and returns a list of model instances to match Click built-in behavior.
+If the parameter is not marked as <cite>multiple=True</cite>, it raises a <cite>BadParameter</cite> exception.</p></li>
+<li><p>If the value is a dictionary, it assumes that the value is loaded directly from
+a configuration file. In this case, it creates an instance of the Pydantic model
+by passing the dictionary as keyword arguments. This enables using config-only
+even for ShorthandParamTypes options.</p></li>
+<li><p>If the value is a string, it assumes that the string represents a shorthand
+notation for the Pydantic model. It calls the <cite>_parse_param_shorthand_str</cite>
+function to parse the string and create an instance of the Pydantic model.</p></li>
+</ol>
+<p>If the value is not a list, dictionary, or string, it raises a <cite>BadParameter</cite>
+exception.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>Any</em>) – The value to be converted to a Pydantic model instance.</p></li>
+<li><p><strong>param</strong> (<em>click.Parameter</em>) – The Click parameter object associated with the value.</p></li>
+<li><p><strong>ctx</strong> (<em>click.Context</em>) – The Click context object associated with the value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An instance of the Pydantic model associated with this parameter type.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>BaseModel</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>click.BadParameter</strong> – If the value is a list and the parameter is not marked as
+    <cite>multiple=True</cite>, or if the value is not a list, dictionary, or string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><!--
+<p class="logo">
+  <a href="../../../../index.html">
+    <img class="logo" src="../../../../_static/mlsimkit-sidebar.png" alt="MLSimKit logo" />
+  </a>
+</p>
+-->
+
+<h4><a href="../../../../index.html">AI Surrogate Models in Engineering on AWS</a></h4>
+<p>
+  Tools to develop and use ML predictive models as surrogates for physics-based simulations.
+</p>
+
+<h4>Useful Links</h4>
+<ul>
+  <li><a href="../../../../user/install.html">Install</a></li>
+  <li><a href="../../../../user/quickstart-kpi.html">Quickstart KPI</a></li>
+  <li><a href="../../../../user/quickstart-slices.html">Quickstart Slices</a></li>
+  <li><a href="../../../../user/quickstart-surface.html">Quickstart Surfaces</a></li>
+  <li><a href="../../../../user/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+
+<div id="native-ribbon">
+</div>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/quickstart-kpi.html">Quickstart with KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/quickstart-surface.html">Quickstart with Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/quickstart-slices.html">Quickstart with Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/tutorial-kpi-windsor.html">KPI Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/tutorial-surface-ahmed.html">Surface Variable Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/tutorial-slices-windsor.html">Slice Prediction Tutorial</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../datasets/ahmed.html">AhmedML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../datasets/windsor.html">WindsorML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../datasets/drivaer.html">DrivAerML Dataset</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/user-guide-kpi.html">Model User Guide – KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/user-guide-surface.html">Model User Guide – Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/user-guide-slice.html">Model User Guide – Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/notebook-guide.html">Using the MLSimKit SDK Interactively (Notebooks, IPython)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/mlflow-guide.html">Tracking Experiments and Results with MLFLow</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.html">Code Structure and Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../learn.html">Learning Module (<code class="docutils literal notranslate"><span class="pre">mlsimkit.learn</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cli-toolkit.html">Creating Custom CLI Commands</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../api.html">MLSimKit SDK API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlsimkit.common.cli</span></code> – CLI Framework</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../index.html#command-decorators">Command Decorators</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#option-types">Option Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#command-classes">Command Classes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/common/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlsimkit.learn.common</span></code> – MLSimKit Learn Common</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/manifest/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlsimkit.learn.manifest</span></code> – MLSimKit Learn Manifest</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../api.html">MLSimKit SDK API</a><ul>
+  <li><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlsimkit.common.cli</span></code> – CLI Framework</a><ul>
+      <li>Previous: <a href="mlsimkit.common.cli.ListParamType.html" title="previous chapter">mlsimkit.common.cli.ListParamType</a></li>
+      <li>Next: <a href="mlsimkit.common.cli.ResourcePath.html" title="next chapter">mlsimkit.common.cli.ResourcePath</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;Copyright 2025 Amazon.com, Inc. or its affiliates. All Rights Reserved..
+      
+      |
+      <a href="../../../../_sources/dev/api/cli/parameter_types/mlsimkit.common.cli.ShorthandParamType.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

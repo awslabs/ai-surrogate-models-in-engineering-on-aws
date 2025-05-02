@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Quickstart with KPI Prediction &#8212; AI Surrogate Models for Engineering on AWS 0.1.dev1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=9de7e953" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=06097142" />
+    <script src="../_static/documentation_options.js?v=6aee1ebc"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Quickstart with Surface Variable Prediction" href="quickstart-surface.html" />
+    <link rel="prev" title="Install" href="install.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="quickstart-with-kpi-prediction">
+<span id="quickstart-kpi"></span><h1>Quickstart with KPI Prediction<a class="headerlink" href="#quickstart-with-kpi-prediction" title="Link to this heading">¶</a></h1>
+<p>To get started, first make sure that:</p>
+<ul class="simple">
+<li><p>MLSimKit is <a class="reference internal" href="install.html#install"><span class="std std-ref">installed</span></a></p></li>
+</ul>
+<p>We’ll use a sample dataset to quickly show you an end-to-end workflow.</p>
+<p>KPI Prediction (KPI) is accessed via the <code class="docutils literal notranslate"><span class="pre">mlsimkit-learn</span> <span class="pre">kpi</span></code> command:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Usage:<span class="w"> </span>mlsimkit-learn<span class="w"> </span>kpi<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>COMMAND1<span class="w"> </span><span class="o">[</span>ARGS<span class="o">]</span>...<span class="w"> </span><span class="o">[</span>COMMAND2
+<span class="w">                          </span><span class="o">[</span>ARGS<span class="o">]</span>...<span class="o">]</span>...
+
+<span class="w">  </span>Use<span class="w"> </span>Case:<span class="w"> </span>KPI<span class="w"> </span>prediction<span class="w"> </span>using<span class="w"> </span>a<span class="w"> </span>variant<span class="w"> </span>of<span class="w"> </span>Mesh<span class="w"> </span>Graph<span class="w"> </span>Networks<span class="w"> </span><span class="o">(</span>MGN<span class="o">)</span>
+
+Options:
+<span class="w">  </span>--manifest-uri<span class="w"> </span>PATH<span class="w">  </span>Manifest<span class="w"> </span>file<span class="w"> </span>to<span class="w"> </span>drive<span class="w"> </span>all<span class="w"> </span>subcommands.<span class="w"> </span>Searches
+<span class="w">                       </span>mlsimkit/datasets<span class="w"> </span>as<span class="w"> </span>a<span class="w"> </span>fallback
+<span class="w">  </span>--help<span class="w">               </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
+
+Commands:
+<span class="w">  </span>predict
+<span class="w">  </span>preprocess
+<span class="w">  </span>train
+</pre></div>
+</div>
+<p>To run KPI commands, you may provide a config only or override the config with command-line arguments by running:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-learn<span class="w"> </span>--config<span class="w"> </span>&lt;config&gt;<span class="w"> </span>kpi<span class="w"> </span>&lt;command-name&gt;
+</pre></div>
+</div>
+<p>You can use the <code class="docutils literal notranslate"><span class="pre">help</span></code> command to see the definitions of all the hyperparameters associated with any command. For example, the following command will display all hyperparameters for training:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-learn<span class="w"> </span>kpi<span class="w"> </span>train<span class="w"> </span>--help
+</pre></div>
+</div>
+<section id="sample-dataset">
+<h2>Sample Dataset<a class="headerlink" href="#sample-dataset" title="Link to this heading">¶</a></h2>
+<p>There is a sample config and a very small sample dataset called “drivaer-sample” so you can run end-to-end quickly:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>src/mlsimkit/conf
+└──<span class="w"> </span>kpi
+<span class="w">    </span>└──<span class="w"> </span>sample.yaml
+
+src/mlsimkit/datasets
+├──<span class="w"> </span>...
+└──<span class="w"> </span>drivaer-sample
+<span class="w">    </span>├──<span class="w"> </span>downsampled_stls
+<span class="w">    </span>└──<span class="w"> </span>kpi.manifest
+</pre></div>
+</div>
+</section>
+<section id="external-datasets">
+<h2>External Datasets<a class="headerlink" href="#external-datasets" title="Link to this heading">¶</a></h2>
+<p>In addition to the sample dataset, there are tutorials to get started with publicly available datasets:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>tutorials/
+└── kpi
+    ├── ahmed/
+    ├── drivaer/ (coming soon)
+    ├── sample/
+    └── windsor/
+</pre></div>
+</div>
+</section>
+<section id="run-the-sample">
+<h2>Run the Sample<a class="headerlink" href="#run-the-sample" title="Link to this heading">¶</a></h2>
+<p>First, make a folder for all the outputs. Replace <code class="docutils literal notranslate"><span class="pre">--output-dir</span> <span class="pre">quickstart/kpi</span></code> in the command below with your own folder location.</p>
+<p>Second, run the entire train-predict pipeline to make predictions on the sample data using CPU-only:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-learn<span class="w"> </span>--output-dir<span class="w"> </span>quickstart/kpi<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--config<span class="w"> </span>src/mlsimkit/conf/kpi/sample.yaml<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>kpi<span class="w"> </span>preprocess<span class="w"> </span>train<span class="w"> </span>--device<span class="w"> </span>cpu<span class="w"> </span>predict
+</pre></div>
+</div>
+<p>Also, note that commands can be chained together.  For example, the above runs <cite>preprocess</cite>, <cite>train</cite>, and then <cite>predict</cite>.</p>
+<section id="running-on-gpu">
+<h3>Running on GPU<a class="headerlink" href="#running-on-gpu" title="Link to this heading">¶</a></h3>
+<p>MLSimKit automatically uses a GPU by default. To use your GPU, remove <code class="docutils literal notranslate"><span class="pre">--device</span> <span class="pre">cpu</span></code> from the previous command and run again:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-learn<span class="w"> </span>--output-dir<span class="w"> </span>quickstart/kpi<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--config<span class="w"> </span>src/mlsimkit/conf/kpi/sample.yaml<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>kpi<span class="w"> </span>preprocess<span class="w"> </span>train<span class="w"> </span>predict
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>On older MacOS hardware, you may see the error <code class="docutils literal notranslate"><span class="pre">Cannot</span> <span class="pre">convert</span> <span class="pre">a</span> <span class="pre">MPS</span> <span class="pre">Tensor</span> <span class="pre">to</span> <span class="pre">float64</span> <span class="pre">dtype</span></code>. If so, force CPU by specifying <code class="docutils literal notranslate"><span class="pre">--device</span> <span class="pre">cpu</span></code> for train commands.</p>
+<p>In general, please see the <a class="reference internal" href="troubleshooting.html#troubleshooting"><span class="std std-ref">Troubleshooting</span></a> guide for possible errors if commands do not work.</p>
+</div>
+<p>All artifacts are written into the output directory <code class="docutils literal notranslate"><span class="pre">--output-dir</span></code>. You may also set the output directory in the config file. Commands automatically share paths to the output artifacts such as the train model path. The sample configuration below sets some input options but most options use defaults. There are many options, which we go into detail after the quickstart.</p>
+<p>The sample configuration <code class="docutils literal notranslate"><span class="pre">conf/kpi/sample.yaml</span></code> looks like this:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kpi</span><span class="p">:</span>
+<span class="w">   </span><span class="nt">manifest_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">drivaer-sample/kpi.manifest</span>
+
+<span class="w">   </span><span class="nt">train</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">epochs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">     </span><span class="nt">batch_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A manifest (<code class="docutils literal notranslate"><span class="pre">manifest_uri</span></code>) describes the paths to a dataset and is used to share data between tasks. For now, know that <code class="docutils literal notranslate"><span class="pre">kpi.manifest</span></code>
+references a small dataset packaged with MLSimKit.</p>
+</div>
+<p>You will see console logs for all three commands, something like below. File artifacts are written to the <code class="docutils literal notranslate"><span class="pre">--output-dir</span></code>.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span><span class="o">[</span>MLSimKit<span class="o">]</span><span class="w"> </span>Learning<span class="w"> </span>Tools
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Package<span class="w"> </span>Version:<span class="w"> </span><span class="m">0</span>.2.3.dev3+gaf49957.d20240808
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Use<span class="w"> </span>Case:<span class="w"> </span>KPI<span class="w"> </span>prediction<span class="w"> </span>via<span class="w"> </span>a<span class="w"> </span>variant<span class="w"> </span>of<span class="w"> </span>MeshGraphNets
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Running<span class="w"> </span><span class="nb">command</span><span class="w"> </span><span class="s1">&#39;preprocess&#39;</span>
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Preprocessing<span class="w"> </span>configuration:<span class="w"> </span><span class="nv">manifest_path</span><span class="o">=</span><span class="s1">&#39;/home/ubuntu/mlsimkit/src/mlsimkit/datasets/drivaer-sample/kpi.manifest&#39;</span><span class="w"> </span><span class="nv">output_dir</span><span class="o">=</span><span class="s1">&#39;/home/ubuntu/mlsimkit/quickstart/kpi/preprocessed_data&#39;</span><span class="w"> </span><span class="nv">downsample_remaining_perc</span><span class="o">=</span>None<span class="w"> </span><span class="nv">num_processes</span><span class="o">=</span>None<span class="w"> </span><span class="nv">manifest_base_relative_path</span><span class="o">=</span>&lt;RelativePathBase.ManifestRoot:<span class="w"> </span><span class="s1">&#39;ManifestRoot&#39;</span>&gt;
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Preprocessing<span class="w"> </span>mesh<span class="w"> </span>files<span class="w"> </span><span class="o">(</span><span class="nv">num_processes</span><span class="o">=</span><span class="m">95</span><span class="o">)</span>
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Pre-processing<span class="w"> </span>file<span class="w"> </span><span class="m">1</span><span class="w"> </span>out<span class="w"> </span>of<span class="w"> </span><span class="m">7</span><span class="w"> </span>files
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Pre-processing<span class="w"> </span>file<span class="w"> </span><span class="m">2</span><span class="w"> </span>out<span class="w"> </span>of<span class="w"> </span><span class="m">7</span><span class="w"> </span>files
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Pre-processing<span class="w"> </span>file<span class="w"> </span><span class="m">3</span><span class="w"> </span>out<span class="w"> </span>of<span class="w"> </span><span class="m">7</span><span class="w"> </span>files
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Pre-processing<span class="w"> </span>file<span class="w"> </span><span class="m">4</span><span class="w"> </span>out<span class="w"> </span>of<span class="w"> </span><span class="m">7</span><span class="w"> </span>files
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Pre-processing<span class="w"> </span>file<span class="w"> </span><span class="m">5</span><span class="w"> </span>out<span class="w"> </span>of<span class="w"> </span><span class="m">7</span><span class="w"> </span>files
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Pre-processing<span class="w"> </span>file<span class="w"> </span><span class="m">6</span><span class="w"> </span>out<span class="w"> </span>of<span class="w"> </span><span class="m">7</span><span class="w"> </span>files
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Pre-processing<span class="w"> </span>file<span class="w"> </span><span class="m">7</span><span class="w"> </span>out<span class="w"> </span>of<span class="w"> </span><span class="m">7</span><span class="w"> </span>files
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Saved<span class="w"> </span>output<span class="w"> </span>files<span class="w"> </span><span class="k">in</span><span class="w"> </span>/home/ubuntu/mlsimkit/quickstart/kpi/preprocessed_data
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Manifest<span class="w"> </span><span class="s1">&#39;/home/ubuntu/mlsimkit/quickstart/kpi/kpi-copy.manifest&#39;</span><span class="w"> </span>written<span class="w"> </span><span class="o">(</span><span class="m">7</span><span class="w"> </span>records<span class="o">)</span>
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Total<span class="w"> </span>preprocessing<span class="w"> </span>time:<span class="w"> </span><span class="m">2</span>.036<span class="w"> </span>seconds
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Splitting<span class="w"> </span>manifest<span class="w"> </span>into<span class="w"> </span>train-size<span class="o">=</span><span class="m">0</span>.6<span class="w"> </span>valid-size<span class="o">=</span><span class="m">0</span>.2<span class="w"> </span>test-size<span class="o">=</span><span class="m">0</span>.2
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Manifest<span class="w"> </span><span class="s1">&#39;/home/ubuntu/mlsimkit/quickstart/kpi/train.manifest&#39;</span><span class="w"> </span>written<span class="w"> </span><span class="o">(</span><span class="m">4</span><span class="w"> </span>records<span class="o">)</span>
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Manifest<span class="w"> </span><span class="s1">&#39;/home/ubuntu/mlsimkit/quickstart/kpi/validate.manifest&#39;</span><span class="w"> </span>written<span class="w"> </span><span class="o">(</span><span class="m">1</span><span class="w"> </span>records<span class="o">)</span>
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Manifest<span class="w"> </span><span class="s1">&#39;/home/ubuntu/mlsimkit/quickstart/kpi/test.manifest&#39;</span><span class="w"> </span>written<span class="w"> </span><span class="o">(</span><span class="m">2</span><span class="w"> </span>records<span class="o">)</span>
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Running<span class="w"> </span><span class="nb">command</span><span class="w"> </span><span class="s1">&#39;train&#39;</span>
+...
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Training<span class="w"> </span>state<span class="w"> </span>configuration:<span class="w"> </span><span class="o">{</span><span class="s2">&quot;Distributed&quot;</span>:<span class="w"> </span><span class="s2">&quot;no&quot;</span>,<span class="w"> </span><span class="s2">&quot;Num processes&quot;</span>:<span class="w"> </span><span class="m">1</span>,<span class="w"> </span><span class="s2">&quot;Process index&quot;</span>:<span class="w"> </span><span class="m">0</span>,<span class="w"> </span><span class="s2">&quot;Local process index&quot;</span>:<span class="w"> </span><span class="m">0</span>,<span class="w"> </span><span class="s2">&quot;Device&quot;</span>:<span class="w"> </span><span class="s2">&quot;cuda&quot;</span>,<span class="w"> </span><span class="s2">&quot;Mixed precision&quot;</span>:<span class="w"> </span><span class="s2">&quot;no&quot;</span><span class="o">}</span>
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Training<span class="w"> </span>started<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="s1">&#39;model&#39;</span>
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Train<span class="w"> </span>dataset<span class="w"> </span>size:<span class="w"> </span><span class="m">4</span>
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Validation<span class="w"> </span>dataset<span class="w"> </span>size:<span class="w"> </span><span class="m">1</span>
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Training:<span class="w">   </span><span class="m">0</span>%<span class="p">|</span><span class="w">                                                         </span><span class="p">|</span><span class="w"> </span><span class="m">0</span>/10<span class="w"> </span><span class="o">[</span><span class="m">00</span>:00&lt;?,<span class="w"> </span>?epochs/s<span class="w"> </span><span class="o">]</span>
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Epoch<span class="w"> </span><span class="m">0</span>:<span class="w"> </span>train<span class="w"> </span><span class="nv">loss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.98888<span class="p">;</span><span class="w"> </span>validation<span class="w"> </span><span class="nv">loss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>.22718<span class="p">;</span><span class="w"> </span>best<span class="w"> </span>validation<span class="w"> </span><span class="nv">loss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>inf
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Model<span class="w"> </span>saved<span class="w"> </span>to<span class="w"> </span><span class="s1">&#39;/home/ubuntu/mlsimkit/quickstart/kpi/training_output/best_model.pt&#39;</span>
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Model<span class="w"> </span>saved<span class="w"> </span>to<span class="w"> </span><span class="s1">&#39;/home/ubuntu/mlsimkit/quickstart/kpi/training_output/checkpoint_models/model_epoch0.pt&#39;</span>
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Training:<span class="w">  </span><span class="m">10</span>%<span class="p">|</span>████▉<span class="w">                                            </span><span class="p">|</span><span class="w"> </span><span class="m">1</span>/10<span class="w"> </span><span class="o">[</span><span class="m">00</span>:00&lt;<span class="m">00</span>:07,<span class="w">  </span><span class="m">1</span>.27epochs/s<span class="w"> </span><span class="o">]</span>
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Epoch<span class="w"> </span><span class="m">1</span>:<span class="w"> </span>train<span class="w"> </span><span class="nv">loss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.90357<span class="p">;</span><span class="w"> </span>validation<span class="w"> </span><span class="nv">loss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>.04253<span class="p">;</span><span class="w"> </span>best<span class="w"> </span>validation<span class="w"> </span><span class="nv">loss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>.22718
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Model<span class="w"> </span>saved<span class="w"> </span>to<span class="w"> </span><span class="s1">&#39;/home/ubuntu/mlsimkit/quickstart/kpi/training_output/best_model.pt&#39;</span>
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Training:<span class="w">  </span><span class="m">20</span>%<span class="p">|</span>█████████▊<span class="w">                                       </span><span class="p">|</span><span class="w"> </span><span class="m">2</span>/10<span class="w"> </span><span class="o">[</span><span class="m">00</span>:00&lt;<span class="m">00</span>:03,<span class="w">  </span><span class="m">2</span>.32epochs/s<span class="w"> </span><span class="o">]</span>
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Epoch<span class="w"> </span><span class="m">2</span>:<span class="w"> </span>train<span class="w"> </span><span class="nv">loss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.88518<span class="p">;</span><span class="w"> </span>validation<span class="w"> </span><span class="nv">loss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>.04486<span class="p">;</span><span class="w"> </span>best<span class="w"> </span>validation<span class="w"> </span><span class="nv">loss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>.04253
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Epoch<span class="w"> </span><span class="m">1</span><span class="w"> </span>had<span class="w"> </span>the<span class="w"> </span>minimum<span class="w"> </span>validation<span class="w"> </span>loss.
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Training:<span class="w">  </span><span class="m">30</span>%<span class="p">|</span>██████████████▋<span class="w">                                  </span><span class="p">|</span><span class="w"> </span><span class="m">3</span>/10<span class="w"> </span><span class="o">[</span><span class="m">00</span>:00&lt;<span class="m">00</span>:02,<span class="w">  </span><span class="m">3</span>.27epochs/s<span class="w"> </span><span class="o">]</span>
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Epoch<span class="w"> </span><span class="m">3</span>:<span class="w"> </span>train<span class="w"> </span><span class="nv">loss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.87817<span class="p">;</span><span class="w"> </span>validation<span class="w"> </span><span class="nv">loss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>.12413<span class="p">;</span><span class="w"> </span>best<span class="w"> </span>validation<span class="w"> </span><span class="nv">loss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>.04253
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Epoch<span class="w"> </span><span class="m">1</span><span class="w"> </span>had<span class="w"> </span>the<span class="w"> </span>minimum<span class="w"> </span>validation<span class="w"> </span>loss.
+
+...
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Training:<span class="w">  </span><span class="m">90</span>%<span class="p">|</span>████████████████████████████████████████████<span class="w">     </span><span class="p">|</span><span class="w"> </span><span class="m">9</span>/10<span class="w"> </span><span class="o">[</span><span class="m">00</span>:01&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">7</span>.32epochs/s<span class="w"> </span><span class="o">]</span>
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Epoch<span class="w"> </span><span class="m">9</span>:<span class="w"> </span>train<span class="w"> </span><span class="nv">loss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.85995<span class="p">;</span><span class="w"> </span>validation<span class="w"> </span><span class="nv">loss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>.23066<span class="p">;</span><span class="w"> </span>best<span class="w"> </span>validation<span class="w"> </span><span class="nv">loss</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>.04253
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Epoch<span class="w"> </span><span class="m">1</span><span class="w"> </span>had<span class="w"> </span>the<span class="w"> </span>minimum<span class="w"> </span>validation<span class="w"> </span>loss.
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Model<span class="w"> </span>saved<span class="w"> </span>to<span class="w"> </span><span class="s1">&#39;/home/ubuntu/mlsimkit/quickstart/kpi/training_output/last_model.pt&#39;</span>
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Training:<span class="w"> </span><span class="m">100</span>%<span class="p">|</span>████████████████████████████████████████████████<span class="p">|</span><span class="w"> </span><span class="m">10</span>/10<span class="w"> </span><span class="o">[</span><span class="m">00</span>:01&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">6</span>.27epochs/s<span class="w"> </span><span class="o">]</span>
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Training<span class="w"> </span><span class="nb">time</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>model:<span class="w"> </span><span class="m">1</span>.606<span class="w"> </span>seconds<span class="w"> </span>/<span class="w"> </span><span class="m">0</span>.027<span class="w"> </span>minutes
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Minimum<span class="w"> </span>validation<span class="w"> </span>loss:<span class="w"> </span><span class="m">1</span>.04253
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Minimum<span class="w"> </span>train<span class="w"> </span>loss:<span class="w"> </span><span class="m">0</span>.85995
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>best_model:<span class="w"> </span>prediction<span class="w"> </span>error<span class="w"> </span><span class="k">for</span><span class="w"> </span>train<span class="w"> </span>data,<span class="w"> </span>kpi<span class="w"> </span><span class="m">0</span>:<span class="w"> </span><span class="nv">MAPE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.07986,<span class="w"> </span><span class="nv">MAE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.02254,<span class="w"> </span><span class="nv">MSE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.00057
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>best_model:<span class="w"> </span>prediction<span class="w"> </span>error<span class="w"> </span><span class="k">for</span><span class="w"> </span>validation<span class="w"> </span>data,<span class="w"> </span>kpi<span class="w"> </span><span class="m">0</span>:<span class="w"> </span><span class="nv">MAPE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.10089,<span class="w"> </span><span class="nv">MAE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.02740,<span class="w"> </span><span class="nv">MSE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.00075
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Saved<span class="w"> </span>error<span class="w"> </span>metrics:<span class="w"> </span>/home/ubuntu/mlsimkit/quickstart/kpi/training_output/best_model_predictions/dataset_prediction_error_metrics.csv
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Saved<span class="w"> </span>results:<span class="w"> </span>/home/ubuntu/mlsimkit/quickstart/kpi/training_output/best_model_predictions/prediction_results.csv
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>last_model:<span class="w"> </span>prediction<span class="w"> </span>error<span class="w"> </span><span class="k">for</span><span class="w"> </span>train<span class="w"> </span>data,<span class="w"> </span>kpi<span class="w"> </span><span class="m">0</span>:<span class="w"> </span><span class="nv">MAPE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.08033,<span class="w"> </span><span class="nv">MAE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.02231,<span class="w"> </span><span class="nv">MSE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.00065
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>last_model:<span class="w"> </span>prediction<span class="w"> </span>error<span class="w"> </span><span class="k">for</span><span class="w"> </span>validation<span class="w"> </span>data,<span class="w"> </span>kpi<span class="w"> </span><span class="m">0</span>:<span class="w"> </span><span class="nv">MAPE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.11909,<span class="w"> </span><span class="nv">MAE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.03234,<span class="w"> </span><span class="nv">MSE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.00105
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Saved<span class="w"> </span>error<span class="w"> </span>metrics:<span class="w"> </span>/home/ubuntu/mlsimkit/quickstart/kpi/training_output/last_model_predictions/dataset_prediction_error_metrics.csv
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Saved<span class="w"> </span>results:<span class="w"> </span>/home/ubuntu/mlsimkit/quickstart/kpi/training_output/last_model_predictions/prediction_results.csv
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Training<span class="w"> </span>Completed
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Total<span class="w"> </span>training<span class="w"> </span>time:<span class="w"> </span><span class="m">2</span>.281<span class="w"> </span>seconds<span class="w"> </span>/<span class="w"> </span><span class="m">0</span>.038<span class="w"> </span>minutes
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Running<span class="w"> </span><span class="nb">command</span><span class="w"> </span><span class="s1">&#39;predict&#39;</span>
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Settings:<span class="w"> </span><span class="nv">inference_data_path</span><span class="o">=</span>None<span class="w"> </span><span class="nv">model_path</span><span class="o">=</span><span class="s1">&#39;/home/ubuntu/mlsimkit/quickstart/kpi/training_output/best_model.pt&#39;</span><span class="w"> </span><span class="nv">manifest_path</span><span class="o">=</span><span class="s1">&#39;/home/ubuntu/mlsimkit/quickstart/kpi/test.manifest&#39;</span><span class="w"> </span><span class="nv">inference_results_dir</span><span class="o">=</span><span class="s1">&#39;/home/ubuntu/mlsimkit/quickstart/kpi/predictions&#39;</span><span class="w"> </span><span class="nv">num_processes</span><span class="o">=</span>None<span class="w"> </span><span class="nv">output_kpi_indices</span><span class="o">=</span>None
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Inference<span class="w"> </span>configuration:<span class="w"> </span><span class="nv">inference_data_path</span><span class="o">=</span>None<span class="w"> </span><span class="nv">model_path</span><span class="o">=</span><span class="s1">&#39;/home/ubuntu/mlsimkit/quickstart/kpi/training_output/best_model.pt&#39;</span><span class="w"> </span><span class="nv">manifest_path</span><span class="o">=</span><span class="s1">&#39;/home/ubuntu/mlsimkit/quickstart/kpi/test.manifest&#39;</span><span class="w"> </span><span class="nv">inference_results_dir</span><span class="o">=</span><span class="s1">&#39;/home/ubuntu/mlsimkit/quickstart/kpi/predictions&#39;</span><span class="w"> </span><span class="nv">num_processes</span><span class="o">=</span>None<span class="w"> </span><span class="nv">output_kpi_indices</span><span class="o">=</span>None
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Predicting<span class="w"> </span>using<span class="w"> </span>input<span class="w"> </span>manifest<span class="w"> </span><span class="s1">&#39;/home/ubuntu/mlsimkit/quickstart/kpi/test.manifest&#39;</span>
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Inference<span class="w"> </span>dataset<span class="w"> </span>size:<span class="w"> </span><span class="m">2</span>
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Time<span class="w"> </span>to<span class="w"> </span>load<span class="w"> </span>dataset<span class="w"> </span>and<span class="w"> </span>model:<span class="w"> </span><span class="m">0</span>.034<span class="w"> </span>seconds
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Inference<span class="w"> </span><span class="nb">time</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>each<span class="w"> </span>data<span class="w"> </span>point:<span class="w"> </span><span class="m">0</span>.009<span class="w"> </span>seconds
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>prediction<span class="w"> </span>error<span class="w"> </span><span class="k">for</span><span class="w"> </span>inference<span class="w"> </span>data,<span class="w"> </span>kpi<span class="w"> </span><span class="m">0</span>:<span class="w"> </span><span class="nv">MAPE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.07365,<span class="w"> </span><span class="nv">MAE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.02141,<span class="w"> </span><span class="nv">MSE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>.00047
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Saved<span class="w"> </span>error<span class="w"> </span>metrics:<span class="w"> </span>/home/ubuntu/mlsimkit/quickstart/kpi/predictions/dataset_prediction_error_metrics.csv
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Saved<span class="w"> </span>results:<span class="w"> </span>/home/ubuntu/mlsimkit/quickstart/kpi/predictions/prediction_results.csv
+<span class="o">[</span>INFO<span class="o">]</span><span class="w"> </span>Total<span class="w"> </span>inference<span class="w"> </span>time:<span class="w"> </span><span class="m">0</span>.136<span class="w"> </span>seconds
+</pre></div>
+</div>
+<p>When complete, the output directory <code class="docutils literal notranslate"><span class="pre">quickstart/kpi/</span></code> should now contain the data from preprocessing and training and the results for prediction</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>quickstart/
+<span class="w"> </span>└──<span class="w"> </span>kpi
+<span class="w">     </span>├──<span class="w"> </span>kpi-copy.manifest
+<span class="w">     </span>├──<span class="w"> </span>train.manifest
+<span class="w">     </span>├──<span class="w"> </span>validate.manifest
+<span class="w">     </span>├──<span class="w"> </span>test.manifest
+<span class="w">     </span>├──<span class="w"> </span>logs
+<span class="w">     </span>│<span class="w">   </span>└──<span class="w"> </span>kpi
+<span class="w">     </span>│<span class="w">       </span>├──<span class="w"> </span>inference.log
+<span class="w">     </span>│<span class="w">       </span>├──<span class="w"> </span>preprocessing.log
+<span class="w">     </span>│<span class="w">       </span>└──<span class="w"> </span>training.log
+<span class="w">     </span>├──<span class="w"> </span>predictions
+<span class="w">     </span>│<span class="w">   </span>├──<span class="w"> </span>dataset_prediction_error_metrics.csv
+<span class="w">     </span>│<span class="w">   </span>├──<span class="w"> </span>predicted_vs_actual_kpi0.png
+<span class="w">     </span>│<span class="w">   </span>└──<span class="w"> </span>prediction_results.csv
+<span class="w">     </span>├──<span class="w"> </span>preprocessed_data
+<span class="w">     </span>│<span class="w">   </span>├──<span class="w"> </span>preprocessed_run_00000.pt
+<span class="w">     </span>│<span class="w">   </span>├──<span class="w"> </span>preprocessed_run_00001.pt
+<span class="w">     </span>│<span class="w">   </span>├──<span class="w"> </span>preprocessed_run_00002.pt
+<span class="w">     </span>│<span class="w">   </span>├──<span class="w"> </span>preprocessed_run_00003.pt
+<span class="w">     </span>│<span class="w">   </span>├──<span class="w"> </span>preprocessed_run_00004.pt
+<span class="w">     </span>│<span class="w">   </span>├──<span class="w"> </span>preprocessed_run_00005.pt
+<span class="w">     </span>│<span class="w">   </span>└──<span class="w"> </span>preprocessed_run_00006.pt
+<span class="w">     </span>└──<span class="w"> </span>training_output
+<span class="w">         </span>├──<span class="w"> </span>best_model.pt
+<span class="w">         </span>├──<span class="w"> </span>best_model_predictions
+<span class="w">         </span>│<span class="w">   </span>├──<span class="w"> </span>dataset_prediction_error_metrics.csv
+<span class="w">         </span>│<span class="w">   </span>├──<span class="w"> </span>predicted_vs_actual_kpi0.png
+<span class="w">         </span>│<span class="w">   </span>└──<span class="w"> </span>prediction_results.csv
+<span class="w">         </span>├──<span class="w"> </span>checkpoint_models
+<span class="w">         </span>│<span class="w">   </span>└──<span class="w"> </span>model_epoch0.pt
+<span class="w">         </span>├──<span class="w"> </span>last_model.pt
+<span class="w">         </span>├──<span class="w"> </span>last_model_predictions
+<span class="w">         </span>│<span class="w">   </span>├──<span class="w"> </span>dataset_prediction_error_metrics.csv
+<span class="w">         </span>│<span class="w">   </span>├──<span class="w"> </span>predicted_vs_actual_kpi0.png
+<span class="w">         </span>│<span class="w">   </span>└──<span class="w"> </span>prediction_results.csv
+<span class="w">         </span>├──<span class="w"> </span>model_loss.csv
+<span class="w">         </span>├──<span class="w"> </span>model_loss.png
+<span class="w">         </span>└──<span class="w"> </span>model_loss_log.png
+</pre></div>
+</div>
+</section>
+</section>
+<section id="results">
+<h2>Results<a class="headerlink" href="#results" title="Link to this heading">¶</a></h2>
+<p>You have trained a KPI model from scratch on sample data. The best model is saved to <code class="docutils literal notranslate"><span class="pre">training_output/best_model.pt</span></code>. You can compare the train and validation predictions against the ground truth in <code class="docutils literal notranslate"><span class="pre">training_output/best_model_predictions/prediction_results.csv</span></code> and view the plot <code class="docutils literal notranslate"><span class="pre">.png</span></code> files in the same folder. Results for the <code class="docutils literal notranslate"><span class="pre">mlsimkit-learn</span> <span class="pre">kpi</span> <span class="pre">predict</span></code> command are in <code class="docutils literal notranslate"><span class="pre">predictions/</span></code>.</p>
+</section>
+<section id="next-steps">
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">¶</a></h2>
+<p>Follow the <a class="reference internal" href="../tutorials/tutorial-kpi-windsor.html#tutorial-kpi-windsor"><span class="std std-ref">KPI Prediction Tutorial</span></a> to train on a real large-scale dataset and make accurate predictions.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><!--
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/mlsimkit-sidebar.png" alt="MLSimKit logo" />
+  </a>
+</p>
+-->
+
+<h4><a href="../index.html">AI Surrogate Models in Engineering on AWS</a></h4>
+<p>
+  Tools to develop and use ML predictive models as surrogates for physics-based simulations.
+</p>
+
+<h4>Useful Links</h4>
+<ul>
+  <li><a href="install.html">Install</a></li>
+  <li><a href="#">Quickstart KPI</a></li>
+  <li><a href="quickstart-slices.html">Quickstart Slices</a></li>
+  <li><a href="quickstart-surface.html">Quickstart Surfaces</a></li>
+  <li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul>
+
+<div id="native-ribbon">
+</div>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Install</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart with KPI Prediction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#sample-dataset">Sample Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#external-datasets">External Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-the-sample">Run the Sample</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#running-on-gpu">Running on GPU</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#results">Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart-surface.html">Quickstart with Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart-slices.html">Quickstart with Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-kpi-windsor.html">KPI Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-surface-ahmed.html">Surface Variable Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-slices-windsor.html">Slice Prediction Tutorial</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/ahmed.html">AhmedML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/windsor.html">WindsorML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/drivaer.html">DrivAerML Dataset</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user-guide-kpi.html">Model User Guide – KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide-surface.html">Model User Guide – Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide-slice.html">Model User Guide – Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook-guide.html">Using the MLSimKit SDK Interactively (Notebooks, IPython)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mlflow-guide.html">Tracking Experiments and Results with MLFLow</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/guide.html">Code Structure and Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/learn.html">Learning Module (<code class="docutils literal notranslate"><span class="pre">mlsimkit.learn</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/cli-toolkit.html">Creating Custom CLI Commands</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/api.html">MLSimKit SDK API</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="install.html" title="previous chapter">Install</a></li>
+      <li>Next: <a href="quickstart-surface.html" title="next chapter">Quickstart with Surface Variable Prediction</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;Copyright 2025 Amazon.com, Inc. or its affiliates. All Rights Reserved..
+      
+      |
+      <a href="../_sources/user/quickstart-kpi.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

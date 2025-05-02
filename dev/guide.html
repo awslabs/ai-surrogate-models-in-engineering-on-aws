@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Code Structure and Concepts &#8212; AI Surrogate Models for Engineering on AWS 0.1.dev1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=9de7e953" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=06097142" />
+    <script src="../_static/documentation_options.js?v=6aee1ebc"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Learning Module (mlsimkit.learn)" href="learn.html" />
+    <link rel="prev" title="Tracking Experiments and Results with MLFLow" href="../user/mlflow-guide.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="code-structure-and-concepts">
+<h1>Code Structure and Concepts<a class="headerlink" href="#code-structure-and-concepts" title="Link to this heading">¶</a></h1>
+<p>This guide provides an overview of the MLSimKit codebase and helps you navigate through the different components and modules of the toolkit.</p>
+<section id="code-structure">
+<h2>Code Structure<a class="headerlink" href="#code-structure" title="Link to this heading">¶</a></h2>
+<p>The MLSimKit project is structured as follows:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>src
+└── mlsimkit
+   ├── common
+   ├── conf
+   ├── datasets
+   ├── image
+   └── learn
+</pre></div>
+</div>
+<p>The main components of the project are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mlsimkit</span></code>: The core package containing the main codebase.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">common</span></code>: Common utilities and helper modules used across the toolkit.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">conf</span></code>: Configuration files and examples.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">datasets</span></code>: Sample datasets for testing and development.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">image</span></code>: Modules related to image processing and visualization.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">learn</span></code>: The main machine learning components, including models, data processing, and training pipelines.</p></li>
+</ul>
+<section id="mlsimkit-common">
+<h3><code class="docutils literal notranslate"><span class="pre">mlsimkit.common</span></code><a class="headerlink" href="#mlsimkit-common" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">common</span></code> module contains shared utilities and helper functions used across the toolkit:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cli.py</span></code>: Framework for creating command-line tools with automated options and YAML config. For detailed information, see the <a class="reference internal" href="api/cli/index.html#api-cli"><span class="std std-ref">CLI Framework API documentation</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config.py</span></code>: Utilities primarily used by the CLI framework.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">logging.py</span></code>: Common logging setup including multi-gpu adapters.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">schema</span></code>: Pydantic schema definitions common to the CLI and logging utilities.</p></li>
+</ul>
+</section>
+<section id="mlsimkit-learn">
+<h3><code class="docutils literal notranslate"><span class="pre">mlsimkit.learn</span></code><a class="headerlink" href="#mlsimkit-learn" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">learn</span></code> module is the core component of the MLSimKit package, offering functionality for various machine learning tasks related to physics-based simulations. It provides common tools for preprocessing data, training models, performing inference, and visualizing results. The model networks and use cases are located in this module. For detailed information, see the <a class="reference internal" href="learn.html"><span class="doc">Learning Module (mlsimkit.learn)</span></a> page.</p>
+</section>
+<section id="mlsimkit-datasets">
+<h3><code class="docutils literal notranslate"><span class="pre">mlsimkit.datasets</span></code><a class="headerlink" href="#mlsimkit-datasets" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">datasets</span></code> directory includes very small sample datasets for testing and development purposes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ahmed-sample</span></code>: A sample dataset for Ahmed Body simulations.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">drivaer-sample</span></code>: A sample dataset for automotive aerodynamics simulations.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These sample datasets are provided for demonstration purposes only. For production use cases, you will need to use your own datasets or obtain publicly available datasets.</p>
+</div>
+</section>
+</section>
+<section id="schemas-for-cli-and-configuration">
+<h2>Schemas for CLI and Configuration<a class="headerlink" href="#schemas-for-cli-and-configuration" title="Link to this heading">¶</a></h2>
+<p>MLSimKit extensively uses the <a class="reference external" href="https://docs.pydantic.dev/latest/">Pydantic library</a> for encoding configuration and CLI inputs. Pydantic classes are called “models” and MLSimKit organizes these in <code class="docutils literal notranslate"><span class="pre">schema</span></code> subfolders within each module or submodule. These “schemas” are the interface between commands, configuration files, and code.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">schema</span></code> subfolders serve as a centralized location for defining the structured data models used by the corresponding module or submodule. These models are then used for various purposes, such as:</p>
+<ol class="arabic simple">
+<li><p><strong>Auto-Generated CLI Options</strong>: The Pydantic models are used to define the configuration options for the CLI. By leveraging the <code class="docutils literal notranslate"><span class="pre">mlsimkit.common.cli</span></code> framework, these models can be seamlessly integrated with the CLI, allowing users to specify configurations through command-line options or configuration files.</p></li>
+<li><p><strong>Validated Configuration Files</strong>: The Pydantic models can be used to define the expected input parameters and return values for functions within the module. This improves code safety, readability and maintainability.</p></li>
+<li><p><strong>Shared Across Code</strong>: Pydantic models provide built-in validation and serialization capabilities, ensuring that the data used throughout the codebase adheres to the defined schemas. This helps catch errors early and promotes consistent data handling.</p></li>
+</ol>
+<p>The <code class="docutils literal notranslate"><span class="pre">schema</span></code> subfolders typically contain one or more Python files, each defining a set of related Pydantic models. For example, in the <code class="docutils literal notranslate"><span class="pre">mlsimkit.learn.kpi</span></code> module, you might find the following structure:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>src
+└── mlsimkit
+   ├── ...
+   └── learn
+        ├── kpi
+            ├── cli.py
+            ├── ...
+            ├── schema
+            │   ├── inference.py
+            │   ├── preprocessing.py
+            │   └── training.py
+            └── ...
+</pre></div>
+</div>
+<p>In this example, the <code class="docutils literal notranslate"><span class="pre">schema</span></code> subfolder within the <code class="docutils literal notranslate"><span class="pre">kpi</span></code> module contains three files: <code class="docutils literal notranslate"><span class="pre">preprocessing.py</span></code>, <code class="docutils literal notranslate"><span class="pre">inference.py</span></code>, and <code class="docutils literal notranslate"><span class="pre">training.py</span></code>. Each of these files defines the Pydantic models specific to the corresponding functionality (preprocessing, inference, and training, respectively).</p>
+<p>For instance, <code class="docutils literal notranslate"><span class="pre">kpi/schema/training.py</span></code> defines the KPI-specific training options, while inheriting common training options from <code class="docutils literal notranslate"><span class="pre">BaseTrainSettings</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">TrainingSettings</span><span class="p">(</span><span class="n">BaseTrainSettings</span><span class="p">):</span>
+    <span class="n">train_manifest_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Path to the train manifest&quot;</span><span class="p">)</span>
+    <span class="n">validation_manifest_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Path to the validation manifest&quot;</span><span class="p">)</span>
+
+    <span class="n">output_kpi_indices</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;index(es) of desired KPIs to predict, separated by &#39;,&#39; (e.g. 0,2,3) (using all if None)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">message_passing_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;number of message passing steps for MGN&quot;</span><span class="p">)</span>
+    <span class="n">hidden_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;size of the hidden layer in the multilayer perceptron (MLP) used in MGN&quot;</span>
+    <span class="p">)</span>
+    <span class="n">dropout_prob</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">lt</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;probability of an element to be zeroed&quot;</span><span class="p">)</span>
+    <span class="n">pooling_type</span><span class="p">:</span> <span class="n">PoolingType</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">PoolingType</span><span class="o">.</span><span class="n">MEAN</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Pooling type used in the MGN&#39;s model architecture&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">loss_metric</span><span class="p">:</span> <span class="n">LossMetric</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">LossMetric</span><span class="o">.</span><span class="n">RMSE</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;loss metric&quot;</span><span class="p">)</span>
+    <span class="n">save_predictions_vs_actuals</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;save the plots showing the predictions vs the actuals for train and validation datasets&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>The CLI is auto-generated combining these schemas. For example, the snippet below is from <code class="docutils literal notranslate"><span class="pre">mlsimkit-learn</span> <span class="pre">kpi</span> <span class="pre">train</span> <span class="pre">--help</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[</span>MLSimKit<span class="o">]</span><span class="w"> </span>Learning<span class="w"> </span>Tools
+<span class="w"> </span>Package<span class="w"> </span>Version:<span class="w"> </span><span class="m">0</span>.2.3.dev8+g0c39dac.d20240821
+<span class="w"> </span>Usage:<span class="w"> </span>mlsimkit-learn<span class="w"> </span>kpi<span class="w"> </span>train<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
+
+<span class="w"> </span>Options:
+<span class="w">   </span>--training-output-dir<span class="w"> </span>TEXT<span class="w">      </span>path<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>folder<span class="w"> </span>where<span class="w"> </span>training<span class="w"> </span>outputs
+<span class="w">                                   </span>and<span class="w"> </span>model<span class="w"> </span>checkpoints<span class="w"> </span>are<span class="w"> </span>saved
+<span class="w">   </span>--epochs<span class="w"> </span>INTEGER<span class="w">                </span>Number<span class="w"> </span>of<span class="w"> </span>epochs.<span class="w"> </span>Default<span class="w"> </span>is<span class="w"> </span>low<span class="w"> </span><span class="k">for</span>
+<span class="w">                                   </span>quickstart<span class="w"> </span>experience.<span class="w"> </span>Higher<span class="w"> </span>number<span class="w"> </span>of
+<span class="w">                                   </span>epochs<span class="w"> </span>are<span class="w"> </span>required<span class="w"> </span><span class="k">for</span><span class="w"> </span>accurate<span class="w"> </span>training.
+<span class="w">                                   </span>See<span class="w"> </span>user<span class="w"> </span>guide.<span class="w">  </span><span class="o">[</span>default:<span class="w"> </span><span class="m">5</span><span class="o">]</span>
+<span class="w">   </span>--batch-size<span class="w"> </span>INTEGER<span class="w">            </span>Batch<span class="w"> </span>size<span class="w"> </span>determines<span class="w"> </span>how<span class="w"> </span>to<span class="w"> </span>group<span class="w"> </span>training
+<span class="w">                                   </span>data.<span class="w"> </span>Note<span class="w"> </span>the<span class="w"> </span>batch<span class="w"> </span>size<span class="w"> </span>is<span class="w"> </span>per<span class="w"> </span>process.
+<span class="w">                                   </span>For<span class="w"> </span>multi-GPU,<span class="w"> </span>this<span class="w"> </span>means<span class="w"> </span>you<span class="w"> </span>need<span class="w"> </span>enough
+<span class="w">                                   </span>training<span class="w"> </span>and<span class="w"> </span>validation<span class="w"> </span>data<span class="w"> </span><span class="k">for</span><span class="w"> </span>all
+<span class="w">                                   </span>processes.<span class="w">  </span><span class="o">[</span>default:<span class="w"> </span><span class="m">4</span><span class="o">]</span>
+<span class="w">   </span>--seed<span class="w"> </span>INTEGER<span class="w">                  </span>Random<span class="w"> </span>seed<span class="w">  </span><span class="o">[</span>default:<span class="w"> </span><span class="m">0</span><span class="o">]</span>
+<span class="w">   </span>--shuffle-data-each-epoch<span class="w"> </span>/<span class="w"> </span>--no-shuffle-data-each-epoch
+<span class="w">                                   </span>shuffle<span class="w"> </span>data<span class="w"> </span>every<span class="w"> </span>epoch<span class="w">  </span><span class="o">[</span>default:<span class="w"> </span>shuffle-
+<span class="w">                                   </span>data-each-epoch<span class="o">]</span>
+<span class="w">   </span>...
+</pre></div>
+</div>
+<p>The configuration can also be set from a YAML file. For example <code class="docutils literal notranslate"><span class="pre">tutorials/kpi/ahmed/training.yaml</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># KPI training configuration for Ahmed dataset</span>
+<span class="nt">output-dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">outputs/training</span><span class="w">    </span><span class="c1"># all artifacts output to CWD/output e,g models, images, metrics</span>
+
+<span class="nt">log</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">prefix-dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">logs</span><span class="w">              </span><span class="c1"># all logs go here</span>
+<span class="w">  </span><span class="nt">config-file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">logging.yaml</span><span class="w">     </span><span class="c1"># tutorial-specific config</span>
+
+<span class="nt">kpi</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">manifest_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">training.manifest</span>
+
+<span class="w">  </span><span class="nt">train</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">output_kpi_indices</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0&quot;</span>
+<span class="w">    </span><span class="nt">epochs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="w">    </span><span class="nt">opt</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">learning_rate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.003</span>
+
+<span class="w">  </span><span class="nt">predict</span><span class="p">:</span>
+<span class="w">    </span><span class="c1"># Manifest includes labels, we want to evaluate performance</span>
+<span class="w">    </span><span class="nt">compare-groundtruth</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p>This modular approach promotes well-defined interfaces shared across commands and code. See the <a class="reference internal" href="cli-toolkit.html#quickstart-cli-framework"><span class="std std-ref">Creating Custom CLI commands guide</span></a> for a step-by-step walkthrough.</p>
+</section>
+<section id="manifest-files-for-interfaces-with-data-sets-and-results">
+<span id="dev-guide-manifests"></span><h2>Manifest Files for Interfaces with Data Sets and Results<a class="headerlink" href="#manifest-files-for-interfaces-with-data-sets-and-results" title="Link to this heading">¶</a></h2>
+<p>In MLSimKit, manifests play a crucial role in interfacing with data sets and organizing the various files and metadata associated with each simulation run and corresponding training results. A manifest is a JSON lines file that contains metadata and file references for each run in a dataset.</p>
+<section id="purpose-of-manifests">
+<h3>Purpose of Manifests<a class="headerlink" href="#purpose-of-manifests" title="Link to this heading">¶</a></h3>
+<p>Manifests serve several purposes in the MLSimKit workflow:</p>
+<ol class="arabic simple">
+<li><p><strong>Data Organization</strong>: Manifests provide a structured way to organize and reference the files associated with each simulation run, such as geometry files (e.g., STL, VTK), data files containing simulation results, and other related files.</p></li>
+<li><p><strong>Metadata Storage</strong>: In addition to file references, manifests can store metadata and parameter values related to each simulation run. This metadata can include key performance indicators (KPIs), simulation settings, or any other relevant information.</p></li>
+<li><p><strong>Data Preparation</strong>: Manifests are used during the data preprocessing stage to keep track of the transformations and operations performed on the data, such as downsampling, mapping data to geometry files, or splitting the data into train, validation, and test sets.</p></li>
+<li><p><strong>Interfacing with ML Components</strong>: The machine learning components of MLSimKit, such as training and inference, rely on manifests to access the relevant data files and metadata for each simulation run.</p></li>
+</ol>
+<p>By leveraging manifests, MLSimKit provides a flexible and extensible way to handle diverse data sets and simulation scenarios, while maintaining a consistent interface for the machine learning components.</p>
+</section>
+<section id="user-generated-manifests-vs-internal-manifests">
+<h3>User-generated Manifests vs. Internal Manifests<a class="headerlink" href="#user-generated-manifests-vs-internal-manifests" title="Link to this heading">¶</a></h3>
+<p>There are two types of manifests in the MLSimKit workflow:</p>
+<ol class="arabic simple">
+<li><p><strong>User-generated Manifests</strong>: These manifests are created by users to describe their dataset and serve as the initial input to the MLSimKit pipeline. Users can generate these manifests using the <code class="docutils literal notranslate"><span class="pre">mlsimkit-manifest</span></code> command, specifying the directories containing simulation runs and the desired file patterns or data files to include.</p></li>
+<li><p><strong>Internal Manifests</strong>: As the data goes through various preprocessing steps, such as downsampling, mapping data to geometry files, or splitting into train/validation/test sets, MLSimKit generates internal manifests that represent the transformed state of the data. These internal manifests are used by the machine learning components (e.g., training, inference) and are typically stored in the output directory specified by the user.</p></li>
+</ol>
+<p>The internal manifests contain additional information beyond what is present in the user-generated manifests, such as references to the preprocessed data files, split data sets, and any other metadata generated during the preprocessing steps.</p>
+</section>
+<section id="manifest-structure">
+<h3>Manifest Structure<a class="headerlink" href="#manifest-structure" title="Link to this heading">¶</a></h3>
+<p>A manifest is a JSON lines file, where each line represents a single simulation run. Each line is a JSON object that can contain the following keys:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">geometry_files</span></code>: A list of file paths or URIs referencing the geometry files (e.g., STL, VTK) associated with the simulation run.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">data_files</span></code>: A list of file paths or URIs referencing the data files (e.g., CSV, VTK) containing simulation results or other data associated with the run.</p></li>
+<li><p>Additional keys specific to the dataset or use case, such as <code class="docutils literal notranslate"><span class="pre">kpi</span></code> for KPI prediction, <code class="docutils literal notranslate"><span class="pre">slices_uri</span></code> for slice prediction or <code class="docutils literal notranslate"><span class="pre">surface_variables</span></code> for surface variable prediction.</p></li>
+</ul>
+<p>During the preprocessing and machine learning stages, MLSimKit may add or modify keys in the internal manifests to include references to preprocessed data files, encoded representations, or any other information required for training and inference. The internal manifests are written and read by subsequent commands.</p>
+<p>The following is an example of a user manifest referencing the sample dataset (see <code class="docutils literal notranslate"><span class="pre">tutorials/kpi/sample/training.manifest</span></code>):</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{&quot;geometry_files&quot;: [&quot;datasets/drivaer-sample/downsampled_stls/run1-frontwheel_0.05perc_ds.stl&quot;, &quot;datasets/drivaer-sample/downsampled_stls/run1-rearwheel_0.05perc_ds.stl&quot;, &quot;datasets/drivaer-sample/downsampled_stls/run1_0.01perc_ds.stl&quot;], &quot;kpi&quot;: [0.3115]}
+{&quot;geometry_files&quot;: [&quot;datasets/drivaer-sample/downsampled_stls/run2-frontwheel_0.05perc_ds.stl&quot;, &quot;datasets/drivaer-sample/downsampled_stls/run2-rearwheel_0.05perc_ds.stl&quot;, &quot;datasets/drivaer-sample/downsampled_stls/run2_0.01perc_ds.stl&quot;], &quot;kpi&quot;: [0.31623]}
+{&quot;geometry_files&quot;: [&quot;datasets/drivaer-sample/downsampled_stls/run3-frontwheel_0.05perc_ds.stl&quot;, &quot;datasets/drivaer-sample/downsampled_stls/run3-rearwheel_0.05perc_ds.stl&quot;, &quot;datasets/drivaer-sample/downsampled_stls/run3_0.01perc_ds.stl&quot;], &quot;kpi&quot;: [0.31682]}
+{&quot;geometry_files&quot;: [&quot;datasets/drivaer-sample/downsampled_stls/run4-frontwheel_0.05perc_ds.stl&quot;, &quot;datasets/drivaer-sample/downsampled_stls/run4-rearwheel_0.05perc_ds.stl&quot;, &quot;datasets/drivaer-sample/downsampled_stls/run4_0.01perc_ds.stl&quot;], &quot;kpi&quot;: [0.26672]}
+{&quot;geometry_files&quot;: [&quot;datasets/drivaer-sample/downsampled_stls/run5-frontwheel_0.05perc_ds.stl&quot;, &quot;datasets/drivaer-sample/downsampled_stls/run5-rearwheel_0.05perc_ds.stl&quot;, &quot;datasets/drivaer-sample/downsampled_stls/run5_0.01perc_ds.stl&quot;], &quot;kpi&quot;: [0.27158]}
+{&quot;geometry_files&quot;: [&quot;datasets/drivaer-sample/downsampled_stls/run6-frontwheel_0.05perc_ds.stl&quot;, &quot;datasets/drivaer-sample/downsampled_stls/run6-rearwheel_0.05perc_ds.stl&quot;, &quot;datasets/drivaer-sample/downsampled_stls/run6_0.01perc_ds.stl&quot;], &quot;kpi&quot;: [0.27429]}
+{&quot;geometry_files&quot;: [&quot;datasets/drivaer-sample/downsampled_stls/run7-frontwheel_0.05perc_ds.stl&quot;, &quot;datasets/drivaer-sample/downsampled_stls/run7-rearwheel_0.05perc_ds.stl&quot;, &quot;datasets/drivaer-sample/downsampled_stls/run7_0.01perc_ds.stl&quot;], &quot;kpi&quot;: [0.27036]}
+</pre></div>
+</div>
+</section>
+<section id="manifests-with-relative-and-absolute-paths">
+<h3>Manifests with Relative and Absolute Paths<a class="headerlink" href="#manifests-with-relative-and-absolute-paths" title="Link to this heading">¶</a></h3>
+<p>In manifests, the file paths or URIs referencing geometry files, data files, or other resources can be specified as either relative or absolute paths. MLSimKit provides flexibility in handling these paths through the <code class="docutils literal notranslate"><span class="pre">RelativePathBase</span></code> enum defined in the <code class="docutils literal notranslate"><span class="pre">mlsimkit.learn.manifest.schema</span></code> module.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">RelativePathBase</span></code> enum has the following options:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CWD</span></code>: Relative paths are resolved against the current working directory.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PackageRoot</span></code>: Relative paths are resolved against the root directory of the MLSimKit package installation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ManifestRoot</span></code>: Relative paths are resolved against the directory containing the manifest file itself.</p></li>
+</ul>
+<p>When creating or processing manifests, users can specify the base directory for resolving relative paths by setting the <code class="docutils literal notranslate"><span class="pre">manifest_base_relative_path</span></code> option in the preprocessing settings. This option accepts values from the <code class="docutils literal notranslate"><span class="pre">RelativePathBase</span></code> enum.</p>
+<p>For example, if a manifest contains a relative path like <code class="docutils literal notranslate"><span class="pre">&quot;geometry_files&quot;:</span> <span class="pre">[&quot;data/run1.stl&quot;]</span></code>, MLSimKit will resolve this path differently based on the <code class="docutils literal notranslate"><span class="pre">manifest_base_relative_path</span></code> setting:</p>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">manifest_base_relative_path</span></code> is set to <code class="docutils literal notranslate"><span class="pre">CWD</span></code>, the path will be resolved against the current working directory.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">manifest_base_relative_path</span></code> is set to <code class="docutils literal notranslate"><span class="pre">PackageRoot</span></code>, the path will be resolved against the root directory of the MLSimKit package installation.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">manifest_base_relative_path</span></code> is set to <code class="docutils literal notranslate"><span class="pre">ManifestRoot</span></code>, the path will be resolved against the directory containing the manifest file itself.</p></li>
+</ul>
+<p>This flexibility allows users to organize their data sets in a way that suits their project structure and distribute manifests and data files together without relying on absolute paths.</p>
+<p>Additionally, users can choose to use absolute paths in their manifests, and MLSimKit will respect those paths without any further resolution.</p>
+<p>By providing this level of control over path resolution, MLSimKit aims to accommodate various data organization strategies and facilitate the integration of diverse data sets into the machine learning workflow.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Currently, MLSimKit supports networked file storage via the <code class="docutils literal notranslate"><span class="pre">file://</span></code> URLs in manifests. The intent is to support additional endpoints like S3 and HTTP in the future, enabling seamless integration with cloud storage and remote data sources.</p>
+</div>
+</section>
+</section>
+<section id="datasets-in-code">
+<span id="dev-guide-datasets"></span><h2>Datasets in Code<a class="headerlink" href="#datasets-in-code" title="Link to this heading">¶</a></h2>
+<p>In MLSimKit, the internal representation of manifests is stored as <a class="reference external" href="https://pandas.pydata.org/docs/user_guide/dsintro.html">Pandas DataFrames</a>. A DataFrame is a 2D table where each row contains the metadata and file references for each simulation run, as well as any additional data generated during pipeline steps.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">data.py</span></code> file in each use case submodule (e.g., <code class="docutils literal notranslate"><span class="pre">kpi</span></code>, <code class="docutils literal notranslate"><span class="pre">surface</span></code>, <code class="docutils literal notranslate"><span class="pre">slices</span></code>) acts as the interface between the training code and these internal Pandas DataFrames. It defines custom dataset interfaces that encapsulate the logic for loading and preprocessing the data from the manifests, ensuring that the data is properly formatted and accessible for the machine learning components.</p>
+<p>The dataset interfaces in <code class="docutils literal notranslate"><span class="pre">data.py</span></code> are typically implemented as subclasses of PyTorch’s <code class="docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code> or <code class="docutils literal notranslate"><span class="pre">torch_geometric.data.Dataset</span></code> classes, depending on the data type and requirements. These classes provide methods for accessing and manipulating the data stored in the Pandas DataFrames, as well as any necessary preprocessing steps.</p>
+<p>For example, in the <code class="docutils literal notranslate"><span class="pre">surface</span></code> submodule, the <code class="docutils literal notranslate"><span class="pre">SurfaceDataset</span></code> class inherits from <code class="docutils literal notranslate"><span class="pre">torch_geometric.data.Dataset</span></code> and serves as the interface for handling surface variable prediction data:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">SurfaceDataset</span><span class="p">(</span><span class="n">torch_geometric</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">manifest</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cuda&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SurfaceDataset</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pre_transform</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">manifest</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">manifest</span> <span class="o">=</span> <span class="n">manifest</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># assume manifest is a filepath, will fail otherwise</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">manifest</span> <span class="o">=</span> <span class="n">read_manifest_file</span><span class="p">(</span><span class="n">manifest</span><span class="p">)</span>
+
+<span class="o">...</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">run_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">manifest</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">surface_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">y_variables</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">ptfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">resolve_file_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">manifest</span><span class="p">[</span><span class="s2">&quot;preprocessed_files&quot;</span><span class="p">][</span><span class="n">idx</span><span class="p">])</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">has_data_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">&quot;data_files&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">manifest</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">has_geometry_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">&quot;geometry_files&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">manifest</span>
+
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>In the __init__ method, the SurfaceDataset class accepts either a Pandas DataFrame or a file path to the manifest. If a file path is provided, it reads the manifest file into a Pandas DataFrame using the read_manifest_file function from the manifest module.</p>
+<p>The SurfaceDataset class then provides various methods for accessing and manipulating the data stored in the manifest DataFrame, such as <code class="docutils literal notranslate"><span class="pre">ptfile</span></code>, <code class="docutils literal notranslate"><span class="pre">has_data_files</span></code>, <code class="docutils literal notranslate"><span class="pre">has_geometry_files</span></code>, etc. These methods allow the training code to retrieve the relevant data files, geometry files, and other metadata associated with each simulation run.</p>
+<p>By encapsulating the data loading and preprocessing logic within these dataset interfaces, developers can easily adapt or create new dataset interfaces to handle different types of data or introduce new data preprocessing techniques without modifying the core machine learning components.</p>
+</section>
+<section id="project-context-and-command-chaining">
+<h2>Project Context and Command Chaining<a class="headerlink" href="#project-context-and-command-chaining" title="Link to this heading">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Project Context is an important concept for pipelining tasks operating on the same datasets and training results. It automates many inputs-outputs across commands and functions.</p>
+</div>
+<p>MLSimKit leverages the concept of a “Project Context” to facilitate command chaining and persistent state management across different subcommands. The <code class="docutils literal notranslate"><span class="pre">ProjectContext</span></code> is a data class that stores relevant settings and outputs generated during the execution of one subcommand, making them available for subsequent subcommands within the same project.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">ProjectContext</span></code> is defined in the <code class="docutils literal notranslate"><span class="pre">mlsimkit.learn.common.schema.project</span></code> module and is typically implemented as a subclass of the <code class="docutils literal notranslate"><span class="pre">BaseProjectContext</span></code> class provided by MLSimKit. Each use case submodule (e.g., <code class="docutils literal notranslate"><span class="pre">kpi</span></code>, <code class="docutils literal notranslate"><span class="pre">surface</span></code>, <code class="docutils literal notranslate"><span class="pre">slices</span></code>) defines its own <code class="docutils literal notranslate"><span class="pre">ProjectContext</span></code> class tailored to its specific requirements.</p>
+<p>Here’s an example implementation of the <code class="docutils literal notranslate"><span class="pre">ProjectContext</span></code> class from the <code class="docutils literal notranslate"><span class="pre">kpi</span></code> submodule:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ProjectContext</span><span class="p">(</span><span class="n">BaseProjectContext</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Persist outputs for chaining commands.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># original input manifest</span>
+    <span class="n">manifest_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># working manifests</span>
+    <span class="n">train_manifest_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">validation_manifest_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">test_manifest_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">model_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">run_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">output_kpi_indices</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
+<p>In this example, the ProjectContext class defines attributes for storing the input manifest path, the paths to the train, validation, and test manifests (generated during preprocessing), the path to the trained model, the run ID (for experiment tracking), and the selected KPI indices.</p>
+<p>The ProjectContext instance is initialized and loaded within the subcommand functions defined in the cli.py file of each use case submodule. For example, in the kpi submodule:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@kpi</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+<span class="nd">@mlsimkit</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">PreprocessingSettings</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;settings&quot;</span><span class="p">)</span>
+<span class="nd">@mlsimkit</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">SplitSettings</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;split_settings&quot;</span><span class="p">,</span> <span class="n">help_group</span><span class="o">=</span><span class="s2">&quot;Split Manifest&quot;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--split-manifest/--no-split-manifest&quot;</span><span class="p">,</span> <span class="n">is_flag</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">preprocess</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n">click</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">PreprocessingSettings</span><span class="p">,</span> <span class="n">split_manifest</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">split_settings</span><span class="p">:</span> <span class="n">SplitSettings</span><span class="p">):</span>
+    <span class="n">project</span> <span class="o">=</span> <span class="n">ProjectContext</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+    <span class="c1"># ... (preprocess data and update the ProjectContext)</span>
+    <span class="n">project</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this example, the preprocess subcommand loads the ProjectContext instance using <code class="docutils literal notranslate"><span class="pre">ProjectContext.load(ctx)</span></code>, performs the necessary preprocessing steps, and updates the ProjectContext with the generated manifest paths. Finally, it persists the updated ProjectContext using <code class="docutils literal notranslate"><span class="pre">project.save(ctx)</span></code>. Subsequent subcommands, such as train or predict, can then access the persisted values from the ProjectContext instance and use them as inputs or for other purposes.</p>
+<p>The ProjectContext class supports multi-GPU commands via the Accelerate library from Hugging Face to ensure that the context is properly loaded and persisted across multiple processes during distributed training scenarios.</p>
+</section>
+<section id="programmatic-dataset-interaction">
+<span id="dev-guide-dataset-interaction"></span><h2>Programmatic Dataset Interaction<a class="headerlink" href="#programmatic-dataset-interaction" title="Link to this heading">¶</a></h2>
+<p>While MLSimKit provides a comprehensive command-line interface (CLI) for various tasks, it also allows programmatic interaction with the datasets for advanced use cases or custom applications. This section demonstrates how to load and iterate through a dataset programmatically, using the <code class="docutils literal notranslate"><span class="pre">SurfaceDataset</span></code> class from the <code class="docutils literal notranslate"><span class="pre">surface</span></code> submodule as an example.</p>
+<section id="prerequisites">
+<h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h3>
+<p>Before we dive into the example, it’s essential to understand the following concepts, which have been covered in previous sections:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#dev-guide-manifests"><span class="std std-ref">Manifests</span></a>: This section explains how manifests are used to organize and manage data files and metadata for each simulation run.</p></li>
+<li><p><a class="reference internal" href="#dev-guide-datasets"><span class="std std-ref">Datasets</span></a>: This section introduces the dataset interfaces defined in the <code class="docutils literal notranslate"><span class="pre">data.py</span></code> file of each use case submodule, which act as bridges between the raw data and the machine learning components.</p></li>
+</ul>
+<p>With these concepts in mind, let’s explore how to programmatically interact with a dataset using the <code class="docutils literal notranslate"><span class="pre">SurfaceDataset</span></code> class.</p>
+</section>
+<section id="example-visualization-application">
+<h3>Example: Visualization Application<a class="headerlink" href="#example-visualization-application" title="Link to this heading">¶</a></h3>
+<p>Suppose we want to create a visualization application that renders the predicted surface variables for each simulation run in the dataset. We can achieve this by leveraging the <code class="docutils literal notranslate"><span class="pre">SurfaceDataset</span></code> class and the <code class="docutils literal notranslate"><span class="pre">Viewer</span></code> class from <code class="docutils literal notranslate"><span class="pre">learn/surface/visualize.py</span></code>.</p>
+<p>Here’s a simplified example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mlsimkit.learn.surface</span><span class="w"> </span><span class="kn">import</span> <span class="n">data</span><span class="p">,</span> <span class="n">visualize</span>
+
+<span class="c1"># Load the dataset from a manifest file</span>
+<span class="n">manifest_path</span> <span class="o">=</span> <span class="s2">&quot;path/to/manifest.jsonl&quot;</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">SurfaceDataset</span><span class="p">(</span><span class="n">manifest_path</span><span class="p">)</span>
+
+<span class="c1"># Create a viewer instance</span>
+<span class="n">viewer</span> <span class="o">=</span> <span class="n">visualize</span><span class="o">.</span><span class="n">Viewer</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">interactive</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="c1"># Iterate over the dataset</span>
+<span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)):</span>
+    <span class="c1"># Get the run ID for the current index</span>
+    <span class="n">run_id</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">run_id</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+
+    <span class="c1"># Check if predictions are available</span>
+    <span class="k">if</span> <span class="n">dataset</span><span class="o">.</span><span class="n">has_predictions</span><span class="p">():</span>
+        <span class="n">predicted_file</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">predicted_file</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rendering prediction for run </span><span class="si">{</span><span class="n">run_id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">predicted_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># Add code to render the prediction using the viewer</span>
+
+    <span class="c1"># Optionally, you can access other data components</span>
+    <span class="k">if</span> <span class="n">dataset</span><span class="o">.</span><span class="n">has_data_files</span><span class="p">():</span>
+        <span class="n">data_files</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">data_files</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Data files for run </span><span class="si">{</span><span class="n">run_id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">data_files</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dataset</span><span class="o">.</span><span class="n">has_geometry_files</span><span class="p">():</span>
+        <span class="n">geometry_files</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">geometry_files</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Geometry files for run </span><span class="si">{</span><span class="n">run_id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">geometry_files</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Additional visualization or processing logic...</span>
+</pre></div>
+</div>
+<p>In this example, we first import the necessary components from the <code class="docutils literal notranslate"><span class="pre">surface</span></code> submodule. Then, we create an instance of the <code class="docutils literal notranslate"><span class="pre">SurfaceDataset</span></code> by providing the path to the manifest file.</p>
+<p>Next, we create an instance of the <code class="docutils literal notranslate"><span class="pre">Viewer</span></code> class from <code class="docutils literal notranslate"><span class="pre">visualize.py</span></code>, passing the <code class="docutils literal notranslate"><span class="pre">SurfaceDataset</span></code> instance and setting <code class="docutils literal notranslate"><span class="pre">interactive=False</span></code> for a non-interactive visualization.</p>
+<p>We iterate over the dataset using a <code class="docutils literal notranslate"><span class="pre">for</span></code> loop and retrieve the run ID for the current index using <code class="docutils literal notranslate"><span class="pre">dataset.run_id(idx)</span></code>. Within the loop, we check if predictions are available using <code class="docutils literal notranslate"><span class="pre">dataset.has_predictions()</span></code> and access the predicted file path using <code class="docutils literal notranslate"><span class="pre">dataset.predicted_file(idx)</span></code>. You can then add code to render the prediction using the <code class="docutils literal notranslate"><span class="pre">Viewer</span></code> instance.</p>
+<p>Additionally, the example demonstrates how to access other data components, such as data files (<code class="docutils literal notranslate"><span class="pre">dataset.has_data_files()</span></code> and <code class="docutils literal notranslate"><span class="pre">dataset.data_files(idx)</span></code>), and geometry files (<code class="docutils literal notranslate"><span class="pre">dataset.has_geometry_files()</span></code> and <code class="docutils literal notranslate"><span class="pre">dataset.geometry_files(idx)</span></code>).</p>
+<p>This example showcases how you can programmatically interact with the dataset, access different components (e.g., predictions, data files, geometry files), and incorporate custom logic or visualization techniques based on your specific requirements.</p>
+<p>By leveraging the dataset interfaces and the documented methods provided by the <code class="docutils literal notranslate"><span class="pre">SurfaceDataset</span></code> class, you can create custom applications or scripts that go beyond the built-in CLI functionality of MLSimKit.</p>
+</section>
+</section>
+<section id="custom-model-saving-and-loading">
+<h2>Custom Model Saving and Loading<a class="headerlink" href="#custom-model-saving-and-loading" title="Link to this heading">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Skip this section if you do NOT need to customize model code.</p>
+</div>
+<p>In MLSimKit, the <code class="docutils literal notranslate"><span class="pre">ModelIO</span></code> interface manages saving and loading of trained machine learning models, used for checkpointing and persisting the best model. This interface is implemented in the <code class="docutils literal notranslate"><span class="pre">networks</span></code> submodule and is designed to provide a consistent and reusable approach for persisting and retrieving model states across different use cases. This allows for the common training code across different use cases.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">ModelIO</span></code> interface is typically defined within the network architecture modules, such as <code class="docutils literal notranslate"><span class="pre">networks/mgn.py</span></code> for the MeshGraphNet architecture. It encapsulates the logic for creating, saving, and loading models, ensuring a standardized approach across different use cases.</p>
+<p>Here’s an example of the <code class="docutils literal notranslate"><span class="pre">ModelIO</span></code> implementation for the MeshGraphNet architecture:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ModelIO</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">...</span><span class="p">):</span>
+       <span class="c1"># ...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">new</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">MeshGraphNet</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="c1"># Load model checkpoint and return the model, optimizer, and other relevant states</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">model_path</span><span class="p">,</span> <span class="n">train_loss</span><span class="p">,</span> <span class="n">validation_loss</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">epoch</span><span class="p">):</span>
+        <span class="c1"># Save the model checkpoint, including the model state, optimizer state, and other relevant information</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">ModelIO</span></code> interface must provide the following methods:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">new</span></code>: Creates a new instance of the model based on the provided configurations and graph shapes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">load</span></code>: Loads a saved model checkpoint, returning the model, optimizer, and other relevant states.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">save</span></code>: Saves the model checkpoint, including the model state, optimizer state, and other relevant information.</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">ModelIO</span></code> interface is used within the use case submodules, such as <code class="docutils literal notranslate"><span class="pre">kpi</span></code> and <code class="docutils literal notranslate"><span class="pre">surface</span></code>, to facilitate model creation, saving, and loading during the training and inference stages.</p>
+<p>For example, in the <code class="docutils literal notranslate"><span class="pre">training.py</span></code> file of the <code class="docutils literal notranslate"><span class="pre">kpi</span></code> submodule, the <code class="docutils literal notranslate"><span class="pre">run_train</span></code> function creates an instance of <code class="docutils literal notranslate"><span class="pre">ModelIO</span></code> and utilizes its <code class="docutils literal notranslate"><span class="pre">new</span></code> and <code class="docutils literal notranslate"><span class="pre">save</span></code> methods:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">run_train</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">accelerator</span><span class="p">):</span>
+    <span class="c1"># ...</span>
+    <span class="n">model_loader</span> <span class="o">=</span> <span class="n">mgn</span><span class="o">.</span><span class="n">ModelIO</span><span class="p">(</span>
+        <span class="n">config</span><span class="p">,</span>
+        <span class="n">data_scaler</span><span class="p">,</span>
+        <span class="n">graph_shape</span><span class="o">=</span><span class="p">(</span><span class="n">node_input_size</span><span class="p">,</span> <span class="n">edge_input_size</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">),</span>
+        <span class="n">accelerator</span><span class="o">=</span><span class="n">accelerator</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">model_loader</span><span class="o">.</span><span class="n">new</span><span class="p">()</span>
+    <span class="c1"># ...</span>
+    <span class="n">model_loader</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">model_path</span><span class="p">,</span> <span class="n">train_loss</span><span class="p">,</span> <span class="n">validation_loss</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">epoch</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Similarly, in the <code class="docutils literal notranslate"><span class="pre">inference.py</span></code> file of the <code class="docutils literal notranslate"><span class="pre">surface</span></code> submodule, the <code class="docutils literal notranslate"><span class="pre">run_predict</span></code> function uses the <code class="docutils literal notranslate"><span class="pre">load</span></code> method of <code class="docutils literal notranslate"><span class="pre">ModelIO</span></code> to load a trained model for inference:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">run_predict</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+    <span class="c1"># ...</span>
+    <span class="n">model</span><span class="p">,</span> <span class="n">model_dict</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">model_path</span><span class="p">)</span>
+    <span class="c1"># ...</span>
+</pre></div>
+</div>
+<p>The common training code leverages the <code class="docutils literal notranslate"><span class="pre">ModelIO</span></code> interface. This interface abstracts away the low-level details of handling model states and checkpoints, allowing the developer to focus on their use case implementation.</p>
+<section id="next-steps">
+<h3>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">¶</a></h3>
+<p>Explore how the core ML code is organized in <a class="reference internal" href="learn.html"><span class="doc">Learning Module (mlsimkit.learn)</span></a>.</p>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><!--
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/mlsimkit-sidebar.png" alt="MLSimKit logo" />
+  </a>
+</p>
+-->
+
+<h4><a href="../index.html">AI Surrogate Models in Engineering on AWS</a></h4>
+<p>
+  Tools to develop and use ML predictive models as surrogates for physics-based simulations.
+</p>
+
+<h4>Useful Links</h4>
+<ul>
+  <li><a href="../user/install.html">Install</a></li>
+  <li><a href="../user/quickstart-kpi.html">Quickstart KPI</a></li>
+  <li><a href="../user/quickstart-slices.html">Quickstart Slices</a></li>
+  <li><a href="../user/quickstart-surface.html">Quickstart Surfaces</a></li>
+  <li><a href="../user/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+
+<div id="native-ribbon">
+</div>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/quickstart-kpi.html">Quickstart with KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/quickstart-surface.html">Quickstart with Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/quickstart-slices.html">Quickstart with Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-kpi-windsor.html">KPI Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-surface-ahmed.html">Surface Variable Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-slices-windsor.html">Slice Prediction Tutorial</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/ahmed.html">AhmedML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/windsor.html">WindsorML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/drivaer.html">DrivAerML Dataset</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/user-guide-kpi.html">Model User Guide – KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/user-guide-surface.html">Model User Guide – Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/user-guide-slice.html">Model User Guide – Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/notebook-guide.html">Using the MLSimKit SDK Interactively (Notebooks, IPython)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/mlflow-guide.html">Tracking Experiments and Results with MLFLow</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Code Structure and Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#code-structure">Code Structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mlsimkit-common"><code class="docutils literal notranslate"><span class="pre">mlsimkit.common</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mlsimkit-learn"><code class="docutils literal notranslate"><span class="pre">mlsimkit.learn</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mlsimkit-datasets"><code class="docutils literal notranslate"><span class="pre">mlsimkit.datasets</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#schemas-for-cli-and-configuration">Schemas for CLI and Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#manifest-files-for-interfaces-with-data-sets-and-results">Manifest Files for Interfaces with Data Sets and Results</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#purpose-of-manifests">Purpose of Manifests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#user-generated-manifests-vs-internal-manifests">User-generated Manifests vs. Internal Manifests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#manifest-structure">Manifest Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#manifests-with-relative-and-absolute-paths">Manifests with Relative and Absolute Paths</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#datasets-in-code">Datasets in Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#project-context-and-command-chaining">Project Context and Command Chaining</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#programmatic-dataset-interaction">Programmatic Dataset Interaction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-visualization-application">Example: Visualization Application</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#custom-model-saving-and-loading">Custom Model Saving and Loading</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#next-steps">Next Steps</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="learn.html">Learning Module (<code class="docutils literal notranslate"><span class="pre">mlsimkit.learn</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli-toolkit.html">Creating Custom CLI Commands</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">MLSimKit SDK API</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../user/mlflow-guide.html" title="previous chapter">Tracking Experiments and Results with MLFLow</a></li>
+      <li>Next: <a href="learn.html" title="next chapter">Learning Module (<code class="docutils literal notranslate"><span class="pre">mlsimkit.learn</span></code>)</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;Copyright 2025 Amazon.com, Inc. or its affiliates. All Rights Reserved..
+      
+      |
+      <a href="../_sources/dev/guide.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

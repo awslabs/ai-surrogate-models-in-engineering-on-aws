@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>2. Training KPI Prediction on the WindsorML Dataset &#8212; AI Surrogate Models for Engineering on AWS 0.1.dev1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=9de7e953" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=06097142" />
+    <script src="../_static/documentation_options.js?v=6aee1ebc"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="3. Using KPI Prediction on New Geometries" href="tutorial-kpi-windsor-prediction.html" />
+    <link rel="prev" title="1. Downloading WindsorML data for KPI Prediction (1.7G)" href="tutorial-kpi-windsor-data-access.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="training-kpi-prediction-on-the-windsorml-dataset">
+<span id="tutorial-kpi-windsor-training"></span><h1><span class="section-number">2. </span>Training KPI Prediction on the WindsorML Dataset<a class="headerlink" href="#training-kpi-prediction-on-the-windsorml-dataset" title="Link to this heading">¶</a></h1>
+<p>This section guides you through the steps to train a KPI prediction model on the <a class="reference internal" href="../datasets/windsor.html#datasets-windsor"><span class="std std-ref">WindsorML Dataset</span></a>. If you haven’t already accessed the WindsorML dataset, <a class="reference internal" href="tutorial-kpi-windsor-data-access.html#tutorial-kpi-windsor-data-access"><span class="std std-ref">follow these instructions</span></a>.</p>
+<p>The KPI Prediction pipeline consists of the following main steps:</p>
+<ol class="arabic simple">
+<li><p>Create the manifest linking geometries with KPIs</p></li>
+<li><p>Preprocess the geometries and KPI values for training and testing</p></li>
+<li><p>Train the KPI prediction model</p></li>
+<li><p>Test the trained model on a test dataset</p></li>
+</ol>
+<p>Before we begin, navigate to the <code class="docutils literal notranslate"><span class="pre">tutorials/kpi/windsor</span></code> folder, which contains the necessary scripts and configuration files for this tutorial:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>tutorials/kpi/windsor/
+├──<span class="w"> </span>download-dataset
+├──<span class="w"> </span>logging.yaml
+├──<span class="w"> </span>prediction.yaml
+├──<span class="w"> </span>readme.txt
+├──<span class="w"> </span>run-clean
+├──<span class="w"> </span>run-create-manifest-prediction
+├──<span class="w"> </span>run-create-manifest-training
+├──<span class="w"> </span>run-prediction
+├──<span class="w"> </span>run-training-pipeline
+└──<span class="w"> </span>training.yaml
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">download-dataset</span></code>: Script to help download the dataset from S3</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">logging.yaml</span></code>: Configuration file for logging settings.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">prediction.yaml</span></code>: Configuration file for prediction on new geometries.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">training.yaml</span></code>: Configuration file for the training and testing pipeline.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">run-create-manifest-prediction</span></code>: Script to create the new geometry prediction data manifest.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">run-create-manifest-training</span></code>: Script to create the training and testing data manifest.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">run-training</span></code>: Script to run the entire training and testing pipeline.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">run-prediction</span></code>: Script to run the prediction step on new geometries.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">readme.txt</span></code>: Additional instructions and information about the tutorial.</p></li>
+</ul>
+<p>The process involves creating the data manifest, understanding the configuration file, running the training and testing pipeline, and reviewing the results.</p>
+<p>Let’s go through each step in detail.</p>
+<section id="creating-the-manifest">
+<h2><span class="section-number">2.1. </span>Creating the Manifest<a class="headerlink" href="#creating-the-manifest" title="Link to this heading">¶</a></h2>
+<p>A manifest describes the paths to a dataset and is used to share data between tasks. The manifest format is <a class="reference external" href="https://jsonlines.org/">JSON Lines</a> where each line corresponds to one simulation run.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Ensure the dataset is on a filesystem: use the <code class="docutils literal notranslate"><span class="pre">./download-dataset</span></code> command or <a class="reference internal" href="tutorial-kpi-windsor-data-access.html#tutorial-kpi-windsor-data-access"><span class="std std-ref">follow these instructions</span></a>.</p>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">run-create-manifest-training</span></code> script generates the required manifest for the WindsorML dataset. To create the manifest, run the script pointing to your dataset location:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./run-create-manifest-training<span class="w"> </span>/path/to/windsor/dataset
+</pre></div>
+</div>
+<p>This will generate a manifest:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">training.manifest</span></code>: Lists of geometries and KPIs used for training, validation, and testing</p></li>
+</ul>
+<p>You can customize the manifests by editing <code class="docutils literal notranslate"><span class="pre">run-create-manifest-training</span></code> script. By default, all runs in <a class="reference internal" href="../datasets/windsor.html#datasets-windsor"><span class="std std-ref">WindsorML Dataset</span></a> are included and all four KPI variables (Cd, Cl, Cs, CMy) from the run <code class="docutils literal notranslate"><span class="pre">force_mom_*.csv</span></code> files:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+
+<span class="c1"># ...</span>
+
+<span class="c1"># The simulation variables to train on</span>
+<span class="nv">kpi_variables</span><span class="o">=</span><span class="s2">&quot;cd cs cl cmy&quot;</span>
+
+<span class="c1"># Get a list of run folders for training</span>
+<span class="nv">train_run_folders</span><span class="o">=(</span><span class="k">$(</span>ls<span class="w"> </span>-d<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$dataset_prefix</span><span class="s2">/run_&quot;</span>*<span class="k">)</span><span class="o">)</span>
+
+<span class="w"> </span><span class="c1"># Uncomment to get a list of just the first 20 runs (if you want to reduce the datset size for testing)</span>
+<span class="w"> </span><span class="c1">#train_run_folders=($(ls -d &quot;$dataset_prefix/run_&quot;* | tail -20))</span>
+
+<span class="w"> </span><span class="c1"># Create train.manifest including the kpi data</span>
+<span class="w"> </span>mlsimkit-manifest<span class="w"> </span>create<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;training.manifest&quot;</span><span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;name=geometry_files,file_glob=*.stl&quot;</span><span class="w"> </span>-d<span class="w"> </span><span class="s2">&quot;name=kpi,file_regex=force_mom_\d+\.csv,columns=</span><span class="nv">$kpi_variables</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">train_run_folders</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>A manifest is a JSON Lines (<code class="docutils literal notranslate"><span class="pre">.manifest</span></code>) file that lists the paths to the geometry files and their associated KPIs. Each line in the manifest represents a single data file entry, containing the following keys:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;geometry_files&quot;</span></code>: A list of relative or absolute paths to the geometry files (e.g., <code class="docutils literal notranslate"><span class="pre">.stl</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;kpi&quot;</span></code>: A list of KPI values associated with the geometries (optional for prediction/inference manifests)</p></li>
+</ul>
+<p>Here’s an example manifest entry:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;geometry_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;file:///data/windsor/dataset/run_90/windsor_90.stl&quot;</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;kpi&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mf">0.31813241431261746</span><span class="p">,</span><span class="w"> </span><span class="mf">-0.14399077989789946</span><span class="p">,</span><span class="w"> </span><span class="mf">-0.2532649116225549</span><span class="p">,</span><span class="w"> </span><span class="mf">-0.05901077208996248</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This entry lists the path to a single geometry file (<code class="docutils literal notranslate"><span class="pre">windsor_90.stl</span></code>) and the associated KPI values.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>By default, training is configured to reproduce accurate results on the full dataset and will take over an hour to complete training. Instead, if you want to first verify end-to-end on the WindsorML dataset, edit <code class="docutils literal notranslate"><span class="pre">training.yaml</span></code> and reduce the number of epochs to e.g, 10. Then reduce the dataset size by editing <code class="docutils literal notranslate"><span class="pre">run-create-manifest-training</span></code> to include fewer runs and recreate the training manifest.</p>
+</div>
+</section>
+<section id="understanding-the-configuration-file">
+<h2><span class="section-number">2.2. </span>Understanding the Configuration File<a class="headerlink" href="#understanding-the-configuration-file" title="Link to this heading">¶</a></h2>
+<p>The KPI training and testing pipeline is configured using <strong>training.yaml</strong>.</p>
+<p>This file controls the training and testing pipeline, including data preprocessing, training the KPI model, and testing. Some key settings include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">output-dir</span></code>: Directory for storing training artifacts (e.g., models, plots, metrics)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kpi.manifest_uri</span></code>: Path to the data manifest</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kpi.preprocess</span></code>: Hyperparameters related to data preprocessing (including the percentage of data used for testing)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kpi.train</span></code>: Hyperparameters related to KPI model training (including the percentage of data used for validation)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kpi.predict</span></code>: Hyperparameters related to KPI model inference</p></li>
+</ul>
+<p>To get an introduction to the available configuration options, use the <code class="docutils literal notranslate"><span class="pre">mlsimkit-learn</span> <span class="pre">kpi</span> <span class="pre">--help</span></code> command and the <code class="docutils literal notranslate"><span class="pre">--help</span></code> option for each sub-command. This will provide an overview of the options and their purposes, which can be helpful when configuring the training and testing pipelines.</p>
+</section>
+<section id="running-the-pipeline">
+<h2><span class="section-number">2.3. </span>Running the Pipeline<a class="headerlink" href="#running-the-pipeline" title="Link to this heading">¶</a></h2>
+<p>With the manifest created and the configuration file in place, you can run the KPI model training pipeline using the provided script:</p>
+<p>Run the training and testing pipeline:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./run-training-pipeline
+</pre></div>
+</div>
+<p>The script executes the necessary commands using the <code class="docutils literal notranslate"><span class="pre">training.yaml</span></code> configuration file.</p>
+<p>You can also run individual commands manually if needed:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-learn<span class="w"> </span>--config<span class="w"> </span>training.yaml<span class="w"> </span>kpi<span class="w"> </span>&lt;command&gt;
+</pre></div>
+</div>
+<p>For example, you may want to skip the preprocessing step when you are training with new parameters, as you can reuse the preprocessed data files.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Preprocessing runs on multiple CPUs by default. You may need a higher limit for the number of open file descriptors, depending on
+the number of CPUs on your system. For the Windsor dataset, run e.g, <code class="docutils literal notranslate"><span class="pre">ulimit</span> <span class="pre">-n</span> <span class="pre">8192</span></code> if you have permissions. If not, edit
+the training script to use fewer processes e.g: <code class="docutils literal notranslate"><span class="pre">kpi</span> <span class="pre">preprocess</span> <span class="pre">--num-processes</span> <span class="pre">1</span></code>. Please refer to the
+<a class="reference internal" href="../user/troubleshooting.html#troubleshooting-file-descriptors"><span class="std std-ref">troubleshooting guide</span></a> for details.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>On older MacOS hardware, you may see the error <code class="docutils literal notranslate"><span class="pre">Cannot</span> <span class="pre">convert</span> <span class="pre">a</span> <span class="pre">MPS</span> <span class="pre">Tensor</span> <span class="pre">to</span> <span class="pre">float64</span> <span class="pre">dtype</span></code>. If so, force CPU by specifying <code class="docutils literal notranslate"><span class="pre">device:</span> <span class="pre">cpu</span></code> for train commands in the configuration file.</p>
+<p>In general, please see the <a class="reference internal" href="../user/troubleshooting.html#troubleshooting"><span class="std std-ref">Troubleshooting</span></a> guide for possible errors if commands do not work.</p>
+</div>
+</section>
+<section id="training-with-multiple-gpus">
+<h2><span class="section-number">2.4. </span>Training with Multiple GPUs<a class="headerlink" href="#training-with-multiple-gpus" title="Link to this heading">¶</a></h2>
+<p>MLSimKit integrates training with <a class="reference external" href="https://huggingface.co/docs/accelerate/index">Hugging Face Accelerate</a> to enable and launch multi-GPU training. This can significantly speed up the training process when multiple GPUs are available.</p>
+<p>To enable multi-GPU training, you can use the <code class="docutils literal notranslate"><span class="pre">--multi-gpu</span></code> flag when running the training script:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./run-training-pipeline<span class="w"> </span>--multi-gpu
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The availability of multi-GPU training depends on your hardware setup and the number of GPUs available on your machine or cluster. If multiple GPUs are not available, the training pipeline will continue to run on a single GPU or CPU.</p>
+</div>
+<p>The script calls <code class="docutils literal notranslate"><span class="pre">mlsimkit-accelerate</span></code> which is our thin wrapper around <code class="docutils literal notranslate"><span class="pre">accelerate</span> <span class="pre">launch</span></code> that runs multiple training processess. By default, <code class="docutils literal notranslate"><span class="pre">accelerate</span> <span class="pre">launch</span></code> will automatically set a configuration for various platforms. Refer to the <a class="reference external" href="https://huggingface.co/docs/accelerate/basic_tutorials/launch#using-accelerate-launch">accelerate launch tutorial</a> for a quick overview. For the complete list of configuration options, see <code class="docutils literal notranslate"><span class="pre">accelerate</span> <span class="pre">launch</span> <span class="pre">--help</span></code>.</p>
+<p>You may pass additional arguments to Accelerate using <code class="docutils literal notranslate"><span class="pre">--launch-args</span></code>:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-accelerate<span class="w"> </span>--config<span class="w"> </span>&lt;config.yaml&gt;<span class="w"> </span>kpi<span class="w"> </span>train<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>--launch-args<span class="w"> </span>&lt;additional<span class="w"> </span>accelerate<span class="w"> </span>launch<span class="w"> </span>args&gt;
+</pre></div>
+</div>
+<p>For example, the following limits to 2 GPUs:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-accelerate<span class="w"> </span>--config<span class="w"> </span>&lt;config.yaml&gt;<span class="w"> </span>kpi<span class="w"> </span>train<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>--launch-args<span class="w"> </span>--num_processes<span class="w"> </span><span class="m">2</span>
+</pre></div>
+</div>
+<p>We recommend using <code class="docutils literal notranslate"><span class="pre">mlsimkit-accelerate</span></code> for simplicity but you may invoke <code class="docutils literal notranslate"><span class="pre">accelerate</span> <span class="pre">launch</span></code> directly like this:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>accelerate<span class="w"> </span>launch<span class="w"> </span>--no-python<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>mlsimkit-learn<span class="w"> </span>--accelerate-mode<span class="w"> </span>kpi<span class="w"> </span>train
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">accelerate</span> <span class="pre">launch</span></code> for training commands only. Non-training commands do not support multiple GPU processors.</p>
+<p>Always specify <code class="docutils literal notranslate"><span class="pre">--accelerate-mode</span></code> with <code class="docutils literal notranslate"><span class="pre">accelerate</span> <span class="pre">launch</span></code> to hide duplicate logs and avoid logging race conditions on start.</p>
+<p>Do not use <code class="docutils literal notranslate"><span class="pre">--accelerate-mode</span></code> outside <code class="docutils literal notranslate"><span class="pre">accelerate</span> <span class="pre">launch</span></code>.</p>
+</div>
+</section>
+<section id="reviewing-results">
+<h2><span class="section-number">2.5. </span>Reviewing Results<a class="headerlink" href="#reviewing-results" title="Link to this heading">¶</a></h2>
+<section id="during-training">
+<h3><span class="section-number">2.5.1. </span>During Training<a class="headerlink" href="#during-training" title="Link to this heading">¶</a></h3>
+<p>The training pipeline generates two plots to help you monitor the KPI model training. They can be found in the <code class="docutils literal notranslate"><span class="pre">outputs/training/training_output/</span></code> directory.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">model_loss.png</span></code>: The plot that shows the training and validation losses of every epoch.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">model_loss_log.png</span></code>: The plot that shows the training and validation losses at the log scale of every epoch.</p></li>
+</ul>
+<p>Here is an example of a loss plot:</p>
+<a class="reference internal image-reference" href="../_images/windsor-kpi-loss-cs.png"><img alt="Figure 1. An example loss plot" src="../_images/windsor-kpi-loss-cs.png" style="width: 450px; height: 350px;" />
+</a>
+<p>You can also find quantitative metrics summarizing the KPI model performance on the training and validation data in the <code class="docutils literal notranslate"><span class="pre">outputs/training/training_output/best_model_predictions/dataset_prediction_error_metrics.csv</span></code> file.</p>
+</section>
+<section id="during-testing">
+<h3><span class="section-number">2.5.2. </span>During Testing<a class="headerlink" href="#during-testing" title="Link to this heading">¶</a></h3>
+<p>The testing step generates KPI values predicted by the trained model. The testing output is located in the <code class="docutils literal notranslate"><span class="pre">outputs/training/predictions/</span></code> directory. Given the ground truth KPI data for the prediction geometries is available, there should be the following output files:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">prediction_results.csv</span></code>: Predicted and actual KPIs for each geometry in the test data set</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">predicted_vs_actual_*.png</span></code>: The plot comparing predictions with ground truth</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dataset_prediction_error_metrics.csv</span></code>: Metrics that quantify the differences between predictions and ground truth</p></li>
+</ul>
+<p>Here is an example prediction output plot that shows how closely the predictions match the ground truth:</p>
+<a class="reference internal image-reference" href="../_images/windsor-kpi-inference-cs.png"><img alt="Figure 2. An example plot comparing predictions with ground truth" src="../_images/windsor-kpi-inference-cs.png" style="width: 400px; height: 400px;" />
+</a>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you want to start tuning training parameters while keeping the same dataset, you can skip the preprocessing step. To do this, either edit <code class="docutils literal notranslate"><span class="pre">run-training-pipeline</span></code> script and remove <code class="docutils literal notranslate"><span class="pre">preprocess</span></code> from the command or, alternatively, call <code class="docutils literal notranslate"><span class="pre">mlsimkit-learn</span> <span class="pre">--config</span> <span class="pre">training.yaml</span> <span class="pre">kpi</span> <span class="pre">...</span></code> subcommands directly.</p>
+</div>
+</section>
+</section>
+<section id="next-steps">
+<h2><span class="section-number">2.6. </span>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">¶</a></h2>
+<p>Proceed to <a class="reference internal" href="tutorial-kpi-windsor-prediction.html#tutorial-kpi-windsor-prediction"><span class="std std-ref">Using KPI Prediction on New Geometries</span></a> tutorial to learn how to run KPI prediction on new geometries without ground truth simulation data.</p>
+<p>See the <a class="reference internal" href="../user/user-guide-kpi.html#user-guide-kpi"><span class="std std-ref">KPI user guide</span></a> for detailed information on more configuration options and how they impact model training and performance.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><!--
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/mlsimkit-sidebar.png" alt="MLSimKit logo" />
+  </a>
+</p>
+-->
+
+<h4><a href="../index.html">AI Surrogate Models in Engineering on AWS</a></h4>
+<p>
+  Tools to develop and use ML predictive models as surrogates for physics-based simulations.
+</p>
+
+<h4>Useful Links</h4>
+<ul>
+  <li><a href="../user/install.html">Install</a></li>
+  <li><a href="../user/quickstart-kpi.html">Quickstart KPI</a></li>
+  <li><a href="../user/quickstart-slices.html">Quickstart Slices</a></li>
+  <li><a href="../user/quickstart-surface.html">Quickstart Surfaces</a></li>
+  <li><a href="../user/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+
+<div id="native-ribbon">
+</div>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/quickstart-kpi.html">Quickstart with KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/quickstart-surface.html">Quickstart with Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/quickstart-slices.html">Quickstart with Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="tutorial-kpi-windsor.html">KPI Prediction Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="tutorial-kpi-windsor-data-access.html">1. Downloading WindsorML data for KPI Prediction (1.7G)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">2. Training KPI Prediction on the WindsorML Dataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#creating-the-manifest">2.1. Creating the Manifest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#understanding-the-configuration-file">2.2. Understanding the Configuration File</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-the-pipeline">2.3. Running the Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#training-with-multiple-gpus">2.4. Training with Multiple GPUs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reviewing-results">2.5. Reviewing Results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#next-steps">2.6. Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial-kpi-windsor-prediction.html">3. Using KPI Prediction on New Geometries</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial-surface-ahmed.html">Surface Variable Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial-slices-windsor.html">Slice Prediction Tutorial</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/ahmed.html">AhmedML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/windsor.html">WindsorML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/drivaer.html">DrivAerML Dataset</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/user-guide-kpi.html">Model User Guide – KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/user-guide-surface.html">Model User Guide – Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/user-guide-slice.html">Model User Guide – Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/notebook-guide.html">Using the MLSimKit SDK Interactively (Notebooks, IPython)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/mlflow-guide.html">Tracking Experiments and Results with MLFLow</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/guide.html">Code Structure and Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/learn.html">Learning Module (<code class="docutils literal notranslate"><span class="pre">mlsimkit.learn</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/cli-toolkit.html">Creating Custom CLI Commands</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/api.html">MLSimKit SDK API</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="tutorial-kpi-windsor.html">KPI Prediction Tutorial</a><ul>
+      <li>Previous: <a href="tutorial-kpi-windsor-data-access.html" title="previous chapter"><span class="section-number">1. </span>Downloading WindsorML data for KPI Prediction (1.7G)</a></li>
+      <li>Next: <a href="tutorial-kpi-windsor-prediction.html" title="next chapter"><span class="section-number">3. </span>Using KPI Prediction on New Geometries</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;Copyright 2025 Amazon.com, Inc. or its affiliates. All Rights Reserved..
+      
+      |
+      <a href="../_sources/tutorials/tutorial-kpi-windsor-training.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

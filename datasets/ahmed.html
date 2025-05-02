@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>AhmedML Dataset &#8212; AI Surrogate Models for Engineering on AWS 0.1.dev1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=9de7e953" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=06097142" />
+    <script src="../_static/documentation_options.js?v=6aee1ebc"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="WindsorML Dataset" href="windsor.html" />
+    <link rel="prev" title="3. Using Slice Prediction on new Geometry" href="../tutorials/tutorial-slices-windsor-prediction.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="ahmedml-dataset">
+<span id="datasets-ahmed"></span><h1>AhmedML Dataset<a class="headerlink" href="#ahmedml-dataset" title="Link to this heading">¶</a></h1>
+<p>The AhmedML dataset is a publicly available dataset <a class="reference external" href="https://caemldatasets.s3.amazonaws.com/ahmed/dataset/LICENSE.txt">licensed as CC BY-SA 4.0</a> and distributed separately to MLSimKit. It is a collection of high-fidelity CFD simulations showing different geometric variants of a body for automotive aerodynamics modeling. Please see the <a class="reference external" href="https://caemldatasets.s3.amazonaws.com/ahmed/dataset/README.txt">README</a> for additional details.</p>
+<section id="downloading-the-training-data-45g">
+<h2>Downloading the training data (45G)<a class="headerlink" href="#downloading-the-training-data-45g" title="Link to this heading">¶</a></h2>
+<p>The dataset is hosted in an S3 bucket.</p>
+<p>Use the following <a class="reference external" href="https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html">AWS CLI</a> command to download the data required for the training tutorials:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>aws<span class="w"> </span>s3<span class="w"> </span>sync<span class="w"> </span>s3://caemldatasets/ahmed/dataset<span class="w"> </span>/path/to/dataset<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--exclude<span class="w"> </span><span class="s2">&quot;*&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--include<span class="w"> </span><span class="s2">&quot;run_*/ahmed*.stl&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--include<span class="w"> </span><span class="s2">&quot;run_*/images/*&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--include<span class="w"> </span><span class="s2">&quot;run_*/boundary*.vtp&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--include<span class="w"> </span><span class="s2">&quot;run_*/force_mom_*.csv&quot;</span>
+</pre></div>
+</div>
+<p>Replace <code class="docutils literal notranslate"><span class="pre">/path/to/dataset</span></code> to your own directory.</p>
+<p>The <a class="reference internal" href="../tutorials/tutorial-surface-ahmed-data-access.html#tutorial-surface-ahmed-data-access"><span class="std std-ref">Surface</span></a> tutorial has a step to download a smaller subset of data.
+The entire dataset includes high-resolution meshes not required for training.</p>
+</section>
+<section id="understanding-the-dataset">
+<span id="datasets-ahmed-understanding"></span><h2>Understanding the Dataset<a class="headerlink" href="#understanding-the-dataset" title="Link to this heading">¶</a></h2>
+<p>The dataset contains 500 cases, each representing a unique geometry variant.  The cases are organized into separate folders named <code class="docutils literal notranslate"><span class="pre">run_1</span></code> to <code class="docutils literal notranslate"><span class="pre">run_500</span></code>, one for each simulation case.
+The variability in geometry across the 500 cases leads to a diverse set of flow physics, making this dataset well-suited for machine learning model development.</p>
+<p>Within each run folder is a standard set of files:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>run_1/
+├──<span class="w"> </span>ahmed.stl
+├──<span class="w"> </span>boundary_1.vtp
+├──<span class="w"> </span>force_mom_1.csv
+├──<span class="w"> </span>force_mom_varref_1.csv
+├──<span class="w"> </span>geo_parameters_1.csv
+├──<span class="w"> </span>images
+│<span class="w">   </span>├──<span class="w"> </span>CpT
+│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>run_*.png
+│<span class="w">   </span>├──<span class="w"> </span>UxMean
+│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>run_*.png
+├──<span class="w"> </span>slices
+│<span class="w">   </span>├──<span class="w"> </span>slice_*.vtp
+└──<span class="w"> </span>volume_1.vtu
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ahmed_&lt;run</span> <span class="pre">#&gt;.stl</span></code> - The surface geometry definition in STL format</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">boundary_&lt;run</span> <span class="pre">#&gt;.vtp</span></code> - Simulation results on the surface</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">volume_&lt;run</span> <span class="pre">#&gt;.vtu</span></code> - Volumetric simulation outputs</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">force_mom_&lt;run</span> <span class="pre">#&gt;.csv</span></code> - Time-averaged force and moment coefficients</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">force_mom_varref_&lt;run</span> <span class="pre">#&gt;.csv</span></code> - Time-averaged force and moment coefficients using unique reference area per geometry</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">images</span></code> - Folder containing slice images through the volume</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">slices</span></code> - Folder containing slice vpt files rotated around the x, y, and z axes</p></li>
+</ul>
+<a class="reference internal image-reference" href="../_images/ahmed-example.png"><img alt="Figure 1. An example Ahmed Body" src="../_images/ahmed-example.png" style="width: 1000px; height: 500px;" />
+</a>
+<p>The slice images show simulation variables like pressure and velocity captured on 2D planes along the X, Y and Z axes. Multiple views are available.</p>
+</section>
+<section id="slice-image-views">
+<h2>Slice Image Views<a class="headerlink" href="#slice-image-views" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">images</span></code> folder within each case contains subfolders organizing the slice images by simulation output variable.</p>
+<p>Within each variable folder (e.g. <code class="docutils literal notranslate"><span class="pre">CpT</span></code>, <code class="docutils literal notranslate"><span class="pre">UxMean</span></code>), there are multiple image sets showing different sliced views through the volume.</p>
+<p>The main image sets are:</p>
+<p><strong>X-Axis Slices</strong></p>
+<p>Filename pattern: <code class="docutils literal notranslate"><span class="pre">run_*-X-*.png</span></code></p>
+<p>These are slices along the X-axis, showing the YZ-plane at different X positions. Useful for visualizing the flow as it passes over the geometry from front to back.</p>
+<a class="reference internal image-reference" href="../_images/run_1-slice-total(p)_coeffMean-X-5.png"><img alt="Figure 2. An example X-Axis slice" src="../_images/run_1-slice-total%28p%29_coeffMean-X-5.png" style="width: 400px; height: 225px;" />
+</a>
+<p><strong>Y-Axis Slices</strong></p>
+<p>Filename pattern: <code class="docutils literal notranslate"><span class="pre">run_*-Y-*.png</span></code></p>
+<p>Slices along the Y-axis, showing the XZ-plane. Provides a top-down view of the geometry.</p>
+<a class="reference internal image-reference" href="../_images/run_1-slice-total(p)_coeffMean-Y-5.png"><img alt="Figure 3. An example Y-Axis slice" src="../_images/run_1-slice-total%28p%29_coeffMean-Y-5.png" style="width: 400px; height: 225px;" />
+</a>
+<p><strong>Z-Axis Slices</strong></p>
+<p>Filename pattern: <code class="docutils literal notranslate"><span class="pre">run_*-Z-*.png</span></code></p>
+<p>Slices along the Z-axis, showing the XY-plane. Gives a side view at different heights.</p>
+<a class="reference internal image-reference" href="../_images/run_1-slice-total(p)_coeffMean-Z-2.png"><img alt="Figure 4. An example Z-Axis slice" src="../_images/run_1-slice-total%28p%29_coeffMean-Z-2.png" style="width: 400px; height: 225px;" />
+</a>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><!--
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/mlsimkit-sidebar.png" alt="MLSimKit logo" />
+  </a>
+</p>
+-->
+
+<h4><a href="../index.html">AI Surrogate Models in Engineering on AWS</a></h4>
+<p>
+  Tools to develop and use ML predictive models as surrogates for physics-based simulations.
+</p>
+
+<h4>Useful Links</h4>
+<ul>
+  <li><a href="../user/install.html">Install</a></li>
+  <li><a href="../user/quickstart-kpi.html">Quickstart KPI</a></li>
+  <li><a href="../user/quickstart-slices.html">Quickstart Slices</a></li>
+  <li><a href="../user/quickstart-surface.html">Quickstart Surfaces</a></li>
+  <li><a href="../user/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+
+<div id="native-ribbon">
+</div>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/quickstart-kpi.html">Quickstart with KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/quickstart-surface.html">Quickstart with Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/quickstart-slices.html">Quickstart with Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-kpi-windsor.html">KPI Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-surface-ahmed.html">Surface Variable Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-slices-windsor.html">Slice Prediction Tutorial</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">AhmedML Dataset</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#downloading-the-training-data-45g">Downloading the training data (45G)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#understanding-the-dataset">Understanding the Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#slice-image-views">Slice Image Views</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="windsor.html">WindsorML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="drivaer.html">DrivAerML Dataset</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/user-guide-kpi.html">Model User Guide – KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/user-guide-surface.html">Model User Guide – Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/user-guide-slice.html">Model User Guide – Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/notebook-guide.html">Using the MLSimKit SDK Interactively (Notebooks, IPython)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/mlflow-guide.html">Tracking Experiments and Results with MLFLow</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/guide.html">Code Structure and Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/learn.html">Learning Module (<code class="docutils literal notranslate"><span class="pre">mlsimkit.learn</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/cli-toolkit.html">Creating Custom CLI Commands</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/api.html">MLSimKit SDK API</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../tutorials/tutorial-slices-windsor-prediction.html" title="previous chapter"><span class="section-number">3. </span>Using Slice Prediction on new Geometry</a></li>
+      <li>Next: <a href="windsor.html" title="next chapter">WindsorML Dataset</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;Copyright 2025 Amazon.com, Inc. or its affiliates. All Rights Reserved..
+      
+      |
+      <a href="../_sources/datasets/ahmed.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

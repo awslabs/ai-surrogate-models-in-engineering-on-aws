@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Tracking Experiments and Results with MLFLow &#8212; AI Surrogate Models for Engineering on AWS 0.1.dev1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=9de7e953" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=06097142" />
+    <script src="../_static/documentation_options.js?v=6aee1ebc"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Code Structure and Concepts" href="../dev/guide.html" />
+    <link rel="prev" title="Using the MLSimKit SDK Interactively (Notebooks, IPython)" href="notebook-guide.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="tracking-experiments-and-results-with-mlflow">
+<span id="user-guide-mlflow"></span><h1>Tracking Experiments and Results with MLFLow<a class="headerlink" href="#tracking-experiments-and-results-with-mlflow" title="Link to this heading">¶</a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
+<p>MLSimKit integrates with MLFlow to streamline the development of the underlying ML models.
+MLFlow is a platform that allows for easy tracking of the MLSimKit results/artifact and comparision of model performance for an
+entire team.  You can learn more about MLFlow by reviewing their <a class="reference external" href="https://mlflow.org/docs/latest/index.html">online documents</a>.
+In the following guide, we provide instructions on how to enable MLFlow tracking.  We do not cover the setup of managed or remote MLFlow tracking servers as this can vary widely from
+organization to organization and is coverd in the <a class="reference external" href="https://mlflow.org/docs/latest/index.html">MLFlow online documents</a>.
+We do however cover setting up a sever locally to help you get started.</p>
+<p>Topics:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="#mlflow-experiment-config"><span class="std std-ref">MLFlow Experiment Configuration</span></a></p></li>
+<li><p><a class="reference internal" href="#mlflow-local-tracking"><span class="std std-ref">Local Tracking</span></a></p></li>
+<li><p><a class="reference internal" href="#mlflow-resume-run"><span class="std std-ref">Resuming an experiment run</span></a></p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="experiment-configuration">
+<span id="mlflow-experiment-config"></span><h2>Experiment Configuration<a class="headerlink" href="#experiment-configuration" title="Link to this heading">¶</a></h2>
+<p>First we need to add tracking information to the config file or via the command-line interface (CLI).  There are two parameters that need to be defined,
+<code class="docutils literal notranslate"><span class="pre">experiment-name</span></code> which can be any string that uniquely identifies your experiment and <code class="docutils literal notranslate"><span class="pre">tracking-uri</span></code> which is the server address and port (e.g. <a class="reference external" href="http://127.0.0.1:8080">http://127.0.0.1:8080</a>).
+In the following example we set the <code class="docutils literal notranslate"><span class="pre">tracking-uri</span></code> to the address used in <a class="reference internal" href="#mlflow-local-tracking"><span class="std std-ref">Local Tracking</span></a>.  Note that the <code class="docutils literal notranslate"><span class="pre">tracking-uri</span></code> can also be a local folder path, however this would bypass the server.
+Below is an example of how to define these arguments in the config file.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nn">...</span>
+<span class="nt">experiment-name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">example-experiment</span><span class="w">          </span><span class="c1"># Unique name for your experiment</span>
+<span class="nt">tracking-uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://127.0.0.1:8080</span><span class="w">          </span><span class="c1"># Local folder or Tracking server URL</span>
+<span class="nn">...</span>
+</pre></div>
+</div>
+</section>
+<section id="local-tracking">
+<span id="mlflow-local-tracking"></span><h2>Local Tracking<a class="headerlink" href="#local-tracking" title="Link to this heading">¶</a></h2>
+<p>If your compute environment has a GUI and web browser, we recommend using a tracking server which can be local or remote.  In this section we go over how
+to start a local server.  As part of the MLSimKit installation, you should already have MLFlow installed. To get started, open a new terminal window, activate
+the virtual environment you installed MLSimKit to and start the local server:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>mlsimkit<span class="w">                                      </span><span class="c1"># Navigate to mlsimkit directory</span>
+<span class="nb">source</span><span class="w"> </span>.venv/bin/activate<span class="w">                        </span><span class="c1"># activate the virtual environment (if applicable)</span>
+mlflow<span class="w"> </span>server<span class="w"> </span>--host<span class="w"> </span><span class="m">127</span>.0.0.1<span class="w"> </span>--port<span class="w"> </span><span class="m">8080</span><span class="w">       </span><span class="c1"># start the local tracking server</span>
+</pre></div>
+</div>
+<p>Now you can navigate in a web browser to <a class="reference external" href="http://127.0.0.1:8080">http://127.0.0.1:8080</a> which should bring up the MLFlow UI.</p>
+<a class="reference internal image-reference" href="../_images/mlflow-no-experiments.png"><img alt="Figure 1. MLFlow UI" src="../_images/mlflow-no-experiments.png" style="width: 700px; height: 450px;" />
+</a>
+<p>When you run MLSimKit, the MLFlow server will automatically log the results from the experiment run and they should show up in the MLFlow UI.</p>
+<a class="reference internal image-reference" href="../_images/mlflow-experiment.png"><img alt="Figure 2. MLFlow UI w/ experiment" src="../_images/mlflow-experiment.png" style="width: 700px; height: 450px;" />
+</a>
+<p>MLFlow provides various ways to review your results.  As an example we show the loss plot from a run in the following image.</p>
+<a class="reference internal image-reference" href="../_images/mlflow-loss-plot.png"><img alt="Figure 3. MLFlow UI Loss Plot" src="../_images/mlflow-loss-plot.png" style="width: 700px; height: 450px;" />
+</a>
+<p>Here are some more resources on setting up an MLFlow tracking server:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://mlflow.org/docs/latest/getting-started/tracking-server-overview/index.html">MLFLow Tracking Server Overview</a></p></li>
+<li><p><a class="reference external" href="https://mlflow.org/docs/latest/tracking/server.html">MLFlow Tracking Server Docs</a></p></li>
+</ul>
+</section>
+<section id="resuming-an-experiment-run">
+<span id="mlflow-resume-run"></span><h2>Resuming an Experiment Run<a class="headerlink" href="#resuming-an-experiment-run" title="Link to this heading">¶</a></h2>
+<p>MLSimKit offers flexibilty in how you may want to execute the code.  As such, there are scenarios where you may want to chain MLFlow tracking
+between steps.  This is often encountered for workflows that use multiple GPUs and require launching train steps with the <code class="docutils literal notranslate"><span class="pre">mlsimkit-accelerate</span></code> command.  In these workflows we need
+to pass the <code class="docutils literal notranslate"><span class="pre">--resume-run</span></code> flag on preceeding steps to ensure all parts of the pipeline are logged under the same run in MLFlow.  Here are some examples:</p>
+<p>KPI Multi-GPU example:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-learn<span class="w"> </span>--config<span class="w"> </span>training.yaml<span class="w"> </span>--log.prefix-dir<span class="w"> </span>logs/preprocess<span class="w"> </span>kpi<span class="w"> </span>preprocess<span class="w"> </span><span class="o">&amp;&amp;</span>
+mlsimkit-accelerate<span class="w"> </span>--config<span class="w"> </span>training.yaml<span class="w">  </span>--resume-run<span class="w"> </span>--log.prefix-dir<span class="w"> </span>logs/train<span class="w"> </span>kpi<span class="w"> </span>train<span class="w"> </span><span class="o">&amp;&amp;</span>
+mlsimkit-learn<span class="w"> </span>--config<span class="w"> </span>training.yaml<span class="w">  </span>--resume-run<span class="w"> </span>--log.prefix-dir<span class="w"> </span>logs/train-prediction<span class="w"> </span>kpi<span class="w"> </span>predict
+</pre></div>
+</div>
+<p>Slice Multi-GPU example:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-learn<span class="w"> </span>--config<span class="w"> </span>training.yaml<span class="w"> </span>--log.prefix-dir<span class="w"> </span>logs/preprocess<span class="w"> </span>slices<span class="w"> </span>preprocess<span class="w"> </span><span class="o">&amp;&amp;</span>
+mlsimkit-accelerate<span class="w"> </span>--config<span class="w"> </span>training.yaml<span class="w">  </span>--resume-run<span class="w"> </span>--log.prefix-dir<span class="w"> </span>logs/train-image-encoder<span class="w"> </span>slices<span class="w"> </span>train-image-encoder<span class="w"> </span><span class="o">&amp;&amp;</span>
+mlsimkit-learn<span class="w"> </span>--config<span class="w"> </span>training.yaml<span class="w">  </span>--resume-run<span class="w"> </span>--log.prefix-dir<span class="w"> </span>logs/inspect-image-encoder<span class="w"> </span>slices<span class="w"> </span>inspect-image-encoder<span class="w"> </span><span class="o">&amp;&amp;</span>
+mlsimkit-learn<span class="w"> </span>--config<span class="w"> </span>training.yaml<span class="w">  </span>--resume-run<span class="w"> </span>--log.prefix-dir<span class="w"> </span>logs/process-mesh-data<span class="w"> </span>slices<span class="w"> </span>process-mesh-data<span class="w"> </span><span class="o">&amp;&amp;</span>
+mlsimkit-accelerate<span class="w"> </span>--config<span class="w"> </span>training.yaml<span class="w">  </span>--resume-run<span class="w"> </span>--log.prefix-dir<span class="w"> </span>logs/train-prediction<span class="w"> </span>slices<span class="w"> </span>train-prediction<span class="w"> </span><span class="o">&amp;&amp;</span>
+mlsimkit-learn<span class="w"> </span>--config<span class="w"> </span>training.yaml<span class="w">  </span>--resume-run<span class="w"> </span>--log.prefix-dir<span class="w"> </span>logs/predict<span class="w"> </span>slices<span class="w"> </span>predict
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><!--
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/mlsimkit-sidebar.png" alt="MLSimKit logo" />
+  </a>
+</p>
+-->
+
+<h4><a href="../index.html">AI Surrogate Models in Engineering on AWS</a></h4>
+<p>
+  Tools to develop and use ML predictive models as surrogates for physics-based simulations.
+</p>
+
+<h4>Useful Links</h4>
+<ul>
+  <li><a href="install.html">Install</a></li>
+  <li><a href="quickstart-kpi.html">Quickstart KPI</a></li>
+  <li><a href="quickstart-slices.html">Quickstart Slices</a></li>
+  <li><a href="quickstart-surface.html">Quickstart Surfaces</a></li>
+  <li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul>
+
+<div id="native-ribbon">
+</div>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart-kpi.html">Quickstart with KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart-surface.html">Quickstart with Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart-slices.html">Quickstart with Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-kpi-windsor.html">KPI Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-surface-ahmed.html">Surface Variable Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-slices-windsor.html">Slice Prediction Tutorial</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/ahmed.html">AhmedML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/windsor.html">WindsorML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/drivaer.html">DrivAerML Dataset</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="user-guide-kpi.html">Model User Guide – KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide-surface.html">Model User Guide – Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide-slice.html">Model User Guide – Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook-guide.html">Using the MLSimKit SDK Interactively (Notebooks, IPython)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tracking Experiments and Results with MLFLow</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#experiment-configuration">Experiment Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#local-tracking">Local Tracking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#resuming-an-experiment-run">Resuming an Experiment Run</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/guide.html">Code Structure and Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/learn.html">Learning Module (<code class="docutils literal notranslate"><span class="pre">mlsimkit.learn</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/cli-toolkit.html">Creating Custom CLI Commands</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/api.html">MLSimKit SDK API</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="notebook-guide.html" title="previous chapter">Using the MLSimKit SDK Interactively (Notebooks, IPython)</a></li>
+      <li>Next: <a href="../dev/guide.html" title="next chapter">Code Structure and Concepts</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;Copyright 2025 Amazon.com, Inc. or its affiliates. All Rights Reserved..
+      
+      |
+      <a href="../_sources/user/mlflow-guide.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

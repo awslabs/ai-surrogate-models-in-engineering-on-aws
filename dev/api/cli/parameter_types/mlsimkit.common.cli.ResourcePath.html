@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>mlsimkit.common.cli.ResourcePath &#8212; AI Surrogate Models for Engineering on AWS 0.1.dev1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/basic.css?v=9de7e953" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/alabaster.css?v=06097142" />
+    <script src="../../../../_static/documentation_options.js?v=6aee1ebc"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="mlsimkit.common.cli.BaseCommand" href="../classes/mlsimkit.common.cli.BaseCommand.html" />
+    <link rel="prev" title="mlsimkit.common.cli.ShorthandParamType" href="mlsimkit.common.cli.ShorthandParamType.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="mlsimkit-common-cli-resourcepath">
+<h1>mlsimkit.common.cli.ResourcePath<a class="headerlink" href="#mlsimkit-common-cli-resourcepath" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlsimkit.common.cli.ResourcePath">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlsimkit.common.cli.</span></span><span class="sig-name descname"><span class="pre">ResourcePath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlsimkit.common.cli.ResourcePath" title="Link to this definition">¶</a></dt>
+<dd><p>A Click option type that resolves paths from the provided search paths,
+including paths from importlib.resources.</p>
+<p>This class inherits from <cite>click.Path</cite> and extends its functionality to support
+resolving paths from package resources or folder paths. If the provided value is not a valid
+existing regular file path, it attempts to resolve the path using the specified
+search paths, which are package paths relative to importlib.resources.</p>
+<p>If require=true and the file does not exist after all search paths then a
+BadParameter is raised.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>search_paths</strong> (<em>Optional</em><em>[</em><em>Sequence</em><em>[</em><em>str</em><em>]</em><em>]</em>) – A sequence of package paths to search for the provided value. If not provided,
+the class will only attempt to resolve regular file paths.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlsimkit.common.cli.ResourcePath.search_paths">
+<span class="sig-name descname"><span class="pre">search_paths</span></span><a class="headerlink" href="#mlsimkit.common.cli.ResourcePath.search_paths" title="Link to this definition">¶</a></dt>
+<dd><p>The sequence of package paths to search for the provided value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Sequence[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlsimkit.common.cli.ResourcePath.convert">
+<span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">click.Parameter</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../learn/common/index.html#mlsimkit.learn.common.training.ModelIO.None" title="mlsimkit.learn.common.training.ModelIO.None"><span class="pre">None</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">click.Context</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../learn/common/index.html#mlsimkit.learn.common.training.ModelIO.None" title="mlsimkit.learn.common.training.ModelIO.None"><span class="pre">None</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../learn/common/index.html#mlsimkit.learn.common.training.ModelIO.None" title="mlsimkit.learn.common.training.ModelIO.None"><span class="pre">None</span></a></span></span><a class="headerlink" href="#mlsimkit.common.cli.ResourcePath.convert" title="Link to this definition">¶</a></dt>
+<dd><p>Converts the provided value to a valid file path.</p>
+<p>If the value is a valid existing regular file path, it returns the resolved path.
+If the value is not a valid regular file path, it attempts to resolve the path
+using the specified search paths. If the path is found in one of the search paths
+and the resolved path exists, it returns the resolved path.</p>
+<p>If the value cannot be resolved as a valid existing file path, and the option
+is required, it raises a <cite>click.exceptions.BadParameter</cite> exception. If the option
+is not required, it returns <cite>None</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>str</em>) – The value to convert to a file path.</p></li>
+<li><p><strong>param</strong> (<em>Optional</em><em>[</em><em>click.Parameter</em><em>]</em>) – The Click parameter object associated with the value.</p></li>
+<li><p><strong>ctx</strong> (<em>Optional</em><em>[</em><em>click.Context</em><em>]</em>) – The Click context object associated with the value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The resolved file path if the value is a valid existing file path or can be
+resolved using the search paths. <cite>None</cite> if the value cannot be resolved and
+the option is not required.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[str, None]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlsimkit.common.cli.ResourcePath.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlsimkit.common.cli.ResourcePath.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id0" title="mlsimkit.common.cli.ResourcePath.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([search_paths])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">coerce_path_result</span></code>(value)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id1" title="mlsimkit.common.cli.ResourcePath.convert"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert</span></code></a>(value, param, ctx)</p></td>
+<td><p>Convert the value to the correct type.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fail</span></code>(message[, param, ctx])</p></td>
+<td><p>Helper method to fail with an invalid value message.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mlsimkit.common.cli.ResourcePath.get_metavar" title="mlsimkit.common.cli.ResourcePath.get_metavar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_metavar</span></code></a>(param)</p></td>
+<td><p>Returns the metavar default for this param if it provides one.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_missing_message</span></code>(param)</p></td>
+<td><p>Optionally might return extra information about a missing parameter.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">shell_complete</span></code>(ctx, param, incomplete)</p></td>
+<td><p>Return a special completion marker that tells the completion system to use the shell to provide path completions for only directories or any paths.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">split_envvar_value</span></code>(rv)</p></td>
+<td><p>Given a value from an environment variable this splits it up into small chunks depending on the defined envvar list splitter.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_info_dict</span></code>()</p></td>
+<td><p>Gather information that could be useful for a tool generating user-facing documentation.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">arity</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">envvar_list_splitter</span></code></p></td>
+<td><p>if a list of this type is expected and the value is pulled from a string environment variable, this is what splits it up.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_composite</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p>the descriptive name of this type</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id1" title="Link to this definition">¶</a></dt>
+<dd><p>Convert the value to the correct type. This is not called if
+the value is <code class="docutils literal notranslate"><span class="pre">None</span></code> (the missing value).</p>
+<p>This must accept string values from the command line, as well as
+values that are already the correct type. It may also convert
+other compatible types.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">param</span></code> and <code class="docutils literal notranslate"><span class="pre">ctx</span></code> arguments may be <code class="docutils literal notranslate"><span class="pre">None</span></code> in certain
+situations, such as when converting prompt input.</p>
+<p>If the value cannot be converted, call <code class="xref py py-meth docutils literal notranslate"><span class="pre">fail()</span></code> with a
+descriptive message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – The value to convert.</p></li>
+<li><p><strong>param</strong> – The parameter that is using this type to convert
+its value. May be <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>ctx</strong> – The current context that arrived at this value. May
+be <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlsimkit.common.cli.ResourcePath.get_metavar">
+<span class="sig-name descname"><span class="pre">get_metavar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlsimkit.common.cli.ResourcePath.get_metavar" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the metavar default for this param if it provides one.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><!--
+<p class="logo">
+  <a href="../../../../index.html">
+    <img class="logo" src="../../../../_static/mlsimkit-sidebar.png" alt="MLSimKit logo" />
+  </a>
+</p>
+-->
+
+<h4><a href="../../../../index.html">AI Surrogate Models in Engineering on AWS</a></h4>
+<p>
+  Tools to develop and use ML predictive models as surrogates for physics-based simulations.
+</p>
+
+<h4>Useful Links</h4>
+<ul>
+  <li><a href="../../../../user/install.html">Install</a></li>
+  <li><a href="../../../../user/quickstart-kpi.html">Quickstart KPI</a></li>
+  <li><a href="../../../../user/quickstart-slices.html">Quickstart Slices</a></li>
+  <li><a href="../../../../user/quickstart-surface.html">Quickstart Surfaces</a></li>
+  <li><a href="../../../../user/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+
+<div id="native-ribbon">
+</div>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/quickstart-kpi.html">Quickstart with KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/quickstart-surface.html">Quickstart with Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/quickstart-slices.html">Quickstart with Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/tutorial-kpi-windsor.html">KPI Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/tutorial-surface-ahmed.html">Surface Variable Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/tutorial-slices-windsor.html">Slice Prediction Tutorial</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../datasets/ahmed.html">AhmedML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../datasets/windsor.html">WindsorML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../datasets/drivaer.html">DrivAerML Dataset</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/user-guide-kpi.html">Model User Guide – KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/user-guide-surface.html">Model User Guide – Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/user-guide-slice.html">Model User Guide – Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/notebook-guide.html">Using the MLSimKit SDK Interactively (Notebooks, IPython)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../user/mlflow-guide.html">Tracking Experiments and Results with MLFLow</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide.html">Code Structure and Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../learn.html">Learning Module (<code class="docutils literal notranslate"><span class="pre">mlsimkit.learn</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cli-toolkit.html">Creating Custom CLI Commands</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../api.html">MLSimKit SDK API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlsimkit.common.cli</span></code> – CLI Framework</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../index.html#command-decorators">Command Decorators</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#option-types">Option Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#command-classes">Command Classes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/common/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlsimkit.learn.common</span></code> – MLSimKit Learn Common</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/manifest/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlsimkit.learn.manifest</span></code> – MLSimKit Learn Manifest</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../api.html">MLSimKit SDK API</a><ul>
+  <li><a href="../index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlsimkit.common.cli</span></code> – CLI Framework</a><ul>
+      <li>Previous: <a href="mlsimkit.common.cli.ShorthandParamType.html" title="previous chapter">mlsimkit.common.cli.ShorthandParamType</a></li>
+      <li>Next: <a href="../classes/mlsimkit.common.cli.BaseCommand.html" title="next chapter">mlsimkit.common.cli.BaseCommand</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;Copyright 2025 Amazon.com, Inc. or its affiliates. All Rights Reserved..
+      
+      |
+      <a href="../../../../_sources/dev/api/cli/parameter_types/mlsimkit.common.cli.ResourcePath.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

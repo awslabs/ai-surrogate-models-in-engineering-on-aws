@@ -1,0 +1,16 @@
+﻿mlsimkit.common.cli.NamedEnum
+=============================
+
+.. currentmodule:: mlsimkit.common.cli
+
+.. autoclass:: NamedEnum
+
+   
+   .. automethod:: __init__
+
+   
+   
+
+   
+   
+   

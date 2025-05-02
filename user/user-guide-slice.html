@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Model User Guide – Slice Prediction &#8212; AI Surrogate Models for Engineering on AWS 0.1.dev1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=9de7e953" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=06097142" />
+    <script src="../_static/documentation_options.js?v=6aee1ebc"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Using the MLSimKit SDK Interactively (Notebooks, IPython)" href="notebook-guide.html" />
+    <link rel="prev" title="Model User Guide – Surface Variable Prediction" href="user-guide-surface.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="model-user-guide-slice-prediction">
+<span id="user-guide-slices"></span><h1>Model User Guide – Slice Prediction<a class="headerlink" href="#model-user-guide-slice-prediction" title="Link to this heading">¶</a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
+<p>MLSimKit uses a deep learning architecture inspired by MeshGraphNets coupled with an AutoEncoder to predict slices of unseen geometries. This user guide walks through how to build a model to predict slices of the <a class="reference internal" href="../datasets/windsor.html#datasets-windsor"><span class="std std-ref">WindsorML Dataset</span></a> geometries using MLSimKit.</p>
+<p>Key concepts:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Slice: a 2D cross-sectional plane cut through the 3D geometry and volume that captures parametrics stored as an image file.  In computational fluid dynamics (CFD), common parametrics include velocity and preasure.</p></li>
+<li><p>Manifest: a JSON Lines file that links geometries to their slices, used in the preprocessing step.</p></li>
+<li><p>Config: a YAML file that can be used to specify preprocessing, training, and inference settings.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="how-to-build-a-slice-model">
+<h2>How to Build a Slice Model<a class="headerlink" href="#how-to-build-a-slice-model" title="Link to this heading">¶</a></h2>
+<section id="getting-the-data">
+<h3>Getting the Data<a class="headerlink" href="#getting-the-data" title="Link to this heading">¶</a></h3>
+<p>This user guide utilizes the WindsorML Body dataset. For detailed instructions on accessing and downloading the example dataset refer to <a class="reference internal" href="../datasets/windsor.html#datasets-windsor"><span class="std std-ref">WindsorML Dataset</span></a>.  For this user guide we assume the data is downloaded at the relative path of <code class="docutils literal notranslate"><span class="pre">data/windsor/</span></code>.</p>
+</section>
+<section id="creating-a-manifest-file-and-a-config-file">
+<h3>Creating a Manifest File and a Config File<a class="headerlink" href="#creating-a-manifest-file-and-a-config-file" title="Link to this heading">¶</a></h3>
+<section id="create-a-manifest-file">
+<span id="slice-manifest"></span><h4>Create a Manifest File<a class="headerlink" href="#create-a-manifest-file" title="Link to this heading">¶</a></h4>
+<p>To preprocess your data for training and inference steps, you’ll need to create a manifest file. This manifest file should list the paths to the data files and the associated slice images files. The manifest file should be a JSON Lines (.jsonl or .manifest) file, with each line representing a single data file entry. Each entry contains the following keys:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;geometry_files&quot;</span></code>: A relative or absolute path to the file(s) associated with a geometry (.stl or .vtp)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;slices_uri&quot;</span></code>: A list of relative or absolute path(s) to slice(s) stored as image(s) associated with the geometry (optional for inference manifest)</p></li>
+</ul>
+</div></blockquote>
+<p>Here is an example of two rows from a manifest file:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;geometry_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;data/windsor/dataset/run_0/windsor_0.stl&quot;</span><span class="p">],</span><span class="w"> </span><span class="nt">&quot;slices_uri&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;data/windsor/dataset/run_0/images/velocityxavg/view1_constz_scan_0004.png&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;data/windsor/dataset/run_0/images/velocityxavg/view1_constz_scan_0009.png&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;data/windsor/dataset/run_0/images/velocityxavg/view1_constz_scan_0001.png&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;data/windsor/dataset/run_0/images/velocityxavg/view1_constz_scan_0005.png&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;data/windsor/dataset/run_0/images/velocityxavg/view1_constz_scan_0002.png&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;data/windsor/dataset/run_0/images/velocityxavg/view1_constz_scan_0003.png&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;data/windsor/dataset/run_0/images/velocityxavg/view1_constz_scan_0006.png&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;data/windsor/dataset/run_0/images/velocityxavg/view1_constz_scan_0008.png&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;data/windsor/dataset/run_0/images/velocityxavg/view1_constz_scan_0007.png&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;data/windsor/dataset/run_0/images/velocityxavg/view1_constz_scan_0000.png&quot;</span><span class="p">]}</span>
+<span class="p">{</span><span class="nt">&quot;geometry_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;data/windsor/dataset/run_1/windsor_1.stl&quot;</span><span class="p">],</span><span class="w"> </span><span class="nt">&quot;slices_uri&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;data/windsor/dataset/run_1/images/velocityxavg/view1_constz_scan_0004.png&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;data/windsor/dataset/run_1/images/velocityxavg/view1_constz_scan_0009.png&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;data/windsor/dataset/run_1/images/velocityxavg/view1_constz_scan_0001.png&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;data/windsor/dataset/run_1/images/velocityxavg/view1_constz_scan_0005.png&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;data/windsor/dataset/run_1/images/velocityxavg/view1_constz_scan_0002.png&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;data/windsor/dataset/run_1/images/velocityxavg/view1_constz_scan_0003.png&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;data/windsor/dataset/run_1/images/velocityxavg/view1_constz_scan_0006.png&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;data/windsor/dataset/run_1/images/velocityxavg/view1_constz_scan_0008.png&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;data/windsor/dataset/run_1/images/velocityxavg/view1_constz_scan_0007.png&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;data/windsor/dataset/run_1/images/velocityxavg/view1_constz_scan_0000.png&quot;</span><span class="p">]}</span>
+</pre></div>
+</div>
+<p>We provide a utility for easier creation of manifest files using the datasets referenced in our guide.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-manifest<span class="w"> </span>create<span class="w"> </span>...
+</pre></div>
+</div>
+<p>Please refer to the <a class="reference internal" href="../tutorials/tutorial-slices-windsor-training.html#tutorial-slices-windsor-training-manifest-creation"><span class="std std-ref">Training Slice Prediction on the WindsorML Dataset - Manifest Creation</span></a> for more details and an example shell script that demostrates how to use this command.</p>
+</section>
+<section id="create-a-config-file">
+<span id="slice-config"></span><h4>Create a Config File<a class="headerlink" href="#create-a-config-file" title="Link to this heading">¶</a></h4>
+<p>To run preprocessing, training, and inference, you can provide the configurations either in an input config file or via the command-line interface (CLI). Here is an example config file:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>log:
+<span class="w">    </span>prefix-dir:<span class="w"> </span>&lt;log_output_directory&gt;<span class="w">             </span><span class="c1"># all logs go here</span>
+
+output_dir:<span class="w"> </span>&lt;output_directory&gt;
+
+slices:
+<span class="w">    </span><span class="c1"># step 1</span>
+<span class="w">    </span>preprocess:
+<span class="w">        </span>manifest-uri:<span class="w"> </span>&lt;manifest_file_path&gt;
+
+<span class="w">    </span><span class="c1"># step 2</span>
+<span class="w">    </span>train-image-encoder:
+<span class="w">        </span>epochs:<span class="w"> </span><span class="m">500</span>
+<span class="w">        </span>batch-size:<span class="w"> </span><span class="m">4</span>
+<span class="w">        </span>train-manifest-path:<span class="w"> </span>&lt;output_directory&gt;/train.manifest<span class="w">          </span><span class="c1"># automatically detected within pipeline</span>
+<span class="w">        </span>validate.manifest-path:<span class="w"> </span>&lt;output_directory&gt;/validate.manifest<span class="w">   </span><span class="c1"># automatically detected within pipeline</span>
+
+<span class="w">    </span><span class="c1"># (Optional) debug/inspect step</span>
+<span class="w">    </span>inspect-image-encoder:
+<span class="w">        </span>manifest-path:<span class="w"> </span>&lt;output_directory&gt;/&lt;manifest_filename_without_extension&gt;-valid.manifest<span class="w">              </span><span class="c1"># automatically detected within pipeline</span>
+<span class="w">        </span>model-path:<span class="w"> </span>&lt;output_directory&gt;/ae/training_output/best_model.pt<span class="w">                                     </span><span class="c1"># automatically detected within pipeline</span>
+
+<span class="w">    </span><span class="c1"># step 3</span>
+<span class="w">    </span>process-mesh-data:
+<span class="w">        </span>model-path:<span class="w"> </span>&lt;output_directory&gt;/ae/training_output/best_model.pt<span class="w">                                     </span><span class="c1"># automatically detected within pipeline</span>
+<span class="w">        </span>manifest-paths:
+<span class="w">            </span>-<span class="w"> </span>&lt;output_directory&gt;/train.manifest<span class="w">                       </span><span class="c1"># automatically detected within pipeline</span>
+<span class="w">            </span>-<span class="w"> </span>&lt;output_directory&gt;/validate.manifest<span class="w">                     </span><span class="c1"># automatically detected within pipeline</span>
+
+<span class="w">    </span><span class="c1"># step 4</span>
+<span class="w">    </span>train-prediction:
+<span class="w">        </span>train-manifest-path:<span class="w"> </span>&lt;output_directory&gt;/train.manifest<span class="w">        </span><span class="c1"># automatically detected within pipeline</span>
+<span class="w">        </span>validate.manifest-path:<span class="w"> </span>&lt;output_directory&gt;/validate.manifest<span class="w"> </span><span class="c1"># automatically detected within pipeline</span>
+<span class="w">        </span>hidden-size:<span class="w"> </span><span class="m">128</span>
+<span class="w">        </span>message-passing-steps:<span class="w"> </span><span class="m">10</span>
+<span class="w">        </span>batch-size:<span class="w"> </span><span class="m">1</span>
+<span class="w">        </span>epochs:<span class="w"> </span><span class="m">200</span>
+
+<span class="w">    </span><span class="c1"># step 5</span>
+<span class="w">    </span>predict:
+<span class="w">        </span>manifest-path:<span class="w"> </span>&lt;output_directory&gt;/&lt;manifest_filename_without_extension&gt;-test.manifest<span class="w">               </span><span class="c1"># automatically detected within pipeline</span>
+<span class="w">        </span>ae-model-path:<span class="w"> </span>&lt;output_directory&gt;/ae/training_output/best_model.pt<span class="w">                                  </span><span class="c1"># automatically detected within pipeline</span>
+<span class="w">        </span>mgn-model-path:<span class="w"> </span>&lt;output_directory&gt;/mgn/training_output/best_model.pt<span class="w">                                </span><span class="c1"># automatically detected within pipeline</span>
+<span class="w">        </span>compare-groundtruth:<span class="w"> </span><span class="nb">true</span>
+</pre></div>
+</div>
+<p>Replace <code class="docutils literal notranslate"><span class="pre">&lt;output_directory&gt;</span></code> with the directory where you want to save the outputs, and  <code class="docutils literal notranslate"><span class="pre">&lt;manifest_uri&gt;</span></code> with the path to your manifest file in the format described in the <a class="reference internal" href="#slice-manifest"><span class="std std-ref">previous step</span></a>. You can modify other configuration parameters discussed in the following sections by adding or updating their values in the configuration file. This allows you to override the default settings as per your requirements.
+Additionally our training pipeline will create a <cite>.project</cite> file in the <code class="docutils literal notranslate"><span class="pre">&lt;output_directory&gt;</span></code>.  This file tracks configurations between pipeline steps, allowing the user to avoid needing to specify certain field.  In the above config example, we added the following comment to designate a number of these fields <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">automatically</span> <span class="pre">detected</span> <span class="pre">within</span> <span class="pre">pipeline</span></code>.  This allows the user flexibilty if they need or want to override configurations in the <code class="docutils literal notranslate"><span class="pre">.project</span></code> file.</p>
+</section>
+</section>
+<section id="preprocessing">
+<span id="slice-preprocess"></span><h3>Preprocessing<a class="headerlink" href="#preprocessing" title="Link to this heading">¶</a></h3>
+<p>Slice prediction model predicts slices directly from a 3D geometry mesh. The first step is to preprocess the slice image files, converting them into data objects that can be easily consumed by the PyTorch deep learning framework. MLSimKit supports preprocessing of most common image file formats such as <cite>.jpeg</cite> and <cite>.png</cite>.</p>
+<p>Run the following command to preprocess the data, replacing <code class="docutils literal notranslate"><span class="pre">&lt;config_file_path&gt;</span></code> with the path to the config file created in the <a class="reference internal" href="#slice-config"><span class="std std-ref">previous step</span></a>:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-learn<span class="w"> </span>--config<span class="w"> </span>&lt;config_file_path&gt;<span class="w"> </span>slices<span class="w"> </span>preprocess
+</pre></div>
+</div>
+<p>The preprocessing takes around 2 minutes on an AWS g5.2xlarge instance on 3290 RGB image slices. During preprocessing, logs are printed in the console.</p>
+<p>The preprocessing step makes a “working” copy of the input manifest file to <code class="docutils literal notranslate"><span class="pre">&lt;output_directory&gt;/&lt;manifest_filename&gt;-copy</span></code> containing three additional fields: <code class="docutils literal notranslate"><span class="pre">`id`</span></code>, <code class="docutils literal notranslate"><span class="pre">slices_data_uri</span></code>, and <code class="docutils literal notranslate"><span class="pre">slices_data_frame_count</span></code>.  The <code class="docutils literal notranslate"><span class="pre">`id`</span></code> field is a generated field that uniquely identifies the row of data.  The <code class="docutils literal notranslate"><span class="pre">slices_data_uri</span></code> is a path pointing to the processed data generated from preocessing step.  The <code class="docutils literal notranslate"><span class="pre">slices_data_frame_count</span></code> is the number of image slices contained in the group of data.  This should match the number of files that are listed in <code class="docutils literal notranslate"><span class="pre">slices_uri</span></code>.  The output resolution of the preprocessed data is determined by the <code class="docutils literal notranslate"><span class="pre">resolution</span></code> field in the config or CLI arguments, which is <cite>[128, 128]</cite> ([horizontal resolution, vertical resolution]).  The resolution is restricted to whole number aspect ratios (larger resolution / smaller resolution).  The resolution directly impacts the model size, which may cause out of memory issues if increased too much.  You can modify this value in the config file or via command line arguments. To modify it in the config file, simply add a <code class="docutils literal notranslate"><span class="pre">preprocess</span></code> section along with the <code class="docutils literal notranslate"><span class="pre">resolution</span></code> and its desired value:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>slices:
+<span class="w">  </span>preprocess:
+<span class="w">      </span>resolution:<span class="w"> </span><span class="o">[</span><span class="m">192</span>,<span class="w"> </span><span class="m">96</span><span class="o">]</span>
+<span class="w">      </span>train-size:<span class="w"> </span><span class="m">0</span>.7
+<span class="w">      </span>valid-size:<span class="w"> </span><span class="m">0</span>.1
+<span class="w">      </span>test-size:<span class="w"> </span><span class="m">0</span>.2
+</pre></div>
+</div>
+<p>The preprocessing step writes three manifest files to <code class="docutils literal notranslate"><span class="pre">&lt;output_directory&gt;/</span></code>: <code class="docutils literal notranslate"><span class="pre">train.manifest</span></code>, <code class="docutils literal notranslate"><span class="pre">validate.manifest</span></code>, and <code class="docutils literal notranslate"><span class="pre">test.manifest</span></code>.  These three files define the train, validation, and test datasets.  Each contains a portion of the rows from the working manifest.  The portion of the data for each file can be adjusted by defining <code class="docutils literal notranslate"><span class="pre">train-size</span></code>, <code class="docutils literal notranslate"><span class="pre">valid-size</span></code>, and <code class="docutils literal notranslate"><span class="pre">test-size</span></code> in the config file under <code class="docutils literal notranslate"><span class="pre">preprocess</span></code>.  These fields should be defined between 0 and 1 and when summed equal 1.  They also have default values of 0.6 for <code class="docutils literal notranslate"><span class="pre">train-size</span></code>, 0.2 for <code class="docutils literal notranslate"><span class="pre">valid-size</span></code> and 0.2 for <code class="docutils literal notranslate"><span class="pre">test-size</span></code> and therefore only need to be defined if you want a different split in the data.</p>
+<p>After preprocessing the data, you can proceed to training the image encoder portion of the model.</p>
+</section>
+<section id="training-the-image-encoder">
+<span id="slice-train-image-encoder"></span><h3>Training The Image Encoder<a class="headerlink" href="#training-the-image-encoder" title="Link to this heading">¶</a></h3>
+<p>Training the image encoder step is where the machine learning model learns to compress the image slices and reconstruct that compression. It takes the preprocessed data as input and produces PyTorch model files as output. The model files can then be used as part of the full slice prediciton model to make predictions in the <a class="reference internal" href="#slice-slice-predict"><span class="std std-ref">final step - Full Slice Prediction</span></a>.</p>
+<p>There are a number of hyperparameters associated with model training of the AE, and all of them have default values. If you choose to use values other than the default ones, you can specify them in the <a class="reference internal" href="#slice-config"><span class="std std-ref">config file</span></a> or via command line arguments. To do it in the config file, simply add a <code class="docutils literal notranslate"><span class="pre">train-image-encoder</span></code> section along with the hyper-parameter names and values. Here is an example.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>slices:
+
+<span class="w">    </span>train-image-encoder:
+<span class="w">        </span>train-manifest-path:<span class="w"> </span>&lt;output_directory&gt;/train.manifest
+<span class="w">        </span>validate.manifest-path:<span class="w"> </span>&lt;output_directory&gt;/validate.manifest
+<span class="w">        </span>batch-size:<span class="w"> </span><span class="m">4</span>
+<span class="w">        </span>epochs:<span class="w"> </span><span class="m">1000</span>
+<span class="w">        </span>opt:
+<span class="w">            </span>learning-rate:<span class="w"> </span><span class="m">0</span>.0003
+</pre></div>
+</div>
+<p>In this example, the values of 2 hyperparameters are adjusted. <code class="docutils literal notranslate"><span class="pre">batch-size</span></code> is set to <code class="docutils literal notranslate"><span class="pre">4</span></code> which controls the number of data samples ran through the model before model weights are updated.  A <code class="docutils literal notranslate"><span class="pre">batch-size</span></code> can impact model performance and the speed of training.  Setting this value too low or high can degrade model performance and is dependent on the specifics of the use case and dataset.  We recommend a value of at least 4.
+<code class="docutils literal notranslate"><span class="pre">epochs</span></code> determines the number of times the dataset is passed through the neural network during training. The larger the number of epochs, the longer the model training time. A value that is too small though may lead to models that have not fully learned.
+Lastly, <code class="docutils literal notranslate"><span class="pre">learning-rate</span></code> stands for learning rate, which controls how fast the model learns. With a larger learning rate,  the number of epochs can typically be smaller, as the neural network makes bigger updates with every data point. A learning rate that is too large, however, can lead to poor performing models.
+Note that <code class="docutils literal notranslate"><span class="pre">learning-rate</span></code> is one of the optimizer settings. Thus, it should be added under <code class="docutils literal notranslate"><span class="pre">opt</span></code>.
+To see the full list of training hyperparameters and their definitions, run the command <code class="docutils literal notranslate"><span class="pre">mlsimkit-learn</span> <span class="pre">slices</span> <span class="pre">train-image-encoder</span> <span class="pre">--help</span></code>.</p>
+<p>Once the config file is ready, run the following command to start training.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-learn<span class="w"> </span>--config<span class="w"> </span>&lt;config_file_path&gt;<span class="w"> </span>slices<span class="w"> </span>train-image-encoder
+</pre></div>
+</div>
+<p>The training takes around 40 minutes on an AWS g5.2xlarge instance with a dataset of 3290 RGB image slices (10 slices per geometry) at a resolution of 128 x 128 for 1000 epochs. During training, the training loss and validation loss of each epoch are printed in the console.</p>
+<p>The training step produces a number of output files (see an example list at the end of this section) in the folder <code class="docutils literal notranslate"><span class="pre">&lt;output_directory&gt;/ae/training_output/</span></code>. Among them, there are model checkpoints including <code class="docutils literal notranslate"><span class="pre">best_model.pt</span></code> which by default will be used in the inference step to make predictions on unseen data. It is the model that has the lowest validation error.</p>
+<p>The model training loss plots (original scale: <code class="docutils literal notranslate"><span class="pre">model_loss.png</span></code>; log scale: <code class="docutils literal notranslate"><span class="pre">model_loss_log.png</span></code>) are typically useful to look at. Training losses and validation losses should be gradually decreasing until no longer decreasing. The gap between training losses and validation losses shouldn’t be too big. If it’s not the case, the model is likely not going to perform well, and hyperparameter values and/or training data may need to be adjusted.    The following is an example log loss plot and note that we could have kept on training by increasing the number of epochs as the loss was still declining.</p>
+<a class="reference internal image-reference" href="../_images/example-slice-ae-loss-log.png"><img alt="Figure 1. An example log loss plot" src="../_images/example-slice-ae-loss-log.png" style="width: 400px; height: 400px;" />
+</a>
+<p>The list of training output files:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&lt;output_directory&gt;/
+<span class="w"> </span>├──<span class="w"> </span>ae
+<span class="w">     </span>├──<span class="w"> </span>...
+<span class="w">     </span>└──<span class="w"> </span>training_output
+<span class="w">         </span>├──<span class="w"> </span>best_model.pt
+<span class="w">         </span>├──<span class="w"> </span>checkpoint_models
+<span class="w">         </span>│<span class="w">   </span>├──<span class="w"> </span>model_epoch0.pt
+<span class="w">         </span>│<span class="w">   </span>├──<span class="w"> </span>model_epoch10.pt
+<span class="w">         </span>│<span class="w">   </span>...
+<span class="w">         </span>├──<span class="w"> </span>last_model.pt
+<span class="w">         </span>├──<span class="w"> </span>model_loss.csv
+<span class="w">         </span>├──<span class="w"> </span>model_loss.png
+<span class="w">         </span>└──<span class="w"> </span>model_loss_log.png
+</pre></div>
+</div>
+</section>
+<section id="reconstruct-images">
+<span id="slice-reconstruct-images"></span><h3>Reconstruct Images<a class="headerlink" href="#reconstruct-images" title="Link to this heading">¶</a></h3>
+<p>Once AE model training is complete, you can optionally run inference on the AE model to verify that the model can adequately encode and decode (or reconstruct) the image slices. The inference step takes the preprocessed data produced by the <a class="reference internal" href="#slice-preprocess"><span class="std std-ref">preprocessing step</span></a> as one of the inputs.
+The toolkit will use the manifest specified in <code class="docutils literal notranslate"><span class="pre">manifest-path</span></code> field and the model specified in the <code class="docutils literal notranslate"><span class="pre">model-path</span></code> field.  The <code class="docutils literal notranslate"><span class="pre">model-path</span></code> is typically either <code class="docutils literal notranslate"><span class="pre">&lt;output_dir&gt;/ae/training_output/best_model.pt</span></code> or  <code class="docutils literal notranslate"><span class="pre">&lt;output_dir&gt;/ae/training_output/last_model.pt</span></code>.  This step performs the reconstruction on the image slice data and saves the inference output in the folder <code class="docutils literal notranslate"><span class="pre">&lt;output_dir&gt;/ae/inference_output/</span></code>.
+You can specify the fields in a section named <code class="docutils literal notranslate"><span class="pre">reconstruct-images</span></code> to the <a class="reference internal" href="#slice-config"><span class="std std-ref">config file</span></a> or via command line arguments.</p>
+<p>Here is an example of how to specify these fields in the config file.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>slices:
+
+<span class="w">    </span>process-mesh-data:
+<span class="w">        </span>model-path:<span class="w"> </span>&lt;output_directory&gt;/ae/training_output/best_model.pt
+<span class="w">        </span>manifest-paths:
+<span class="w">            </span>-<span class="w"> </span>&lt;output_directory&gt;/train.manifest
+<span class="w">            </span>-<span class="w"> </span>&lt;output_directory&gt;/validate.manifest
+</pre></div>
+</div>
+<p>Run reconstruct-images via the following command.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-learn<span class="w"> </span>--config<span class="w"> </span>&lt;config_file_path&gt;<span class="w"> </span>slices<span class="w"> </span>reconstruct-images
+</pre></div>
+</div>
+<p>The following is an example of the output files that can be expected:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&lt;output_directory&gt;/
+├──<span class="w"> </span>ae
+<span class="w">   </span>├──<span class="w"> </span>inference_output
+<span class="w">   </span>│<span class="w">  </span>└──images
+<span class="w">   </span>│<span class="w">     </span>├──<span class="w"> </span>slice-group-0-combined-0.png
+<span class="w">   </span>│<span class="w">     </span>├──<span class="w"> </span>slice-group-0-combined-1.png
+<span class="w">   </span>│<span class="w">     </span>├──<span class="w"> </span>...
+<span class="w">   </span>│<span class="w">     </span>├──<span class="w"> </span>slice-group-0-error-0.png
+<span class="w">   </span>│<span class="w">     </span>├──<span class="w"> </span>slice-group-0-error-1.png
+<span class="w">   </span>│<span class="w">     </span>├──<span class="w"> </span>...
+<span class="w">   </span>│<span class="w">     </span>├──<span class="w"> </span>slice-group-0-original-0.png
+<span class="w">   </span>│<span class="w">     </span>├──<span class="w"> </span>slice-group-0-original-1.png
+<span class="w">   </span>│<span class="w">     </span>├──<span class="w"> </span>...
+<span class="w">   </span>│<span class="w">     </span>├──<span class="w"> </span>slice-group-0-reconstructed-0.png
+<span class="w">   </span>│<span class="w">     </span>├──<span class="w"> </span>slice-group-0-reconstructed-1.png
+<span class="w">   </span>│<span class="w">     </span>├──<span class="w"> </span>...
+<span class="w">   </span>│<span class="w">  </span>├──<span class="w"> </span>results.jsonl
+<span class="w">   </span>│<span class="w">  </span>├──<span class="w"> </span>slice-group-0-reconstructed.pt
+<span class="w">   </span>│<span class="w">  </span>├──<span class="w"> </span>slice-group-1-reconstructed.pt
+<span class="w">   </span>│<span class="w">  </span>├──<span class="w"> </span>...
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">slice-group-&lt;id&gt;-original-&lt;frame</span> <span class="pre">#&gt;.png</span></code> is the ground truth image after preprocessing.  The image should match the source images the user pointed to in the <a class="reference internal" href="#slice-preprocess"><span class="std std-ref">preprocessing step</span></a> in the manifest file.</p>
+<p><code class="docutils literal notranslate"><span class="pre">slice-group-&lt;id&gt;-reconstructed-&lt;frame</span> <span class="pre">#&gt;.png</span></code> is the reconstructed image after the above original file is passed through the AE that was trained in <a class="reference internal" href="#slice-train-image-encoder"><span class="std std-ref">Training AE step</span></a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">slice-group-&lt;id&gt;-error-&lt;frame</span> <span class="pre">#&gt;.png</span></code> is the root mean squared error (RMSE) for each pixel value between the above 2 files.</p>
+<p>All of these files are enumerated with both an <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">frame</span> <span class="pre">#</span></code>, where the <code class="docutils literal notranslate"><span class="pre">id</span></code> value corresponds to the <code class="docutils literal notranslate"><span class="pre">id</span></code> value generated during <a class="reference internal" href="#slice-preprocess"><span class="std std-ref">preprocessing</span></a> that uniquely identifies the individual rows in <code class="docutils literal notranslate"><span class="pre">&lt;output_directory&gt;/&lt;manifest_filename&gt;</span></code> and the <code class="docutils literal notranslate"><span class="pre">frame</span> <span class="pre">#</span></code> corresponds to the individual images in the same manifest.  The <code class="docutils literal notranslate"><span class="pre">frame</span> <span class="pre">#</span></code> corresponds to the order of the files listed in <cite>slices_data_uri</cite> starting from 0.</p>
+<p><code class="docutils literal notranslate"><span class="pre">results.jsonl</span></code> contains the various metrics that quantify the comparision in the <code class="docutils literal notranslate"><span class="pre">id</span></code> group between the original and the reconstructed images.  The following is an example row in json pretty-print format.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;metrics&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;mae&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.007588425055046</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;mape&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.052369099693203</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;mse&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.00004475500306656</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;msle&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.000563740206406696</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;psnr&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">27.6023534626506</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;slice_data_uri&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;file:///&lt;output_directory&gt;/slices/slice-group-&lt;id&gt;.npy&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Description of each of the metrics under the <cite>metrics</cite> field can be reviewed at <a class="reference external" href="https://lightning.ai/docs/torchmetrics/stable/all-metrics.html">torchmetrics</a>, where the abreviations correspond to the following metric names:</p>
+<p>mse - Mean Squared Error
+mae - Mean Absolute Error
+mape - Mean Absolute Percentage Error
+msle - Mean Squared Log Error
+psnr - Peak Signal to Noise Ratio</p>
+<p><code class="docutils literal notranslate"><span class="pre">slice-group-&lt;id&gt;-reconstructed.pt</span></code> contains the raw predictions from the reconstructions for each <code class="docutils literal notranslate"><span class="pre">id</span></code> group.  These are stored as Pytorch Tensors.</p>
+</section>
+<section id="encode-mesh-data">
+<span id="slice-encode-mesh-data"></span><h3>Encode Mesh Data<a class="headerlink" href="#encode-mesh-data" title="Link to this heading">¶</a></h3>
+<p>Once the training for the image encoder is adequate, the encoding of the mesh data and image data together can be done. This step processes the geometry files defined in the manifest in the fields <code class="docutils literal notranslate"><span class="pre">geometry_files</span></code> and uses the image encoding model to take the preprocessed data from <a class="reference internal" href="#slice-preprocess"><span class="std std-ref">preprocessing step</span></a> to produce training data for the next step <a class="reference internal" href="#slice-train-prediction"><span class="std std-ref">Training The Full Slice Prediction Model</span></a>.
+The toolkit will use the manifest files specified under <code class="docutils literal notranslate"><span class="pre">manifest-paths</span></code> field in the <a class="reference internal" href="#slice-config"><span class="std std-ref">config file</span></a> under <cite>train-prediction</cite>.  The model specified in the <code class="docutils literal notranslate"><span class="pre">model-path</span></code> field will be used to encode the slices.  The output will be saved in the folder <code class="docutils literal notranslate"><span class="pre">&lt;output_dir&gt;/ae/inference_output/</span></code>.
+These fields can also be defined via command line arguments.</p>
+<p>Here is how to provide a encoding data path in the config file.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>slices:
+
+<span class="w">    </span>encode-mesh-data:
+<span class="w">        </span>model-path:<span class="w"> </span>&lt;output_directory&gt;/ae/training_output/best_model.pt
+<span class="w">        </span>manifest-paths:
+<span class="w">            </span>-<span class="w"> </span>&lt;output_directory&gt;/train.manifest
+<span class="w">            </span>-<span class="w"> </span>&lt;output_directory&gt;/validate.manifest
+</pre></div>
+</div>
+<p>Run inference encoder via the following command.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-learn<span class="w"> </span>--config<span class="w"> </span>&lt;config_file_path&gt;<span class="w"> </span>slices<span class="w"> </span>encode-mesh-data
+</pre></div>
+</div>
+<p>The inference encoder step produces the following output files:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&lt;output_directory&gt;/
+├──<span class="w"> </span>ae
+<span class="w">   </span>├──<span class="w"> </span>inference_output
+<span class="w">   </span>│<span class="w">  </span>├──<span class="w"> </span>geometry-group-0.pt
+<span class="w">   </span>│<span class="w">  </span>├──<span class="w"> </span>geometry-group-1.pt
+<span class="w">   </span>│<span class="w">  </span>├──<span class="w"> </span>...
+<span class="w">   </span>│<span class="w">  </span>├──<span class="w"> </span>geometry-group-353.pt
+<span class="w">   </span>│<span class="w">  </span>├──<span class="w"> </span>geometry-group-354.pt
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">geometry-group-&lt;id&gt;.pt</span></code> is the processed output data that contains the image slices encoding combined with the geometry mesh file in a format that can be used to train the final prediction model in <a class="reference internal" href="#slice-train-prediction"><span class="std std-ref">the next step training prediction model</span></a>.</p>
+<p>Also note that the manifests listed under the <code class="docutils literal notranslate"><span class="pre">manifest-paths</span></code> field in the <a class="reference internal" href="#slice-config"><span class="std std-ref">config file</span></a> are updated to include <code class="docutils literal notranslate"><span class="pre">encoding_uri</span></code> for each row that includes the absolute path to the files discussed above.</p>
+</section>
+<section id="training-the-full-slice-prediction-model">
+<span id="slice-train-prediction"></span><h3>Training The Full Slice Prediction Model<a class="headerlink" href="#training-the-full-slice-prediction-model" title="Link to this heading">¶</a></h3>
+<p>Once the <a class="reference internal" href="#slice-encode-mesh-data"><span class="std std-ref">Encode Mesh Data</span></a> step is complete, the training of the full slice prediction model can be done. Training the full slice prediction step is where the machine learning model learns to predict image slices from mesh geometry. It takes the processed data from <a class="reference internal" href="#slice-encode-mesh-data"><span class="std std-ref">Encode Mesh Data</span></a> as input and produces PyTorch model files as output. The model files can then be used as part of the full slice prediciton model to make predictions in the <a class="reference internal" href="#slice-slice-predict"><span class="std std-ref">final step - Full Slice Prediction</span></a>.
+There are a number of hyperparameters associated with training of the full slice prediciton model, and all of them have default values. If you choose to use values other than the default ones, you can specify them in the <a class="reference internal" href="#slice-config"><span class="std std-ref">config file</span></a> or via command line arguments. To do it in the <a class="reference internal" href="#slice-config"><span class="std std-ref">config file</span></a>, simply add a <code class="docutils literal notranslate"><span class="pre">train-prediction</span></code> section along with the hyperparameter names and values. Here is an example.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>slices:
+
+<span class="w">    </span>train-prediction:
+<span class="w">        </span>train_manifest_path:<span class="w"> </span>&lt;output_directory&gt;/train.manifest
+<span class="w">        </span>validate.manifest_path:<span class="w"> </span>&lt;output_directory&gt;/validate.manifest
+</pre></div>
+</div>
+<p>To see the full list of training hyperparameters and their definitions, run the command <code class="docutils literal notranslate"><span class="pre">mlsimkit-learn</span> <span class="pre">slices</span> <span class="pre">train-prediction</span> <span class="pre">--help</span></code>.</p>
+<p>Once the config file is ready, run the following command to start training.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-learn<span class="w"> </span>--config<span class="w"> </span>&lt;config_file_path&gt;<span class="w"> </span>slices<span class="w"> </span>train-prediction
+</pre></div>
+</div>
+<p>The training takes around 220 minutes on an AWS g5.2xlarge instance with a dataset of 329 ~5000 node meshes. During training, the training loss and validation loss of each epoch are printed in the console.</p>
+<p>The training step produces a number of output files (see an example list at the end of this section) in the folder <code class="docutils literal notranslate"><span class="pre">&lt;output_directory&gt;/mgn/training_output/</span></code>. Among them, there are model checkpoints including <code class="docutils literal notranslate"><span class="pre">best_model.pt</span></code> which is recommended to use for new predictions. The <code class="docutils literal notranslate"><span class="pre">best_model.pt</span></code> is the model that has the lowest validation error.</p>
+<p>The model training loss plots (original scale: <code class="docutils literal notranslate"><span class="pre">model_loss.png</span></code>; log scale: <code class="docutils literal notranslate"><span class="pre">model_loss_log.png</span></code>) are typically useful to look at. Training losses and validation losses should be gradually decreasing until no longer decreasing. The gap between training losses and validation losses shouldn’t be too big. If it’s not the case, the model is likely not going to perform well, and hyperparameter values and/or training data may need to be adjusted.  The following is an example log loss plot.</p>
+<a class="reference internal image-reference" href="../_images/example-slice-mgn-loss-log.png"><img alt="Figure 2. An example log loss plot" src="../_images/example-slice-mgn-loss-log.png" style="width: 400px; height: 400px;" />
+</a>
+<p>The list of training output files:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&lt;output_directory&gt;/
+├──<span class="w"> </span>ae
+<span class="w">   </span>└──<span class="w"> </span>training_output
+<span class="w">       </span>├──<span class="w"> </span>best_model.pt
+<span class="w">       </span>├──<span class="w"> </span>checkpoint_models
+<span class="w">       </span>│<span class="w">   </span>└──<span class="w"> </span>model_epoch0.pt
+<span class="w">       </span>│<span class="w">   </span>├──<span class="w"> </span>model_epoch10.pt
+<span class="w">       </span>│<span class="w">   </span>├──<span class="w"> </span>...
+<span class="w">       </span>├──<span class="w"> </span>last_model.pt
+<span class="w">       </span>├──<span class="w"> </span>model_loss.csv
+<span class="w">       </span>├──<span class="w"> </span>model_loss.png
+<span class="w">       </span>└──<span class="w"> </span>model_loss_log.png
+</pre></div>
+</div>
+</section>
+<section id="full-slice-prediction">
+<span id="slice-slice-predict"></span><h3>Full Slice Prediction<a class="headerlink" href="#full-slice-prediction" title="Link to this heading">¶</a></h3>
+<p>After <a class="reference internal" href="#slice-train-prediction"><span class="std std-ref">training the full slice prediction model</span></a>, the model can be used to predict slices on new geometry.  In the <a class="reference internal" href="#slice-config"><span class="std std-ref">config file</span></a> or via command line arguments, a manifest and the models from <a class="reference internal" href="#slice-train-prediction"><span class="std std-ref">the previous step</span></a> and <a class="reference internal" href="#slice-train-image-encoder"><span class="std std-ref">training the image encoder step</span></a> need to be provided.  The following is example of how to define these in the <a class="reference internal" href="#slice-config"><span class="std std-ref">config file</span></a>.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>slices:
+
+<span class="w">    </span>predict:
+<span class="w">        </span>manifest-path:<span class="w"> </span>&lt;output_directory&gt;/&lt;manifest_filename_without_extension&gt;-test.manifest
+<span class="w">        </span>ae-model-path:<span class="w"> </span>&lt;output_directory&gt;/ae/training_output/best_model.pt
+<span class="w">        </span>mgn-model-path:<span class="w"> </span>&lt;output_directory&gt;/mgn/training_output/best_model.pt
+</pre></div>
+</div>
+<p>Once the config file is ready, run the following command to genrate slice predictions.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-learn<span class="w"> </span>--config<span class="w"> </span>&lt;config_file_path&gt;<span class="w"> </span>slices<span class="w"> </span>predict
+</pre></div>
+</div>
+<p>If ground truth is provided in the manifest file, the full slice prediction produces a similiar output as the <a class="reference internal" href="#slice-reconstruct-images"><span class="std std-ref">Reconstruct Images step</span></a> but under <code class="docutils literal notranslate"><span class="pre">&lt;output_dir&gt;/prediction/</span></code> folder using the manifest defined under <code class="docutils literal notranslate"><span class="pre">manifest_path</span></code> field.  Note that the images files are named with <code class="docutils literal notranslate"><span class="pre">&lt;geometry_files_without_extension&gt;</span></code> instead of <code class="docutils literal notranslate"><span class="pre">slice-group-&lt;id&gt;</span></code>.  Additionally there are <code class="docutils literal notranslate"><span class="pre">&lt;geometry_files_without_extension&gt;.npy</span></code> files that are the predictions saved as numpy arrays.  The following are examples of what to expect:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&lt;output_directory&gt;/
+├──<span class="w"> </span>prediction/
+<span class="w">    </span>├──<span class="w"> </span>geometry-group-102-prediction.npy
+<span class="w">    </span>├──<span class="w"> </span>...
+<span class="w">    </span>├──<span class="w"> </span>geometry-group-91-prediction.npy
+<span class="w">    </span>├──<span class="w"> </span>images
+<span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>geometry-group-102-error-0.png
+<span class="w">    </span>│<span class="w">   </span>...
+<span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>geometry-group-102-error-9.png
+<span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>geometry-group-102-original-0.png
+<span class="w">    </span>│<span class="w">   </span>...
+<span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>geometry-group-102-original-0.png
+<span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>geometry-group-102-original-9.png
+<span class="w">    </span>│<span class="w">   </span>...
+<span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>geometry-group-102-prediction-9.png
+<span class="w">    </span>│<span class="w">   </span>...
+<span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>geometry-group-91-error-0.png
+<span class="w">    </span>│<span class="w">   </span>...
+<span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>geometry-group-91-error-9.png
+<span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>geometry-group-91-original-0.png
+<span class="w">    </span>│<span class="w">   </span>...
+<span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>geometry-group-91-original-9.png
+<span class="w">    </span>│<span class="w">   </span>...
+<span class="w">    </span>│<span class="w">   </span>├──<span class="w"> </span>geometry-group-91-prediction-9.png
+<span class="w">    </span>├──<span class="w"> </span>results.jsonl
+</pre></div>
+</div>
+<p>If the ground truth is not provided <code class="docutils literal notranslate"><span class="pre">results.jsonl</span></code>, and files with suffixes <code class="docutils literal notranslate"><span class="pre">error-&lt;frame</span> <span class="pre">#&gt;.png</span></code> and <code class="docutils literal notranslate"><span class="pre">original-&lt;frame</span> <span class="pre">#&gt;.png</span></code> will not be present.</p>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><!--
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/mlsimkit-sidebar.png" alt="MLSimKit logo" />
+  </a>
+</p>
+-->
+
+<h4><a href="../index.html">AI Surrogate Models in Engineering on AWS</a></h4>
+<p>
+  Tools to develop and use ML predictive models as surrogates for physics-based simulations.
+</p>
+
+<h4>Useful Links</h4>
+<ul>
+  <li><a href="install.html">Install</a></li>
+  <li><a href="quickstart-kpi.html">Quickstart KPI</a></li>
+  <li><a href="quickstart-slices.html">Quickstart Slices</a></li>
+  <li><a href="quickstart-surface.html">Quickstart Surfaces</a></li>
+  <li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul>
+
+<div id="native-ribbon">
+</div>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart-kpi.html">Quickstart with KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart-surface.html">Quickstart with Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart-slices.html">Quickstart with Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-kpi-windsor.html">KPI Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-surface-ahmed.html">Surface Variable Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-slices-windsor.html">Slice Prediction Tutorial</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/ahmed.html">AhmedML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/windsor.html">WindsorML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/drivaer.html">DrivAerML Dataset</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="user-guide-kpi.html">Model User Guide – KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide-surface.html">Model User Guide – Surface Variable Prediction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Model User Guide – Slice Prediction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-build-a-slice-model">How to Build a Slice Model</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#getting-the-data">Getting the Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-a-manifest-file-and-a-config-file">Creating a Manifest File and a Config File</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#preprocessing">Preprocessing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#training-the-image-encoder">Training The Image Encoder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reconstruct-images">Reconstruct Images</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#encode-mesh-data">Encode Mesh Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#training-the-full-slice-prediction-model">Training The Full Slice Prediction Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#full-slice-prediction">Full Slice Prediction</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="notebook-guide.html">Using the MLSimKit SDK Interactively (Notebooks, IPython)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mlflow-guide.html">Tracking Experiments and Results with MLFLow</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/guide.html">Code Structure and Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/learn.html">Learning Module (<code class="docutils literal notranslate"><span class="pre">mlsimkit.learn</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/cli-toolkit.html">Creating Custom CLI Commands</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/api.html">MLSimKit SDK API</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="user-guide-surface.html" title="previous chapter">Model User Guide – Surface Variable Prediction</a></li>
+      <li>Next: <a href="notebook-guide.html" title="next chapter">Using the MLSimKit SDK Interactively (Notebooks, IPython)</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;Copyright 2025 Amazon.com, Inc. or its affiliates. All Rights Reserved..
+      
+      |
+      <a href="../_sources/user/user-guide-slice.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

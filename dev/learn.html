@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Learning Module (mlsimkit.learn) &#8212; AI Surrogate Models for Engineering on AWS 0.1.dev1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=9de7e953" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=06097142" />
+    <script src="../_static/documentation_options.js?v=6aee1ebc"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Creating Custom CLI Commands" href="cli-toolkit.html" />
+    <link rel="prev" title="Code Structure and Concepts" href="guide.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="learning-module-mlsimkit-learn">
+<h1>Learning Module (<code class="docutils literal notranslate"><span class="pre">mlsimkit.learn</span></code>)<a class="headerlink" href="#learning-module-mlsimkit-learn" title="Link to this heading">¶</a></h1>
+<p>Before reading this, first understand <a class="reference internal" href="guide.html"><span class="doc">Code Structure and Concepts</span></a>. You are encouraged to complete the tutorials and read the user guides to understand the use case applications before modifying the code.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">learn</span></code> module is the core component of the MLSimKit package, offering functionality for various machine learning tasks related to physics-based simulations. It follows a modular design, with a centralized <code class="docutils literal notranslate"><span class="pre">common</span></code> submodule containing shared utilities and helper functions used across the toolkit, and dedicated submodules for different use cases.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">common</span></code> submodule contains shared components like the command-line interface (CLI) utilities, configuration management, logging utilities, mesh data processing, and a shared training loop. The <code class="docutils literal notranslate"><span class="pre">training.py</span></code> file within this submodule provides a generic training function that can be utilized by different use cases.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">networks</span></code> submodule contains the implementations of various neural network architectures used in the toolkit, such as convolutional autoencoders and MeshGraphNets (a graph neural network architecture). These network architectures are designed to handle different types of data and serve different use cases.</p>
+<section id="use-cases">
+<h2>Use Cases<a class="headerlink" href="#use-cases" title="Link to this heading">¶</a></h2>
+<p>There are dedicated submodules for each specific use case, such as Key Performance Indicator (KPI) prediction, surface variable prediction, and slice prediction (<code class="docutils literal notranslate"><span class="pre">kpi</span></code>, <code class="docutils literal notranslate"><span class="pre">surface</span></code>, and <code class="docutils literal notranslate"><span class="pre">slices</span></code>, respectively). These submodules encapsulate the functionality related to their respective use cases, including data loading and preprocessing, training, inference, and visualization (where applicable).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">learn</span></code> module follows a consistent structure <em>by convention</em> across the different use case submodules (e.g., <code class="docutils literal notranslate"><span class="pre">kpi</span></code>, <code class="docutils literal notranslate"><span class="pre">surface</span></code>, <code class="docutils literal notranslate"><span class="pre">slices</span></code>). Each submodule typically contains the following components:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">preprocessing.py</span></code>: This file contains utilities for preprocessing the data specific to the use case, such as processing mesh files, converting data formats, and generating manifests.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">data.py</span></code>: This file defines custom dataset interfaces for loading and preprocessing the data from manifests, tailored to the specific data types and requirements of the use case.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">schema/</span></code>: This directory contains Pydantic schema definitions for various settings and configurations related to the use case, such as preprocessing settings, training settings, and inference settings.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">training.py</span></code>: This file implements the training functionality for the use case, including the <code class="docutils literal notranslate"><span class="pre">run_train</span></code> function that leverages the shared training loop from the <code class="docutils literal notranslate"><span class="pre">common</span></code> submodule.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inference.py</span></code>: This file provides utilities for performing inference and generating predictions using the trained models specific to the use case.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cli.py</span></code>: This file serves as the command-line interface (CLI) entry point for the use case, allowing users to interact with the functionality through subcommands (e.g., <code class="docutils literal notranslate"><span class="pre">mlsimkit-learn</span> <span class="pre">kpi</span> <span class="pre">preprocess</span></code>, <code class="docutils literal notranslate"><span class="pre">mlsimkit-learn</span> <span class="pre">surface</span> <span class="pre">train</span></code>).</p></li>
+</ul>
+<p>Within each of these components, the code is structured to encapsulate the logic and utilities specific to the use case, while leveraging shared utilities and abstractions from the <code class="docutils literal notranslate"><span class="pre">common</span></code> submodule for common tasks like configuration management, logging, and training.</p>
+</section>
+<section id="training-flow">
+<h2>Training Flow<a class="headerlink" href="#training-flow" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">training.py</span></code> file within each use case submodule follows a similar flow for training the respective machine learning models. Here’s a general overview of the training process:</p>
+<ol class="arabic simple">
+<li><p><strong>Configuration Parsing</strong>: The <code class="docutils literal notranslate"><span class="pre">run_train</span></code> function, typically the entry point for training, parses the configuration settings from the command-line arguments or configuration files. These settings may include hyperparameters, data paths, and other training-related options.</p></li>
+<li><p><strong>Data Loading</strong>: The function loads the training and validation data from the respective manifests using the dataset interfaces defined in <code class="docutils literal notranslate"><span class="pre">data.py</span></code>. This step typically involves creating instances of the custom dataset classes and passing the appropriate manifest paths.</p></li>
+<li><p><strong>Model and Optimizer Initialization</strong>: Based on the configuration settings and the characteristics of the input data (e.g., node and edge input sizes for geometric data), the function initializes the appropriate model architecture. It also creates an instance of the <code class="docutils literal notranslate"><span class="pre">ModelIO</span></code> class from the <code class="docutils literal notranslate"><span class="pre">networks</span></code> submodule, which encapsulates the logic for creating, saving, and loading models. Additionally, an optimizer is initialized for the training process.</p></li>
+<li><p><strong>Training Loop</strong>: The core training process is typically delegated to the shared <code class="docutils literal notranslate"><span class="pre">train</span></code> function from the <code class="docutils literal notranslate"><span class="pre">common.training</span></code> module. This function handles the iterative training loop, computing the loss, backpropagation, and model updates. It also manages checkpointing, validation, and early stopping based on the provided configurations.</p></li>
+<li><p><strong>Model Saving</strong>: After the training process is complete, the <code class="docutils literal notranslate"><span class="pre">run_train</span></code> function saves the trained model using the <code class="docutils literal notranslate"><span class="pre">ModelIO</span></code> instance. This step typically involves saving the model state, optimizer state, and other relevant metadata to a file or directory specified in the configuration.</p></li>
+<li><p><strong>Optional Steps</strong>: Depending on the use case and configuration settings, additional steps may be performed after training, such as:</p>
+<ul class="simple">
+<li><p>Generating predictions on the training and validation datasets, and saving the results for comparison or visualization purposes.</p></li>
+<li><p>Logging training metrics and artifacts using MLflow or other experiment tracking tools.</p></li>
+<li><p>Updating the internal manifests with the paths to the trained model or other generated artifacts.</p></li>
+</ul>
+</li>
+</ol>
+<p>While the specific implementation details may vary across different use cases, the general flow of the <code class="docutils literal notranslate"><span class="pre">training.py</span></code> file follows this structure, leveraging the shared utilities from the <code class="docutils literal notranslate"><span class="pre">common</span></code> submodule and the custom components defined within the use case submodule.</p>
+</section>
+<section id="programmatically-training-and-predicting">
+<h2>Programmatically Training and Predicting<a class="headerlink" href="#programmatically-training-and-predicting" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">learn</span></code> module can be imported and used in your Python scripts or notebooks. For example, to perform KPI prediction, you can import the necessary components from the <code class="docutils literal notranslate"><span class="pre">kpi</span></code> submodule:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mlsimkit.learn.kpi</span><span class="w"> </span><span class="kn">import</span> <span class="n">preprocessing</span><span class="p">,</span> <span class="n">training</span><span class="p">,</span> <span class="n">inference</span>
+
+<span class="c1"># Preprocess data</span>
+<span class="n">settings</span> <span class="o">=</span> <span class="n">PreprocessingSettings</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">working_manifest</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">run_preprocess</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">project_root</span><span class="p">)</span>
+
+<span class="c1"># Train the model</span>
+<span class="n">train_settings</span> <span class="o">=</span> <span class="n">TrainingSettings</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">accelerator</span> <span class="o">=</span> <span class="n">Accelerator</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">training</span><span class="o">.</span><span class="n">run_train</span><span class="p">(</span><span class="n">train_settings</span><span class="p">,</span> <span class="n">accelerator</span><span class="p">)</span>
+
+<span class="c1"># Perform inference</span>
+<span class="n">inference_settings</span> <span class="o">=</span> <span class="n">InferenceSettings</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">inference</span><span class="o">.</span><span class="n">run_predict</span><span class="p">(</span><span class="n">inference_settings</span><span class="p">,</span> <span class="n">compare_groundtruth</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Similarly, for other tasks like surface variable prediction or slice prediction, you can import the relevant components from the corresponding submodules.</p>
+<p>For more detailed usage examples and configuration options, refer to the user guides and tutorials provided in the MLSimKit documentation.</p>
+</section>
+<section id="mlsimkit-learn-common">
+<h2><code class="docutils literal notranslate"><span class="pre">mlsimkit.learn.common</span></code><a class="headerlink" href="#mlsimkit-learn-common" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">common</span></code> module contains shared utilities and helper functions used across the learning module:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cli.py</span></code>: CLI command entry for <code class="docutils literal notranslate"><span class="pre">mlsimkit-learn</span></code>. Submodules add sub-commands e.g, <code class="docutils literal notranslate"><span class="pre">mlsimkit-learn</span> <span class="pre">kpi</span> <span class="pre">...</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config.py</span></code>: Configuration management and parsing utilities.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">logging.py</span></code>: Logging utilities and configuration.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mesh.py</span></code>: Utilities for working with mesh data, including loading, converting, downsampling, and preprocessing mesh files.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">schema</span></code>: Pydantic schema definitions for various components, including optimizers, training settings, and project configuration.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tracking.py</span></code>: Utilities for tracking and logging machine learning experiments using MLflow.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">training.py</span></code>: Utilities for training machine learning models, including a generic training loop that can be used across different use cases.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">utils.py</span></code>: General utility functions for tasks like calculating mean and standard deviation, obtaining optimizers and learning rate schedulers, and saving loss plots and prediction results.</p></li>
+</ul>
+</section>
+<section id="mlsimkit-learn-kpi">
+<h2><code class="docutils literal notranslate"><span class="pre">mlsimkit.learn.kpi</span></code><a class="headerlink" href="#mlsimkit-learn-kpi" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">kpi</span></code> module contains components for Key Performance Indicator (KPI) prediction tasks:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cli.py</span></code>: CLI command entry KPI prediction, including options for preprocessing, training, and inference.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">data.py</span></code>: Data loading and preprocessing utilities for KPI prediction, including the <code class="docutils literal notranslate"><span class="pre">KPIDataset</span></code> class for loading and handling KPI data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inference.py</span></code>: Inference functionality for KPI prediction, including utilities for getting predictions and saving prediction results.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">preprocessing.py</span></code>: Preprocessing utilities for KPI prediction, including functions for processing mesh files and adding preprocessed data to the manifest.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">schema</span></code>: Pydantic schema definitions for KPI prediction tasks, including preprocessing, inference, and training settings.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">training.py</span></code>: Training functionality for KPI prediction models, including the <code class="docutils literal notranslate"><span class="pre">run_train</span></code> function for training KPI models using the shared training loop.</p></li>
+</ul>
+</section>
+<section id="mlsimkit-learn-slices">
+<h2><code class="docutils literal notranslate"><span class="pre">mlsimkit.learn.slices</span></code><a class="headerlink" href="#mlsimkit-learn-slices" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">slices</span></code> module contains components for slice prediction tasks:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cli.py</span></code>: CLI command entry for slice prediction, including options for preprocessing, training, and inference.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">data.py</span></code>: Data loading and preprocessing utilities for slice prediction, including the <code class="docutils literal notranslate"><span class="pre">SlicesDataset</span></code> and <code class="docutils literal notranslate"><span class="pre">GraphDataset</span></code> classes for loading and handling slice data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inference.py</span></code>: Inference functionality for slice prediction, including utilities for running inference on autoencoders and the final prediction model.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">preprocessing.py</span></code>: Preprocessing utilities for slice prediction, including functions for loading and converting slice image data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">schema</span></code>: Pydantic schema definitions for slice prediction tasks, including preprocessing, inference, and training settings.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">training.py</span></code>: Training functionality for slice prediction models, including the <code class="docutils literal notranslate"><span class="pre">run_train_ae</span></code> and <code class="docutils literal notranslate"><span class="pre">run_train_mgn</span></code> functions for training autoencoders and the final prediction model, respectively.</p></li>
+</ul>
+</section>
+<section id="mlsimkit-learn-surface">
+<h2><code class="docutils literal notranslate"><span class="pre">mlsimkit.learn.surface</span></code><a class="headerlink" href="#mlsimkit-learn-surface" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">surface</span></code> module contains components for surface variable prediction tasks:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cli.py</span></code>: CLI command entry for surface variable prediction, including options for preprocessing, training, inference, and visualization.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">data.py</span></code>: Data loading and preprocessing utilities for surface variable prediction, including the <code class="docutils literal notranslate"><span class="pre">SurfaceDataset</span></code> class for loading and handling surface data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inference.py</span></code>: Inference functionality for surface variable prediction, including utilities for running inference and converting predictions to VTK/PyVista formats.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">preprocessing.py</span></code>: Preprocessing utilities for surface variable prediction, including functions for processing mesh files, mapping data to STL files, and handling surface variables.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">schema</span></code>: Pydantic schema definitions for surface variable prediction tasks, including preprocessing, inference, training, and visualization settings.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">training.py</span></code>: Training functionality for surface variable prediction models, including the <code class="docutils literal notranslate"><span class="pre">run_train</span></code> function for training surface prediction models using the shared training loop.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">visualize.py</span></code>: Visualization utilities for surface variable prediction results, including the <code class="docutils literal notranslate"><span class="pre">Viewer</span></code> class for rendering and visualizing predictions.</p></li>
+</ul>
+</section>
+<section id="mlsimkit-learn-manifest">
+<h2><code class="docutils literal notranslate"><span class="pre">mlsimkit.learn.manifest</span></code><a class="headerlink" href="#mlsimkit-learn-manifest" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">manifest</span></code> module provides utilities for working with data manifests:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">manifest.py</span></code>: This file contains the core functionality for creating, splitting, and processing manifests. It includes functions for:</p>
+<ul>
+<li><p>Generating manifest entries from simulation “run” folders, extracting parameter values from data files and file paths from glob patterns.</p></li>
+<li><p>Reading and writing manifest files in JSON lines format.</p></li>
+<li><p>Creating and copying working manifests to avoid modifying the original user manifests.</p></li>
+<li><p>Resolving file paths within manifests, handling relative and absolute paths.</p></li>
+<li><p>Splitting manifests into train, validation, and test sets based on specified percentages and random seeds.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cli.py</span></code>: This file provides the command-line interface (CLI) for working with manifests:</p>
+<ul>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">create</span></code> command generates a manifest file from a dataset, extracting parameter values from data files and file paths from glob patterns.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">split</span></code> command splits an existing manifest file into train, validation, and test sets based on the provided split settings.</p></li>
+</ul>
+</li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">manifest</span></code> module plays a crucial role in managing and preprocessing data for the various machine learning tasks supported by MLSimKit. It ensures that the necessary data files and metadata are organized and accessible through the manifest files, which are then used by other components of the toolkit for tasks such as training and inference.</p>
+</section>
+<section id="mlsimkit-learn-networks">
+<h2><code class="docutils literal notranslate"><span class="pre">mlsimkit.learn.networks</span></code><a class="headerlink" href="#mlsimkit-learn-networks" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">networks</span></code> module contains implementations of various neural network architectures used in the toolkit:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">autoencoder.py</span></code>: Implementation of convolutional autoencoders, including the <code class="docutils literal notranslate"><span class="pre">ConvAutoencoder</span></code> class and related utilities for training and inference.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mgn.py</span></code>: Implementation of MeshGraphNets, a graph neural network architecture, including the <code class="docutils literal notranslate"><span class="pre">MeshGraphNet</span></code> class and related utilities for training and inference.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">schema</span></code>: Pydantic schema definitions for network architectures, including settings for convolutional autoencoders.</p></li>
+</ul>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><!--
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/mlsimkit-sidebar.png" alt="MLSimKit logo" />
+  </a>
+</p>
+-->
+
+<h4><a href="../index.html">AI Surrogate Models in Engineering on AWS</a></h4>
+<p>
+  Tools to develop and use ML predictive models as surrogates for physics-based simulations.
+</p>
+
+<h4>Useful Links</h4>
+<ul>
+  <li><a href="../user/install.html">Install</a></li>
+  <li><a href="../user/quickstart-kpi.html">Quickstart KPI</a></li>
+  <li><a href="../user/quickstart-slices.html">Quickstart Slices</a></li>
+  <li><a href="../user/quickstart-surface.html">Quickstart Surfaces</a></li>
+  <li><a href="../user/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+
+<div id="native-ribbon">
+</div>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/quickstart-kpi.html">Quickstart with KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/quickstart-surface.html">Quickstart with Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/quickstart-slices.html">Quickstart with Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-kpi-windsor.html">KPI Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-surface-ahmed.html">Surface Variable Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-slices-windsor.html">Slice Prediction Tutorial</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/ahmed.html">AhmedML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/windsor.html">WindsorML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/drivaer.html">DrivAerML Dataset</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/user-guide-kpi.html">Model User Guide – KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/user-guide-surface.html">Model User Guide – Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/user-guide-slice.html">Model User Guide – Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/notebook-guide.html">Using the MLSimKit SDK Interactively (Notebooks, IPython)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/mlflow-guide.html">Tracking Experiments and Results with MLFLow</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="guide.html">Code Structure and Concepts</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Learning Module (<code class="docutils literal notranslate"><span class="pre">mlsimkit.learn</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#use-cases">Use Cases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#training-flow">Training Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#programmatically-training-and-predicting">Programmatically Training and Predicting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mlsimkit-learn-common"><code class="docutils literal notranslate"><span class="pre">mlsimkit.learn.common</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mlsimkit-learn-kpi"><code class="docutils literal notranslate"><span class="pre">mlsimkit.learn.kpi</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mlsimkit-learn-slices"><code class="docutils literal notranslate"><span class="pre">mlsimkit.learn.slices</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mlsimkit-learn-surface"><code class="docutils literal notranslate"><span class="pre">mlsimkit.learn.surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mlsimkit-learn-manifest"><code class="docutils literal notranslate"><span class="pre">mlsimkit.learn.manifest</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mlsimkit-learn-networks"><code class="docutils literal notranslate"><span class="pre">mlsimkit.learn.networks</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cli-toolkit.html">Creating Custom CLI Commands</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">MLSimKit SDK API</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="guide.html" title="previous chapter">Code Structure and Concepts</a></li>
+      <li>Next: <a href="cli-toolkit.html" title="next chapter">Creating Custom CLI Commands</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;Copyright 2025 Amazon.com, Inc. or its affiliates. All Rights Reserved..
+      
+      |
+      <a href="../_sources/dev/learn.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

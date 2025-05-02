@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Troubleshooting &#8212; AI Surrogate Models for Engineering on AWS 0.1.dev1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=9de7e953" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=06097142" />
+    <script src="../_static/documentation_options.js?v=6aee1ebc"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="KPI Prediction Tutorial" href="../tutorials/tutorial-kpi-windsor.html" />
+    <link rel="prev" title="Quickstart with Slice Prediction" href="quickstart-slices.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="troubleshooting">
+<span id="id1"></span><h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">¶</a></h1>
+<p>Before troubleshooting, it’s helpful to gather information about your system’s hardware and software configurations. Common issues are related to CUDA version mismatches as PyTorch includes its own CUDA binaries. You want to ensure that PyTorch is using its own CUDA binaries and not conflicting with other CUDA installations on your system.</p>
+<section id="check-torch-cuda-and-mlsimkit-versions">
+<h2>Check Torch, CUDA, and MLSimKit Versions<a class="headerlink" href="#check-torch-cuda-and-mlsimkit-versions" title="Link to this heading">¶</a></h2>
+<p>Use the following Python code to print the installed versions of Torch, CUDA used by Torch, and MLSimKit:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span><span class="o">,</span><span class="w"> </span><span class="nn">mlsimkit</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">cuda</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mlsimkit</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or using the command-line:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import torch; import mlsimkit; print(f&#39;Torch: {torch.__version__}\nCUDA: {torch.version.cuda}\nMLSimKit: {mlsimkit.__version__}&#39;)&quot;</span>
+</pre></div>
+</div>
+<p>You will see output like:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Torch: 2.2.2+cu121
+CUDA: 12.1
+MLSimKit: 0.1.0b0
+</pre></div>
+</div>
+</section>
+<section id="check-nvidia-driver-version">
+<h2>Check NVIDIA Driver Version<a class="headerlink" href="#check-nvidia-driver-version" title="Link to this heading">¶</a></h2>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">nvidia-smi</span></code> command to check the installed NVIDIA driver version:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>nvidia-smi
+</pre></div>
+</div>
+<p>Look for the “Driver Version” field in the output.</p>
+</section>
+<section id="common-issues">
+<h2>Common Issues<a class="headerlink" href="#common-issues" title="Link to this heading">¶</a></h2>
+<section id="gpu-out-of-memory-oom-issues">
+<h3>GPU out-of-memory (OOM) issues<a class="headerlink" href="#gpu-out-of-memory-oom-issues" title="Link to this heading">¶</a></h3>
+<p>You may run into an out-of-memory (OOM) issue while training a model, but there are steps that can be taken to address it.  The following are some suggestions of things to try:</p>
+<ol class="arabic simple">
+<li><p>Change training hyperparameters to reduce the size of the model or in-memory data such as <code class="docutils literal notranslate"><span class="pre">batch-size</span></code>, <code class="docutils literal notranslate"><span class="pre">message-passing-steps</span></code>, <code class="docutils literal notranslate"><span class="pre">hidden-size</span></code>, <code class="docutils literal notranslate"><span class="pre">ae.start-out-channel</span></code> and <code class="docutils literal notranslate"><span class="pre">ae.div-rate</span></code>.</p></li>
+<li><p>Try uing mixed precision (<code class="docutils literal notranslate"><span class="pre">--mixed-precision</span> <span class="pre">fp16</span></code> or <code class="docutils literal notranslate"><span class="pre">--mixed-precision</span> <span class="pre">bf16</span></code>).</p></li>
+<li><p>Make sure you are not using the deterministic flag, as this will increase the memory requirements of the model training (<code class="docutils literal notranslate"><span class="pre">--deterministic</span></code>).</p></li>
+<li><p>Reduce the size of your training data in preprocessing.  For instance in the slices use case, the resolution can be reduced via <code class="docutils literal notranslate"><span class="pre">--resolution</span></code> argument, and the number of input channels can be reduced via the <code class="docutils literal notranslate"><span class="pre">--grayscale</span></code> argument.  For input meshes in the KPI and Surface use cases, <code class="docutils literal notranslate"><span class="pre">--downsample-remaining-perc</span></code> can be used to decrease the size of the meshes.</p></li>
+<li><p>Reduce the size of your training data externally.  Alternatively, outside methods can be used to reduce the size of the data.  For instance the number of slices can be reduced or external software can be used to decimate meshes.</p></li>
+<li><p>Try training on the cpu (<code class="docutils literal notranslate"><span class="pre">--device</span> <span class="pre">cpu</span></code>) instead.  Note that this can lead to much longer training times which may be undesirable.</p></li>
+<li><p>Make sure other processes aren’t consuming your GPU’s memory.  This can be done by using the <code class="docutils literal notranslate"><span class="pre">nvidia-smi</span></code> command.</p></li>
+<li><p>Train on a bigger GPU with more memory.</p></li>
+</ol>
+</section>
+<section id="could-not-load-library-libcudnn-cnn-train-so-on-deep-learning-ami">
+<h3><code class="docutils literal notranslate"><span class="pre">&quot;Could</span> <span class="pre">not</span> <span class="pre">load</span> <span class="pre">library</span> <span class="pre">libcudnn_cnn_train.so&quot;</span></code> on Deep Learning AMI<a class="headerlink" href="#could-not-load-library-libcudnn-cnn-train-so-on-deep-learning-ami" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">mlsimkit</span></code> depends on Pytorch, which installs its own Cuda binaries. You may see this error if your environment has a version mismatch:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Could<span class="w"> </span>not<span class="w"> </span>load<span class="w"> </span>library<span class="w"> </span>libcudnn_cnn_train.so.8.<span class="w"> </span>Error:<span class="w"> </span>/usr/local/cuda-12.1/lib/libcudnn_cnn_train.so.8:<span class="w"> </span>undefined<span class="w"> </span>symbol:<span class="w"> </span>_ZN5cudnn3cnn34layerNormFwd_execute_internal_implERKNS_7backend11VariantPackEP11CUstream_stRNS0_18LayerNormFwdParamsERKNS1_20NormForwardOperationEmb,<span class="w"> </span>version<span class="w"> </span>libcudnn_cnn_infer.so.8
+</pre></div>
+</div>
+<p>One solution is to remove Cuda from the system entirely and/or install the identical version. For example,
+see the <a class="reference external" href="https://docs.aws.amazon.com/dlami/latest/devguide/tutorial-base.html">Deep Learning tutorial</a>.</p>
+<p>Alternatively, you may remove the Cuda binaries from your library path when running <code class="docutils literal notranslate"><span class="pre">torch</span></code> applications. For example, in the Deep Learning AMI for Ubuntu 22.04, the default <code class="docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code> includes Cuda 12.1:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$LD_LIBRARY_PATH</span>
+/opt/amazon/efa/lib:/opt/amazon/openmpi/lib:/opt/aws-ofi-nccl/lib:/usr/local/cuda-12.1/lib:/usr/local/cuda-12.1/lib64:/usr/local/cuda-12.1:/usr/local/cuda-12.1/targets/x86_64-linux/lib/:/usr/local/cuda-12.1/extras/CUPTI/lib64:/usr/local/lib:/usr/lib
+</pre></div>
+</div>
+<p>Remove the <code class="docutils literal notranslate"><span class="pre">cuda-12.1</span></code> directories and then <code class="docutils literal notranslate"><span class="pre">Pytorch</span></code> will use its own cuda binaries:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span><span class="w"> </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/opt/amazon/efa/lib:/opt/amazon/openmpi/lib:/opt/aws-ofi-nccl/lib:/usr/local/lib:/usr/lib
+</pre></div>
+</div>
+</section>
+<section id="mlsimkit-accelerate-train-command-hangs-or-timeouts-on-multi-gpu-instances">
+<h3><code class="docutils literal notranslate"><span class="pre">mlsimkit-accelerate</span></code> train command hangs or timeouts on multi-GPU instances<a class="headerlink" href="#mlsimkit-accelerate-train-command-hangs-or-timeouts-on-multi-gpu-instances" title="Link to this heading">¶</a></h3>
+<p>The train processes (across use cases) can hang and/or timeout when running on a NVIDIA multiple GPU compute when executing via <code class="docutils literal notranslate"><span class="pre">mlsimkit-accelerate</span></code> or <code class="docutils literal notranslate"><span class="pre">accelerate</span> <span class="pre">launch</span></code>.  This can be caused by NVIDIA drivers such as <code class="docutils literal notranslate"><span class="pre">NVIDIA-SMI</span> <span class="pre">555.42.06</span></code>.  To fix the issue you can remove and install a different NVIDIA driver that is compatible:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>sudo<span class="w"> </span>apt-get<span class="w"> </span>--purge<span class="w"> </span>remove<span class="w"> </span>nvidia-kernel-source-555
+$<span class="w"> </span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>--verbose-versions<span class="w"> </span>cuda-drivers-535
+</pre></div>
+</div>
+</section>
+<section id="cannot-convert-a-mps-tensor-to-float64-dtype-or-fp16-mixed-precision-requires-a-gpu-not-mps-on-macos">
+<h3><code class="docutils literal notranslate"><span class="pre">&quot;Cannot</span> <span class="pre">convert</span> <span class="pre">a</span> <span class="pre">MPS</span> <span class="pre">Tensor</span> <span class="pre">to</span> <span class="pre">float64</span> <span class="pre">dtype...&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;fp16</span> <span class="pre">mixed</span> <span class="pre">precision</span> <span class="pre">requires</span> <span class="pre">a</span> <span class="pre">GPU</span> <span class="pre">(not</span> <span class="pre">'mps')&quot;</span></code> on MacOS<a class="headerlink" href="#cannot-convert-a-mps-tensor-to-float64-dtype-or-fp16-mixed-precision-requires-a-gpu-not-mps-on-macos" title="Link to this heading">¶</a></h3>
+<p>On older MacOS hardware, you may need to force CPU-only for training if you see one of the following errors:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>TypeError: Cannot convert a MPS Tensor to float64 dtype as the MPS framework doesn&#39;t support float64. Please use float32 instead.
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Error: fp16 mixed precision requires a GPU (not &#39;mps&#39;)
+</pre></div>
+</div>
+<p>Use <code class="docutils literal notranslate"><span class="pre">--device</span> <span class="pre">cpu</span></code> for all training commands. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mlsimkit</span><span class="o">-</span><span class="n">learn</span> <span class="n">kpi</span> <span class="n">train</span> <span class="o">--</span><span class="n">device</span> <span class="n">cpu</span>
+<span class="n">mlsimkit</span><span class="o">-</span><span class="n">learn</span> <span class="n">slices</span> <span class="n">train</span><span class="o">-</span><span class="n">image</span><span class="o">-</span><span class="n">encoder</span> <span class="o">--</span><span class="n">device</span> <span class="n">cpu</span>
+<span class="n">mlsimkit</span><span class="o">-</span><span class="n">learn</span> <span class="n">slices</span> <span class="n">train</span><span class="o">-</span><span class="n">prediction</span> <span class="o">--</span><span class="n">device</span> <span class="n">cpu</span>
+</pre></div>
+</div>
+</section>
+<section id="qt-qpa-plugin-could-not-load-the-qt-platform-plugin">
+<h3><code class="docutils literal notranslate"><span class="pre">&quot;qt.qpa.plugin:</span> <span class="pre">Could</span> <span class="pre">not</span> <span class="pre">load</span> <span class="pre">the</span> <span class="pre">Qt</span> <span class="pre">platform</span> <span class="pre">plugin...&quot;</span></code><a class="headerlink" href="#qt-qpa-plugin-could-not-load-the-qt-platform-plugin" title="Link to this heading">¶</a></h3>
+<p>The Slice prediction code utilizes the <code class="docutils literal notranslate"><span class="pre">opencv-python</span></code> package, which relies on a specific version of the Qt library. In some cases, this version may conflict with other Qt installations already present on your system, resulting in the following error:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">QObject</span><span class="p">::</span><span class="n">moveToThread</span><span class="p">:</span> <span class="n">Current</span> <span class="n">thread</span> <span class="p">(</span><span class="mh">0x55fff86fe4f0</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">the</span> <span class="nb">object</span><span class="s1">&#39;s thread (0x55fff91b1b70).</span>
+<span class="n">Cannot</span> <span class="n">move</span> <span class="n">to</span> <span class="n">target</span> <span class="n">thread</span> <span class="p">(</span><span class="mh">0x55fff86fe4f0</span><span class="p">)</span>
+
+<span class="n">qt</span><span class="o">.</span><span class="n">qpa</span><span class="o">.</span><span class="n">plugin</span><span class="p">:</span> <span class="n">Could</span> <span class="ow">not</span> <span class="n">load</span> <span class="n">the</span> <span class="n">Qt</span> <span class="n">platform</span> <span class="n">plugin</span> <span class="s2">&quot;xcb&quot;</span> <span class="ow">in</span> <span class="s2">&quot;/home/ubuntu/miniconda3/lib/python3.12/site-packages/cv2/qt/plugins&quot;</span> <span class="n">even</span> <span class="n">though</span> <span class="n">it</span> <span class="n">was</span> <span class="n">found</span><span class="o">.</span>
+<span class="n">This</span> <span class="n">application</span> <span class="n">failed</span> <span class="n">to</span> <span class="n">start</span> <span class="n">because</span> <span class="n">no</span> <span class="n">Qt</span> <span class="n">platform</span> <span class="n">plugin</span> <span class="n">could</span> <span class="n">be</span> <span class="n">initialized</span><span class="o">.</span> <span class="n">Reinstalling</span> <span class="n">the</span> <span class="n">application</span> <span class="n">may</span> <span class="n">fix</span> <span class="n">this</span> <span class="n">problem</span><span class="o">.</span>
+
+<span class="n">Available</span> <span class="n">platform</span> <span class="n">plugins</span> <span class="n">are</span><span class="p">:</span> <span class="n">xcb</span><span class="p">,</span> <span class="n">eglfs</span><span class="p">,</span> <span class="n">minimal</span><span class="p">,</span> <span class="n">minimalegl</span><span class="p">,</span> <span class="n">offscreen</span><span class="p">,</span> <span class="n">vnc</span><span class="p">,</span> <span class="n">webgl</span><span class="o">.</span>
+
+<span class="n">Aborted</span> <span class="p">(</span><span class="n">core</span> <span class="n">dumped</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To prevent such conflicts, we recommend setting up and using a virtual environment for running the Slice prediction code. This approach isolates the required dependencies, including the necessary Qt version, from your system’s global environment.
+Please refer to the <a class="reference internal" href="install.html#install"><span class="std std-ref">Install</span></a> section for instructions on creating and activating a virtual environment.</p>
+</section>
+<section id="multi-processes-warning-may-exceed-file-descriptors-limits-runtimeerror-received-0-items-of-ancdata">
+<span id="troubleshooting-file-descriptors"></span><h3>Multi-processes warning “may exceed file descriptors limits” (<code class="docutils literal notranslate"><span class="pre">&quot;RuntimeError:</span> <span class="pre">received</span> <span class="pre">0</span> <span class="pre">items</span> <span class="pre">of</span> <span class="pre">ancdata&quot;</span></code>)<a class="headerlink" href="#multi-processes-warning-may-exceed-file-descriptors-limits-runtimeerror-received-0-items-of-ancdata" title="Link to this heading">¶</a></h3>
+<p>During the <code class="docutils literal notranslate"><span class="pre">kpi</span> <span class="pre">preprocess</span></code> or <code class="docutils literal notranslate"><span class="pre">surface</span> <span class="pre">preprocess</span></code> steps, MLSimKit uses Python’s <code class="docutils literal notranslate"><span class="pre">multiprocessing</span></code> module to parallelize the processing of mesh files across multiple CPU cores. However, this parallelization can sometimes exceed the system’s file descriptor limit, leading to the following error:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>RuntimeError: received 0 items of ancdata
+</pre></div>
+</div>
+<p>This error occurs when the number of open file descriptors (used for inter-process communication) exceeds the system’s limit. The
+likelihood of encountering this issue increases when processing a higher number of simulation runs,</p>
+<p>You will encounter a warning in the logs when running the <cite>mlsimkit-learn kpi preprocess</cite> or <cite>mlsimkit-learn surface preprocess</cite> commands with multiple processes:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[WARNING] Using multi-processes (2) for preprocessing data. May exceed file descriptor limits, use &#39;ulimit -n&#39;. See Troubleshooting in the user guide.
+</pre></div>
+</div>
+<p><strong>Workaround: Increase your File Descriptor Limit</strong></p>
+<p>If you prefer to continue preprocessing with multiple CPUs, increase the file descriptor limit on your system by running <code class="docutils literal notranslate"><span class="pre">ulimit</span> <span class="pre">-n</span> <span class="pre">&lt;higher_value&gt;</span></code> before running <code class="docutils literal notranslate"><span class="pre">mlsimkit-learn</span></code>. However, this may require administrative privileges and may not be a viable option in some environments.</p>
+<p><strong>Workaround: Use a Single Process</strong></p>
+<p>To avoid this issue enitrely, use a single process for preprocessing by setting <code class="docutils literal notranslate"><span class="pre">--num-processes</span> <span class="pre">1</span></code>:</p>
+<p>KPI command</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>mlsimkit-learn --config training.yaml --log.prefix-dir logs/preprocess kpi preprocess --num-processes 1
+</pre></div>
+</div>
+<p>Surface command</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>mlsimkit-learn --config training.yaml --log.prefix-dir logs/preprocess surface preprocess --num-processes 1
+</pre></div>
+</div>
+<p>This workaround eliminates the need for inter-process communication and shared memory segments, preventing the file descriptor limit from being exceeded.</p>
+</section>
+<section id="surface-view-screenshots-error-pyvista-will-likely-segfault-when-rendering-bad-x-server-connection">
+<span id="troubleshooting-xvfb"></span><h3>Surface view screenshots error “PyVista will likely segfault when rendering” (<code class="docutils literal notranslate"><span class="pre">&quot;bad</span> <span class="pre">X</span> <span class="pre">server</span> <span class="pre">connection&quot;</span></code>)<a class="headerlink" href="#surface-view-screenshots-error-pyvista-will-likely-segfault-when-rendering-bad-x-server-connection" title="Link to this heading">¶</a></h3>
+<p>Outputting screenshots of the surface prediction data requires 3D rendering. On systems without a display, you will see an error like this:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>mlsimkit-learn<span class="w"> </span>--config<span class="w"> </span>training.yaml<span class="w"> </span>surface<span class="w"> </span>view<span class="w"> </span>--no-gui
+/usr/local/lib/python3.10/dist-packages/pyvista/plotting/plotter.py:151:<span class="w"> </span>UserWarning:
+This<span class="w"> </span>system<span class="w"> </span>does<span class="w"> </span>not<span class="w"> </span>appear<span class="w"> </span>to<span class="w"> </span>be<span class="w"> </span>running<span class="w"> </span>an<span class="w"> </span>xserver.
+PyVista<span class="w"> </span>will<span class="w"> </span>likely<span class="w"> </span>segfault<span class="w"> </span>when<span class="w"> </span>rendering.
+
+Try<span class="w"> </span>starting<span class="w"> </span>a<span class="w"> </span>virtual<span class="w"> </span>frame<span class="w"> </span>buffer<span class="w"> </span>with<span class="w"> </span>xvfb,<span class="w"> </span>or<span class="w"> </span>using
+<span class="w">  </span><span class="sb">``</span>pyvista.start_xvfb<span class="o">()</span><span class="sb">``</span>
+
+<span class="w">  </span>warnings.warn<span class="o">(</span>
+<span class="m">2024</span>-06-03<span class="w"> </span><span class="m">00</span>:15:35.535<span class="w"> </span><span class="o">(</span><span class="w">   </span><span class="m">1</span>.463s<span class="o">)</span><span class="w"> </span><span class="o">[</span><span class="w">    </span>7FE7D7B70480<span class="o">]</span>vtkXOpenGLRenderWindow.:456<span class="w">    </span>ERR<span class="p">|</span><span class="w"> </span>vtkXOpenGLRenderWindow<span class="w"> </span><span class="o">(</span>0x561067609970<span class="o">)</span>:<span class="w"> </span>bad<span class="w"> </span>X<span class="w"> </span>server<span class="w"> </span>connection.<span class="w"> </span><span class="nv">DISPLAY</span><span class="o">=</span>
+<span class="o">[</span>ERROR<span class="o">]</span><span class="w"> </span>bad<span class="w"> </span>X<span class="w"> </span>server<span class="w"> </span>connection.<span class="w"> </span><span class="nv">DISPLAY</span><span class="o">=</span>
+Aborted<span class="w"> </span><span class="o">(</span>core<span class="w"> </span>dumped<span class="o">)</span>
+</pre></div>
+</div>
+<p><strong>Linux/Ubuntu:</strong></p>
+<p>We support the package Xvfb (X virtual framebuffer) on Linux/Ubuntu. Install this package:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">xvfb</span>
+</pre></div>
+</div>
+<p>Now start Xvfb when starting the viewer to enable rendering on remote machines:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mlsimkit</span><span class="o">-</span><span class="n">learn</span> <span class="n">surface</span> <span class="n">view</span> <span class="o">--</span><span class="n">start</span><span class="o">-</span><span class="n">xvfb</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>See the <a class="reference external" href="https://docs.pyvista.org/version/stable/getting-started/installation.html#running-on-remote-servers">PyVista documentation ‘Running on Remote Servers’</a> for more details.</p>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><!--
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/mlsimkit-sidebar.png" alt="MLSimKit logo" />
+  </a>
+</p>
+-->
+
+<h4><a href="../index.html">AI Surrogate Models in Engineering on AWS</a></h4>
+<p>
+  Tools to develop and use ML predictive models as surrogates for physics-based simulations.
+</p>
+
+<h4>Useful Links</h4>
+<ul>
+  <li><a href="install.html">Install</a></li>
+  <li><a href="quickstart-kpi.html">Quickstart KPI</a></li>
+  <li><a href="quickstart-slices.html">Quickstart Slices</a></li>
+  <li><a href="quickstart-surface.html">Quickstart Surfaces</a></li>
+  <li><a href="#">Troubleshooting</a></li>
+</ul>
+
+<div id="native-ribbon">
+</div>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart-kpi.html">Quickstart with KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart-surface.html">Quickstart with Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart-slices.html">Quickstart with Slice Prediction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#check-torch-cuda-and-mlsimkit-versions">Check Torch, CUDA, and MLSimKit Versions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#check-nvidia-driver-version">Check NVIDIA Driver Version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#common-issues">Common Issues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gpu-out-of-memory-oom-issues">GPU out-of-memory (OOM) issues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#could-not-load-library-libcudnn-cnn-train-so-on-deep-learning-ami"><code class="docutils literal notranslate"><span class="pre">&quot;Could</span> <span class="pre">not</span> <span class="pre">load</span> <span class="pre">library</span> <span class="pre">libcudnn_cnn_train.so&quot;</span></code> on Deep Learning AMI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mlsimkit-accelerate-train-command-hangs-or-timeouts-on-multi-gpu-instances"><code class="docutils literal notranslate"><span class="pre">mlsimkit-accelerate</span></code> train command hangs or timeouts on multi-GPU instances</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cannot-convert-a-mps-tensor-to-float64-dtype-or-fp16-mixed-precision-requires-a-gpu-not-mps-on-macos"><code class="docutils literal notranslate"><span class="pre">&quot;Cannot</span> <span class="pre">convert</span> <span class="pre">a</span> <span class="pre">MPS</span> <span class="pre">Tensor</span> <span class="pre">to</span> <span class="pre">float64</span> <span class="pre">dtype...&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;fp16</span> <span class="pre">mixed</span> <span class="pre">precision</span> <span class="pre">requires</span> <span class="pre">a</span> <span class="pre">GPU</span> <span class="pre">(not</span> <span class="pre">'mps')&quot;</span></code> on MacOS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qt-qpa-plugin-could-not-load-the-qt-platform-plugin"><code class="docutils literal notranslate"><span class="pre">&quot;qt.qpa.plugin:</span> <span class="pre">Could</span> <span class="pre">not</span> <span class="pre">load</span> <span class="pre">the</span> <span class="pre">Qt</span> <span class="pre">platform</span> <span class="pre">plugin...&quot;</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multi-processes-warning-may-exceed-file-descriptors-limits-runtimeerror-received-0-items-of-ancdata">Multi-processes warning “may exceed file descriptors limits” (<code class="docutils literal notranslate"><span class="pre">&quot;RuntimeError:</span> <span class="pre">received</span> <span class="pre">0</span> <span class="pre">items</span> <span class="pre">of</span> <span class="pre">ancdata&quot;</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#surface-view-screenshots-error-pyvista-will-likely-segfault-when-rendering-bad-x-server-connection">Surface view screenshots error “PyVista will likely segfault when rendering” (<code class="docutils literal notranslate"><span class="pre">&quot;bad</span> <span class="pre">X</span> <span class="pre">server</span> <span class="pre">connection&quot;</span></code>)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-kpi-windsor.html">KPI Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-surface-ahmed.html">Surface Variable Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-slices-windsor.html">Slice Prediction Tutorial</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/ahmed.html">AhmedML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/windsor.html">WindsorML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/drivaer.html">DrivAerML Dataset</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user-guide-kpi.html">Model User Guide – KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide-surface.html">Model User Guide – Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide-slice.html">Model User Guide – Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook-guide.html">Using the MLSimKit SDK Interactively (Notebooks, IPython)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mlflow-guide.html">Tracking Experiments and Results with MLFLow</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/guide.html">Code Structure and Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/learn.html">Learning Module (<code class="docutils literal notranslate"><span class="pre">mlsimkit.learn</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/cli-toolkit.html">Creating Custom CLI Commands</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/api.html">MLSimKit SDK API</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="quickstart-slices.html" title="previous chapter">Quickstart with Slice Prediction</a></li>
+      <li>Next: <a href="../tutorials/tutorial-kpi-windsor.html" title="next chapter">KPI Prediction Tutorial</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;Copyright 2025 Amazon.com, Inc. or its affiliates. All Rights Reserved..
+      
+      |
+      <a href="../_sources/user/troubleshooting.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,6 @@
+﻿mlsimkit.common.cli.program
+===========================
+
+.. currentmodule:: mlsimkit.common.cli
+
+.. autofunction:: program

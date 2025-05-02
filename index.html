@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Welcome to AI Surrogate Models in Engineering on AWS (MLSimKit) 0.1.dev1 &#8212; AI Surrogate Models for Engineering on AWS 0.1.dev1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=9de7e953" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=06097142" />
+    <script src="_static/documentation_options.js?v=6aee1ebc"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Install" href="user/install.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="welcome-to-ai-surrogate-models-in-engineering-on-aws-mlsimkit-release">
+<span id="welcome"></span><h1>Welcome to AI Surrogate Models in Engineering on AWS (MLSimKit) 0.1.dev1<a class="headerlink" href="#welcome-to-ai-surrogate-models-in-engineering-on-aws-mlsimkit-release" title="Link to this heading">¶</a></h1>
+<p>AI Surrogate Models in Engineering on AWS (project name: ML for Simulation Toolkit or MLSimKit) provides engineers and designers a starting point for near real-time predictions of physics-based simulations using ML models. It enables engineers to quickly iterate on their designs and see immediate results rather than having to wait hours for a full physics-based simulation to run.</p>
+<p>The toolkit is a collection of commands and SDKs that insert into the traditional iterative design-simulate workflow (see diagram below), where it can take days to run a single cycle. Instead, the “train-design-predict” workflow becomes an additional choice to train models on simulated ground truth and then use the newly trained models for predictions on new designs in minutes.</p>
+<a class="reference internal image-reference" href="_images/mlsimkit-workflow-diagram.png"><img alt="Figure 1. Traditional vs. MLSimKit-based workflow diagram" src="_images/mlsimkit-workflow-diagram.png" style="width: 800px;" />
+</a>
+<section id="get-started">
+<h2>Get Started<a class="headerlink" href="#get-started" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user/install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user/quickstart-kpi.html">Quickstart with KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user/quickstart-surface.html">Quickstart with Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user/quickstart-slices.html">Quickstart with Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+</div>
+</section>
+<section id="tutorials">
+<h2>Tutorials<a class="headerlink" href="#tutorials" title="Link to this heading">¶</a></h2>
+<p>Explore tutorials that dive deeper into specific use cases for training on larger datasets.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/tutorial-kpi-windsor.html">KPI Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/tutorial-surface-ahmed.html">Surface Variable Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/tutorial-slices-windsor.html">Slice Prediction Tutorial</a></li>
+</ul>
+</div>
+</section>
+<section id="external-datasets">
+<h2>External Datasets<a class="headerlink" href="#external-datasets" title="Link to this heading">¶</a></h2>
+<p>Learn about external publicly available datasets that are supported by the MLSimKit tutorials.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="datasets/ahmed.html">AhmedML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets/windsor.html">WindsorML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets/drivaer.html">DrivAerML Dataset</a></li>
+</ul>
+</div>
+</section>
+<section id="user-guides">
+<h2>User Guides<a class="headerlink" href="#user-guides" title="Link to this heading">¶</a></h2>
+<p>Discover comprehensive user guides to configure and tune model parameters for training on your custom datasets. Learn how to use the MLSimKit SDK to build your own applications and setup MLFlow for tracking results with a UI dashboard.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user/user-guide-kpi.html">Model User Guide – KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user/user-guide-surface.html">Model User Guide – Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user/user-guide-slice.html">Model User Guide – Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user/notebook-guide.html">Using the MLSimKit SDK Interactively (Notebooks, IPython)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user/mlflow-guide.html">Tracking Experiments and Results with MLFLow</a></li>
+</ul>
+</div>
+</section>
+<section id="developer-guides">
+<h2>Developer Guides<a class="headerlink" href="#developer-guides" title="Link to this heading">¶</a></h2>
+<p>Customize MLSimKit by learning how the code is structured and the various modules to modify for your own custom use cases.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev/guide.html">Code Structure and Concepts</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev/guide.html#code-structure">Code Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/guide.html#schemas-for-cli-and-configuration">Schemas for CLI and Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/guide.html#manifest-files-for-interfaces-with-data-sets-and-results">Manifest Files for Interfaces with Data Sets and Results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/guide.html#datasets-in-code">Datasets in Code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/guide.html#project-context-and-command-chaining">Project Context and Command Chaining</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/guide.html#programmatic-dataset-interaction">Programmatic Dataset Interaction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/guide.html#custom-model-saving-and-loading">Custom Model Saving and Loading</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dev/learn.html">Learning Module (<code class="docutils literal notranslate"><span class="pre">mlsimkit.learn</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev/learn.html#use-cases">Use Cases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/learn.html#training-flow">Training Flow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/learn.html#programmatically-training-and-predicting">Programmatically Training and Predicting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/learn.html#mlsimkit-learn-common"><code class="docutils literal notranslate"><span class="pre">mlsimkit.learn.common</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/learn.html#mlsimkit-learn-kpi"><code class="docutils literal notranslate"><span class="pre">mlsimkit.learn.kpi</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/learn.html#mlsimkit-learn-slices"><code class="docutils literal notranslate"><span class="pre">mlsimkit.learn.slices</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/learn.html#mlsimkit-learn-surface"><code class="docutils literal notranslate"><span class="pre">mlsimkit.learn.surface</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/learn.html#mlsimkit-learn-manifest"><code class="docutils literal notranslate"><span class="pre">mlsimkit.learn.manifest</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/learn.html#mlsimkit-learn-networks"><code class="docutils literal notranslate"><span class="pre">mlsimkit.learn.networks</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dev/cli-toolkit.html">Creating Custom CLI Commands</a></li>
+</ul>
+</div>
+</section>
+<section id="api-reference">
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev/api.html">MLSimKit SDK API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev/api/cli/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlsimkit.common.cli</span></code> – CLI Framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/api/learn/common/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlsimkit.learn.common</span></code> – MLSimKit Learn Common</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/api/learn/manifest/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlsimkit.learn.manifest</span></code> – MLSimKit Learn Manifest</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><!--
+<p class="logo">
+  <a href="#">
+    <img class="logo" src="_static/mlsimkit-sidebar.png" alt="MLSimKit logo" />
+  </a>
+</p>
+-->
+
+<h4><a href="#">AI Surrogate Models in Engineering on AWS</a></h4>
+<p>
+  Tools to develop and use ML predictive models as surrogates for physics-based simulations.
+</p>
+
+<h4>Useful Links</h4>
+<ul>
+  <li><a href="user/install.html">Install</a></li>
+  <li><a href="user/quickstart-kpi.html">Quickstart KPI</a></li>
+  <li><a href="user/quickstart-slices.html">Quickstart Slices</a></li>
+  <li><a href="user/quickstart-surface.html">Quickstart Surfaces</a></li>
+  <li><a href="user/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+
+<div id="native-ribbon">
+</div><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="user/install.html" title="next chapter">Install</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;Copyright 2025 Amazon.com, Inc. or its affiliates. All Rights Reserved..
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

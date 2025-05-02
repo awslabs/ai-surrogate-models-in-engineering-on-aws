@@ -1,0 +1,64 @@
+﻿mlsimkit.common.cli.BaseGroup
+=============================
+
+.. currentmodule:: mlsimkit.common.cli
+
+.. autoclass:: BaseGroup
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~BaseGroup.__init__
+      ~BaseGroup.add_command
+      ~BaseGroup.collect_usage_pieces
+      ~BaseGroup.command
+      ~BaseGroup.format_commands
+      ~BaseGroup.format_epilog
+      ~BaseGroup.format_help
+      ~BaseGroup.format_help_text
+      ~BaseGroup.format_options
+      ~BaseGroup.format_usage
+      ~BaseGroup.get_command
+      ~BaseGroup.get_help
+      ~BaseGroup.get_help_option
+      ~BaseGroup.get_help_option_names
+      ~BaseGroup.get_params
+      ~BaseGroup.get_short_help_str
+      ~BaseGroup.get_usage
+      ~BaseGroup.group
+      ~BaseGroup.invoke
+      ~BaseGroup.list_commands
+      ~BaseGroup.main
+      ~BaseGroup.make_context
+      ~BaseGroup.make_parser
+      ~BaseGroup.parse_args
+      ~BaseGroup.resolve_command
+      ~BaseGroup.result_callback
+      ~BaseGroup.shell_complete
+      ~BaseGroup.to_info_dict
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~BaseGroup.allow_extra_args
+      ~BaseGroup.allow_interspersed_args
+      ~BaseGroup.command_class
+      ~BaseGroup.group_class
+      ~BaseGroup.ignore_unknown_options
+      ~BaseGroup.commands
+      ~BaseGroup.callback
+      ~BaseGroup.params
+      ~BaseGroup.name
+      ~BaseGroup.context_settings
+   
+   

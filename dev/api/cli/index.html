@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>mlsimkit.common.cli – CLI Framework &#8212; AI Surrogate Models for Engineering on AWS 0.1.dev1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/basic.css?v=9de7e953" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=06097142" />
+    <script src="../../../_static/documentation_options.js?v=6aee1ebc"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="mlsimkit.common.cli.program" href="functions/mlsimkit.common.cli.program.html" />
+    <link rel="prev" title="MLSimKit SDK API" href="../../api.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-mlsimkit.common.cli">
+<span id="mlsimkit-common-cli-cli-framework"></span><span id="api-cli"></span><h1><a class="reference internal" href="#module-mlsimkit.common.cli" title="mlsimkit.common.cli"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlsimkit.common.cli</span></code></a> – CLI Framework<a class="headerlink" href="#module-mlsimkit.common.cli" title="Link to this heading">¶</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">mlsimkit.common.cli</span></code> module offers a convenient way to create rich command-line interfaces (CLIs) for Python applications with automated options generation and YAML configuration loading. It leverages the power of the <a class="reference external" href="https://click.palletsprojects.com/">Click</a> library and seamlessly integrates with <a class="reference external" href="https://pydantic-docs.helpmanual.io/">Pydantic</a> models, allowing developers to define and validate command-line options based on their data models.</p>
+<p>The key components of this framework include:</p>
+<ul class="simple">
+<li><p>Command decorators for creating entry points and grouping commands</p></li>
+<li><p>Utilities for converting Pydantic models into Click options</p></li>
+<li><p>Click-compatible parameter types for handling various data types</p></li>
+<li><p>Opinionated custom Click classes for top-level program, commands and sub-command behaviors.</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MySettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">level</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="nb">bool</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">click</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">mlsimkit</span>
+
+<span class="nd">@mlsimkit</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">program</span><span class="p">(</span><span class="s2">&quot;tool&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span> <span class="n">use_config_file</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nd">@mlsimkit</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">MySettings</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;settings&#39;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&quot;--normal-option&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cli</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n">click</span><span class="o">.</span><span class="n">Context</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">MySettings</span><span class="p">):</span>
+    <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">cli</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>%<span class="w"> </span>python3<span class="w"> </span>mycli.py<span class="w"> </span>--help
+Usage:<span class="w"> </span>mycli.py<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>COMMAND<span class="w"> </span><span class="o">[</span>ARGS<span class="o">]</span>...
+
+Options:
+<span class="w">  </span>--version<span class="w">             </span>Show<span class="w"> </span>the<span class="w"> </span>version<span class="w"> </span>and<span class="w"> </span>exit.
+<span class="w">  </span>--level<span class="w"> </span>INTEGER<span class="w">       </span><span class="o">[</span>required<span class="o">]</span>
+<span class="w">  </span>--mode<span class="w"> </span>/<span class="w"> </span>--no-mode<span class="w">    </span><span class="o">[</span>required<span class="o">]</span>
+<span class="w">  </span>--normal-option<span class="w"> </span>TEXT
+<span class="w">  </span>--help<span class="w">                </span>Show<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>and<span class="w"> </span>exit.
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="functions/mlsimkit.common.cli.options.html#mlsimkit.common.cli.options" title="mlsimkit.common.cli.options"><code class="xref py py-func docutils literal notranslate"><span class="pre">options()</span></code></a> for more API usage examples or follow the <a class="reference internal" href="../../cli-toolkit.html#quickstart-cli-framework"><span class="std std-ref">quickstart user guide</span></a>.</p>
+<section id="command-decorators">
+<h2>Command Decorators<a class="headerlink" href="#command-decorators" title="Link to this heading">¶</a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="functions/mlsimkit.common.cli.program.html#mlsimkit.common.cli.program" title="mlsimkit.common.cli.program"><code class="xref py py-obj docutils literal notranslate"><span class="pre">program</span></code></a></p></td>
+<td><p>Decorator to turn a function into a program.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="functions/mlsimkit.common.cli.group.html#mlsimkit.common.cli.group" title="mlsimkit.common.cli.group"><code class="xref py py-obj docutils literal notranslate"><span class="pre">group</span></code></a></p></td>
+<td><p>A parent command for grouping of sub-commands.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="functions/mlsimkit.common.cli.options.html#mlsimkit.common.cli.options" title="mlsimkit.common.cli.options"><code class="xref py py-obj docutils literal notranslate"><span class="pre">options</span></code></a></p></td>
+<td><p>Decorator to define Click command options using Pydantic schemas.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="functions/mlsimkit.common.cli.options_from_schema.html#mlsimkit.common.cli.options_from_schema" title="mlsimkit.common.cli.options_from_schema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">options_from_schema</span></code></a></p></td>
+<td><p>Decorator to generate Click options for all fields in a Pydantic model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="functions/mlsimkit.common.cli.options_from_schema_shorthand.html#mlsimkit.common.cli.options_from_schema_shorthand" title="mlsimkit.common.cli.options_from_schema_shorthand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">options_from_schema_shorthand</span></code></a></p></td>
+<td><p>Decorator to generate a Click option from a Pydantic model using shorthand notation.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="option-types">
+<h2>Option Types<a class="headerlink" href="#option-types" title="Link to this heading">¶</a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="parameter_types/mlsimkit.common.cli.NamedEnum.html#mlsimkit.common.cli.NamedEnum" title="mlsimkit.common.cli.NamedEnum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NamedEnum</span></code></a></p></td>
+<td><p>Enum that constructs members based on string names.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="parameter_types/mlsimkit.common.cli.ListParamType.html#mlsimkit.common.cli.ListParamType" title="mlsimkit.common.cli.ListParamType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ListParamType</span></code></a></p></td>
+<td><p>A Click parameter that parses a delimited list of values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="parameter_types/mlsimkit.common.cli.ShorthandParamType.html#mlsimkit.common.cli.ShorthandParamType" title="mlsimkit.common.cli.ShorthandParamType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ShorthandParamType</span></code></a></p></td>
+<td><p>Click Parameter type for a Pydantic model that accepts shorthand notation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="parameter_types/mlsimkit.common.cli.ResourcePath.html#mlsimkit.common.cli.ResourcePath" title="mlsimkit.common.cli.ResourcePath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ResourcePath</span></code></a></p></td>
+<td><p>A Click option type that resolves paths from the provided search paths, including paths from importlib.resources.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="command-classes">
+<h2>Command Classes<a class="headerlink" href="#command-classes" title="Link to this heading">¶</a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="classes/mlsimkit.common.cli.BaseCommand.html#mlsimkit.common.cli.BaseCommand" title="mlsimkit.common.cli.BaseCommand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseCommand</span></code></a></p></td>
+<td><p>A Click command that handles instantiating Pydantic models from flattened CLI params.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="classes/mlsimkit.common.cli.BaseGroup.html#mlsimkit.common.cli.BaseGroup" title="mlsimkit.common.cli.BaseGroup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseGroup</span></code></a></p></td>
+<td><p>A Click group that handles instantiating Pydantic models from flattened CLI params.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><!--
+<p class="logo">
+  <a href="../../../index.html">
+    <img class="logo" src="../../../_static/mlsimkit-sidebar.png" alt="MLSimKit logo" />
+  </a>
+</p>
+-->
+
+<h4><a href="../../../index.html">AI Surrogate Models in Engineering on AWS</a></h4>
+<p>
+  Tools to develop and use ML predictive models as surrogates for physics-based simulations.
+</p>
+
+<h4>Useful Links</h4>
+<ul>
+  <li><a href="../../../user/install.html">Install</a></li>
+  <li><a href="../../../user/quickstart-kpi.html">Quickstart KPI</a></li>
+  <li><a href="../../../user/quickstart-slices.html">Quickstart Slices</a></li>
+  <li><a href="../../../user/quickstart-surface.html">Quickstart Surfaces</a></li>
+  <li><a href="../../../user/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+
+<div id="native-ribbon">
+</div>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user/install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user/quickstart-kpi.html">Quickstart with KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user/quickstart-surface.html">Quickstart with Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user/quickstart-slices.html">Quickstart with Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/tutorial-kpi-windsor.html">KPI Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/tutorial-surface-ahmed.html">Surface Variable Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/tutorial-slices-windsor.html">Slice Prediction Tutorial</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasets/ahmed.html">AhmedML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasets/windsor.html">WindsorML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasets/drivaer.html">DrivAerML Dataset</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user/user-guide-kpi.html">Model User Guide – KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user/user-guide-surface.html">Model User Guide – Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user/user-guide-slice.html">Model User Guide – Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user/notebook-guide.html">Using the MLSimKit SDK Interactively (Notebooks, IPython)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../user/mlflow-guide.html">Tracking Experiments and Results with MLFLow</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide.html">Code Structure and Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../learn.html">Learning Module (<code class="docutils literal notranslate"><span class="pre">mlsimkit.learn</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cli-toolkit.html">Creating Custom CLI Commands</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../api.html">MLSimKit SDK API</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlsimkit.common.cli</span></code> – CLI Framework</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#command-decorators">Command Decorators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#option-types">Option Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#command-classes">Command Classes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../learn/common/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlsimkit.learn.common</span></code> – MLSimKit Learn Common</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../learn/manifest/index.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mlsimkit.learn.manifest</span></code> – MLSimKit Learn Manifest</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../api.html">MLSimKit SDK API</a><ul>
+      <li>Previous: <a href="../../api.html" title="previous chapter">MLSimKit SDK API</a></li>
+      <li>Next: <a href="functions/mlsimkit.common.cli.program.html" title="next chapter">mlsimkit.common.cli.program</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;Copyright 2025 Amazon.com, Inc. or its affiliates. All Rights Reserved..
+      
+      |
+      <a href="../../../_sources/dev/api/cli/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

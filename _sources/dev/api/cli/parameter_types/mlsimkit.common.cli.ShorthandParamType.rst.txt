@@ -1,0 +1,38 @@
+﻿mlsimkit.common.cli.ShorthandParamType
+======================================
+
+.. currentmodule:: mlsimkit.common.cli
+
+.. autoclass:: ShorthandParamType
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ShorthandParamType.__init__
+      ~ShorthandParamType.convert
+      ~ShorthandParamType.fail
+      ~ShorthandParamType.get_metavar
+      ~ShorthandParamType.get_missing_message
+      ~ShorthandParamType.shell_complete
+      ~ShorthandParamType.split_envvar_value
+      ~ShorthandParamType.to_info_dict
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ShorthandParamType.arity
+      ~ShorthandParamType.envvar_list_splitter
+      ~ShorthandParamType.is_composite
+      ~ShorthandParamType.name
+   
+   

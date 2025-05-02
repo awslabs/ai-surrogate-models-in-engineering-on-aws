@@ -1,0 +1,6 @@
+﻿mlsimkit.common.cli.group
+=========================
+
+.. currentmodule:: mlsimkit.common.cli
+
+.. autofunction:: group

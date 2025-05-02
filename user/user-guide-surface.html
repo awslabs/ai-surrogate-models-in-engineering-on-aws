@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Model User Guide – Surface Variable Prediction &#8212; AI Surrogate Models for Engineering on AWS 0.1.dev1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=9de7e953" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=06097142" />
+    <script src="../_static/documentation_options.js?v=6aee1ebc"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Model User Guide – Slice Prediction" href="user-guide-slice.html" />
+    <link rel="prev" title="Model User Guide – KPI Prediction" href="user-guide-kpi.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="model-user-guide-surface-variable-prediction">
+<span id="user-guide-surface"></span><h1>Model User Guide – Surface Variable Prediction<a class="headerlink" href="#model-user-guide-surface-variable-prediction" title="Link to this heading">¶</a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
+<p>This surface variable prediction user guide dives deeper into the preprocessing, training, and predicting/inference steps and provides answers to some commonly asked questions.</p>
+</section>
+<section id="preprocessing">
+<span id="preprocess-surface"></span><h2>Preprocessing<a class="headerlink" href="#preprocessing" title="Link to this heading">¶</a></h2>
+<p>The preprocessing step converts the data files (e.g., <code class="docutils literal notranslate"><span class="pre">.vtu</span></code>) and/or geometry files (e.g., <code class="docutils literal notranslate"><span class="pre">.stl</span></code>) into data objects (<code class="docutils literal notranslate"><span class="pre">.pt</span></code>) that can be easily consumed by the PyTorch deep learning framework. Each run is corresponding to one <code class="docutils literal notranslate"><span class="pre">.pt</span></code> file.</p>
+<p>Certain runs may be used for model training, while others may be used for validation or testing. The portions of the data used for training, validation, and testing can be specified via <code class="docutils literal notranslate"><span class="pre">train-size</span></code>, <code class="docutils literal notranslate"><span class="pre">valid-size</span></code>, and <code class="docutils literal notranslate"><span class="pre">test-size</span></code> arguments. MLSimKit randomly assigns runs into appropriate datasets based on the desired proportions (the default is 60% for training, 20% for validation, and 20% for testing). The <code class="docutils literal notranslate"><span class="pre">random_seed</span></code> argument can be used to ensure reproducibility.</p>
+<p>Setting <code class="docutils literal notranslate"><span class="pre">save_cell_data</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code> allows the preprocessing step to keep the mesh cell data (which is not used in model training) in the preprocessed data. It increases the sizes of the preprocessed <code class="docutils literal notranslate"><span class="pre">.pt</span></code> files, but the output/predicted <code class="docutils literal notranslate"><span class="pre">.vtp</span></code> files (produced in the predicting/inference step) generally look better with cell data included.</p>
+<p>Preprocessing related arguments can be specified in the <code class="docutils literal notranslate"><span class="pre">preprocess</span></code> section of the config <code class="docutils literal notranslate"><span class="pre">.yaml</span></code> file or via CLI.</p>
+<section id="training">
+<span id="train-surface"></span><h3>Training<a class="headerlink" href="#training" title="Link to this heading">¶</a></h3>
+<p>The training step is where the machine learning model learns the relationship between geometries and surface variable values. It takes the preprocessed data as input and produces PyTorch model files as output. The model files can then be used to make predictions in the <a class="reference internal" href="#inference-surface"><span class="std std-ref">the predicting/inference step</span></a>.</p>
+<p>There are a number of hyper-parameters associated with model training (the full list can be seen by running <code class="docutils literal notranslate"><span class="pre">mlsimkit-learn</span> <span class="pre">surface</span> <span class="pre">train</span> <span class="pre">--help</span></code>). You probably don’t need to change the values of most of them, but a few hyper-parameters may be worth looking at, especially if your model is not performing well.</p>
+<dl class="simple">
+<dt>Here are some examples:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">epochs</span></code> determines the number of times the dataset is passed through the neural network during training. The larger the number of epochs, the longer the model training time. A value that is too small though may lead to models that have not fully learned.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">message_passing_steps</span></code> and <code class="docutils literal notranslate"><span class="pre">hidden_size</span></code> determine how complex the model gets. Larger numbers correspond to more complex/capable models which require more memories and take longer to train.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">learning_rate</span></code> controls how fast the model learns. With a larger learning rate,  the number of epochs can typically be smaller, as the neural network makes bigger updates with every data point. A learning rate that is too large, however, can lead to poor performing models.  Note that <code class="docutils literal notranslate"><span class="pre">learning_rate</span></code> is one of the optimizer settings. Thus, it should be added under <code class="docutils literal notranslate"><span class="pre">opt</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">strength_x</span></code>, <code class="docutils literal notranslate"><span class="pre">strength_y</span></code>, and <code class="docutils literal notranslate"><span class="pre">strength_z</span></code> control the weights associated with the three loss functions which measure the differences between predictions and ground truth at the aggregated level in X, Y, and Z directions. They exert similar effects to model training as regularization. When all of them are set to 0, the model only relies on one loss function that measures the difference between predictions and ground truth at the node level. Models trained this way don’t always produce accurate KPI predictions (KPIs are calculated from predicted surface variable values). When <code class="docutils literal notranslate"><span class="pre">strength_x</span></code>, <code class="docutils literal notranslate"><span class="pre">strength_y</span></code>, and <code class="docutils literal notranslate"><span class="pre">strength_z</span></code> are too large though, the model may not be able to capture the underlying patterns in the data effectively. When the predicted surface variables include scaler ones such as pressure, it is typically desirable to use non-zero values for <code class="docutils literal notranslate"><span class="pre">strength_x</span></code>, <code class="docutils literal notranslate"><span class="pre">strength_y</span></code>, and <code class="docutils literal notranslate"><span class="pre">strength_z</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">batch_size</span></code> determines the number of data points that are used together during one iteration of training. It can impact the model performance, training speed, and memory usage. Its ideal value is dependent on the specifics of the use case and dataset.</p></li>
+</ul>
+</dd>
+</dl>
+<p>All training related hyper-parameter values can be specified in the <code class="docutils literal notranslate"><span class="pre">train</span></code> section of the config <code class="docutils literal notranslate"><span class="pre">.yaml</span></code> file (an example below) or via CLI.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>train:
+<span class="w">    </span>epochs:<span class="w"> </span><span class="m">500</span>
+<span class="w">    </span>message_passing_steps:<span class="w"> </span><span class="m">15</span>
+<span class="w">    </span>hidden_size:<span class="w"> </span><span class="m">32</span>
+<span class="w">    </span>opt:
+<span class="w">      </span>learning_rate:<span class="w"> </span><span class="m">0</span>.003
+<span class="w">    </span>batch_size:<span class="w"> </span><span class="m">1</span>
+<span class="w">    </span>strength_x:<span class="w"> </span><span class="m">30</span>
+<span class="w">    </span>strength_y:<span class="w"> </span><span class="m">1</span>
+<span class="w">    </span>strength_z:<span class="w"> </span><span class="m">10</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If your meshes are fine and/or have large values for <code class="docutils literal notranslate"><span class="pre">message_passing_steps</span></code>, <code class="docutils literal notranslate"><span class="pre">hidden_size</span></code>, and <code class="docutils literal notranslate"><span class="pre">batch_size</span></code>, you may run into out-of-memory (OOM) issues. If that happens, you can reduce the number of nodes in your meshes, set smaller values for <code class="docutils literal notranslate"><span class="pre">message_passing_steps</span></code>, <code class="docutils literal notranslate"><span class="pre">hidden_size</span></code>, and <code class="docutils literal notranslate"><span class="pre">batch_size</span></code>, or use an instance with more GPU memories.</p>
+</div>
+<p>The training step produces a number of output files in the folder <code class="docutils literal notranslate"><span class="pre">&lt;output_directory&gt;/training_output/</span></code>. Among them, there are model checkpoints including <code class="docutils literal notranslate"><span class="pre">best_model.pt</span></code> which by default will be used in the predicting/inference step to make predictions. It is the model that has the lowest validation error.</p>
+<p>The model training loss plots (original scale: <code class="docutils literal notranslate"><span class="pre">model_loss.png</span></code>; log scale: <code class="docutils literal notranslate"><span class="pre">model_loss_log.png</span></code>) are typically useful to look at. Training losses and validation losses should be gradually decreasing until no longer decreasing. The gap between training losses and validation losses shouldn’t be too big. If it’s not the case, the model is likely not going to perform well, and hyper-parameter values and/or training data may need to be adjusted.</p>
+<a class="reference internal image-reference" href="../_images/ahmed-surface-loss-user-guide.png"><img alt="Figure 1. An example loss plot" src="../_images/ahmed-surface-loss-user-guide.png" style="width: 450px; height: 350px;" />
+</a>
+</section>
+<section id="predicting-inference">
+<span id="inference-surface"></span><h3>Predicting/inference<a class="headerlink" href="#predicting-inference" title="Link to this heading">¶</a></h3>
+<p>Once model training is complete, you can use the model to get predictions. The predicting/inference step takes the trained model and predict on the preprocessed data produced by the <a class="reference internal" href="#preprocess-surface"><span class="std std-ref">preprocessing step</span></a>. An <code class="docutils literal notranslate"><span class="pre">.vtp</span></code> file can be produced for each run containing the predicted surface variable values. If ground truth exists, the difference between ground truth and predictions can also be added to the output <code class="docutils literal notranslate"><span class="pre">.vtp</span></code> files. The metrics quantifying the difference will be calculated as well.</p>
+<p>Screenshots of the output <code class="docutils literal notranslate"><span class="pre">.vtp</span></code> files will be saved when <code class="docutils literal notranslate"><span class="pre">save_prediction_screenshots</span></code> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code> (it may not work on SageMaker though). Predicting/inference related arguments can be specified in the <code class="docutils literal notranslate"><span class="pre">predict</span></code> section of the config <code class="docutils literal notranslate"><span class="pre">.yaml</span></code> file or via CLI.</p>
+</section>
+<section id="visualizations">
+<span id="user-guide-surface-visualizations"></span><h3>Visualizations<a class="headerlink" href="#visualizations" title="Link to this heading">¶</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>All visualization rendering requires access to a display or a virtual display for remote machines. You may use Xvfb on remote Linux machines. See below.</p>
+</div>
+<section id="d-interactive-viewer">
+<h4>3D Interactive Viewer<a class="headerlink" href="#d-interactive-viewer" title="Link to this heading">¶</a></h4>
+<p>There is a simple viewer GUI provided for surface prediction. The viewer makes it easy to quickly visually compare the original (ground truth) input mesh vs. the predicted mesh across an entire dataset. The viewer uses the same config and output directories to locate the input and output files. The viewer is not intended to replace feature-rich applications like ParaView.</p>
+<p>By default, the training manifest will be displayed.</p>
+<p>Start the viewer on a machine with a display by running:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-learn<span class="w"> </span>--output-dir<span class="w"> </span>/path/to/outputs<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--config<span class="w"> </span>/path/to/config<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>surface<span class="w"> </span>view
+</pre></div>
+</div>
+<img alt="../_images/quickstart-surface-viewer.gif" class="align-center" src="../_images/quickstart-surface-viewer.gif" />
+</section>
+<section id="screenshots-tool">
+<h4>Screenshots tool<a class="headerlink" href="#screenshots-tool" title="Link to this heading">¶</a></h4>
+<p>You may use the <code class="docutils literal notranslate"><span class="pre">surface</span> <span class="pre">view</span></code> tool without starting a GUI application for rendering screenshots. You still need access to display or virtual display. By default, the training manifest is used for screenshots:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-learn<span class="w"> </span>--output-dir<span class="w"> </span>/path/to/outputs<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--config<span class="w"> </span>/path/to/config<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>surface<span class="w"> </span>view<span class="w"> </span>--no-gui
+</pre></div>
+</div>
+</section>
+<section id="screenshots-during-training">
+<h4>Screenshots during training<a class="headerlink" href="#screenshots-during-training" title="Link to this heading">¶</a></h4>
+<p>It may be desirable to save screenshots automatically at the end of training. To enable screenshots during training, pass <code class="docutils literal notranslate"><span class="pre">--save-prediction-screenshots</span></code> to the training command. You still need access to a display:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-learn<span class="w"> </span>--output-dir<span class="w"> </span>quickstart/surface<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--config<span class="w"> </span>src/mlsimkit/conf/surface/sample.yaml<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>surface<span class="w"> </span>train<span class="w"> </span>--save-prediction-screenshots
+</pre></div>
+</div>
+</section>
+<section id="remote-screenshots-headless-linux">
+<h4>Remote screenshots (headless Linux)<a class="headerlink" href="#remote-screenshots-headless-linux" title="Link to this heading">¶</a></h4>
+<p>On a remote Linux machine without a display, you may use a virtual display to take screenshots.</p>
+<p>First install Xvfb for a virtual display:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">xvfb</span>
+</pre></div>
+</div>
+<p>Second, pass <code class="docutils literal notranslate"><span class="pre">--start-xvfb</span></code> during training or the view tool:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-learn<span class="w"> </span>...<span class="w"> </span>surface<span class="w"> </span>train<span class="w"> </span>--start-xvfb<span class="w"> </span>...
+mlsimkit-learn<span class="w"> </span>...<span class="w"> </span>surface<span class="w"> </span>view<span class="w"> </span>--start-xvfb<span class="w"> </span>...
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This virtual display can take screenshots but viewing will still require a GUI such as DCV. For more information about setting up DCV on your EC2 instance or remote machine please see the <cite>DCV AWS documentation &lt;https://docs.aws.amazon.com/dcv/latest/userguide/client.html&gt;</cite>.</p>
+</div>
+</section>
+<section id="custom-manifest-and-filtering">
+<h4>Custom manifest and filtering<a class="headerlink" href="#custom-manifest-and-filtering" title="Link to this heading">¶</a></h4>
+<p>You may change the mesh files that are rendered by specifying an input manifest file to the interactive viewer and screenshot tools:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-learn<span class="w"> </span>--output-dir<span class="w"> </span>/path/to/outputs<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--config<span class="w"> </span>/path/to/config<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>surface<span class="w"> </span>view<span class="w"> </span>--manifest<span class="w"> </span>/path/to/manifest
+</pre></div>
+</div>
+<p>Or pass the manifest lines as stdin using <code class="docutils literal notranslate"><span class="pre">--manifest</span> <span class="pre">-</span></code>. We can then easily use command-line tools to filter the manifest and display
+only runs we are interested in. For example, below, we include only runs 10* and 20*:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>cat<span class="w"> </span>/path/to/manifest<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;(run_10|run_20&quot;</span><span class="o">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>mlsimkit-learn<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--output-dir<span class="w"> </span>/path/to/outputs<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--config<span class="w"> </span>/path/to/config<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>surface<span class="w"> </span>view<span class="w"> </span>--manifest<span class="w"> </span>-
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><!--
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/mlsimkit-sidebar.png" alt="MLSimKit logo" />
+  </a>
+</p>
+-->
+
+<h4><a href="../index.html">AI Surrogate Models in Engineering on AWS</a></h4>
+<p>
+  Tools to develop and use ML predictive models as surrogates for physics-based simulations.
+</p>
+
+<h4>Useful Links</h4>
+<ul>
+  <li><a href="install.html">Install</a></li>
+  <li><a href="quickstart-kpi.html">Quickstart KPI</a></li>
+  <li><a href="quickstart-slices.html">Quickstart Slices</a></li>
+  <li><a href="quickstart-surface.html">Quickstart Surfaces</a></li>
+  <li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul>
+
+<div id="native-ribbon">
+</div>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart-kpi.html">Quickstart with KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart-surface.html">Quickstart with Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart-slices.html">Quickstart with Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-kpi-windsor.html">KPI Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-surface-ahmed.html">Surface Variable Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-slices-windsor.html">Slice Prediction Tutorial</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/ahmed.html">AhmedML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/windsor.html">WindsorML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/drivaer.html">DrivAerML Dataset</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="user-guide-kpi.html">Model User Guide – KPI Prediction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Model User Guide – Surface Variable Prediction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#preprocessing">Preprocessing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#training">Training</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#predicting-inference">Predicting/inference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#visualizations">Visualizations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide-slice.html">Model User Guide – Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebook-guide.html">Using the MLSimKit SDK Interactively (Notebooks, IPython)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mlflow-guide.html">Tracking Experiments and Results with MLFLow</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/guide.html">Code Structure and Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/learn.html">Learning Module (<code class="docutils literal notranslate"><span class="pre">mlsimkit.learn</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/cli-toolkit.html">Creating Custom CLI Commands</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/api.html">MLSimKit SDK API</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="user-guide-kpi.html" title="previous chapter">Model User Guide – KPI Prediction</a></li>
+      <li>Next: <a href="user-guide-slice.html" title="next chapter">Model User Guide – Slice Prediction</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;Copyright 2025 Amazon.com, Inc. or its affiliates. All Rights Reserved..
+      
+      |
+      <a href="../_sources/user/user-guide-surface.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

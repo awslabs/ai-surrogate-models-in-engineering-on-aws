@@ -1,0 +1,39 @@
+﻿mlsimkit.common.cli.ResourcePath
+================================
+
+.. currentmodule:: mlsimkit.common.cli
+
+.. autoclass:: ResourcePath
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ResourcePath.__init__
+      ~ResourcePath.coerce_path_result
+      ~ResourcePath.convert
+      ~ResourcePath.fail
+      ~ResourcePath.get_metavar
+      ~ResourcePath.get_missing_message
+      ~ResourcePath.shell_complete
+      ~ResourcePath.split_envvar_value
+      ~ResourcePath.to_info_dict
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ResourcePath.arity
+      ~ResourcePath.envvar_list_splitter
+      ~ResourcePath.is_composite
+      ~ResourcePath.name
+   
+   

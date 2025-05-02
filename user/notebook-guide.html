@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Using the MLSimKit SDK Interactively (Notebooks, IPython) &#8212; AI Surrogate Models for Engineering on AWS 0.1.dev1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=9de7e953" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=06097142" />
+    <script src="../_static/documentation_options.js?v=6aee1ebc"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tracking Experiments and Results with MLFLow" href="mlflow-guide.html" />
+    <link rel="prev" title="Model User Guide – Slice Prediction" href="user-guide-slice.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="using-the-mlsimkit-sdk-interactively-notebooks-ipython">
+<h1>Using the MLSimKit SDK Interactively (Notebooks, IPython)<a class="headerlink" href="#using-the-mlsimkit-sdk-interactively-notebooks-ipython" title="Link to this heading">¶</a></h1>
+<p>You may use MLSimKit programmatically, without the CLI as a Pythom module.</p>
+<p>To access your MLSimKit module from <code class="docutils literal notranslate"><span class="pre">ipython</span></code>, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>%<span class="w"> </span><span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+%<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>ipython
+%<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>IPython
+</pre></div>
+</div>
+<section id="running-the-surface-training-pipeline">
+<h2>Running the Surface Training Pipeline<a class="headerlink" href="#running-the-surface-training-pipeline" title="Link to this heading">¶</a></h2>
+<p>The example below runs the Surface model end-to-end on the sample dataset.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1"># Setup preprocessing using the sample dataset manifest</span>
+<span class="c1">#</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlsimkit.learn.surface.schema</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlsimkit.learn.surface.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">SurfaceDataset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlsimkit.learn.surface.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_preprocess</span>
+
+<span class="n">settings</span> <span class="o">=</span> <span class="n">PreprocessingSettings</span><span class="p">(</span>
+    <span class="n">manifest_path</span><span class="o">=</span><span class="s2">&quot;tutorials/surface/sample/training.manifest&quot;</span><span class="p">,</span>
+    <span class="n">output_dir</span><span class="o">=</span><span class="s2">&quot;notebook_example&quot;</span><span class="p">,</span>
+    <span class="n">manifest_base_relative_path</span><span class="o">=</span><span class="s2">&quot;PackageRoot&quot;</span><span class="p">)</span>
+
+<span class="c1">#</span>
+<span class="c1"># Run preprocessing convert mesh inputs to training data</span>
+<span class="c1">#</span>
+<span class="n">working_manifest</span> <span class="o">=</span> <span class="n">run_preprocess</span><span class="p">(</span>
+    <span class="n">settings</span><span class="p">,</span>
+    <span class="n">surface_variables</span><span class="o">=</span><span class="p">[</span><span class="n">SurfaceVariables</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;pMean&#39;</span><span class="p">)])</span>
+
+<span class="c1">#</span>
+<span class="c1"># Split the preprocessed manifest into train, validation and test sets</span>
+<span class="c1">#</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlsimkit.learn.manifest.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplitSettings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlsimkit.learn.manifest</span><span class="w"> </span><span class="kn">import</span> <span class="n">split_manifest</span>
+
+<span class="n">split_settings</span> <span class="o">=</span> <span class="n">SplitSettings</span><span class="p">(</span><span class="n">train_size</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">valid_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="n">manifests</span> <span class="o">=</span> <span class="n">split_manifest</span><span class="p">(</span><span class="n">working_manifest</span><span class="p">,</span> <span class="n">split_settings</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
+
+<span class="c1">#</span>
+<span class="c1"># Run training using the same settings as tutorials/surface/sample/training.yaml</span>
+<span class="c1">#</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlsimkit.learn.surface.schema.training</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrainingSettings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlsimkit.learn.surface.training</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_train</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlsimkit.learn.common.training</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_accelerator</span>
+
+<span class="n">settings</span> <span class="o">=</span> <span class="n">TrainingSettings</span><span class="p">(</span>
+    <span class="n">train_manifest_path</span><span class="o">=</span><span class="n">manifests</span><span class="p">[</span><span class="s1">&#39;train&#39;</span><span class="p">],</span>
+    <span class="n">validation_manifest_path</span><span class="o">=</span><span class="n">manifests</span><span class="p">[</span><span class="s1">&#39;validation&#39;</span><span class="p">],</span>
+    <span class="n">training_output_dir</span><span class="o">=</span><span class="s2">&quot;notebook_example/training_output&quot;</span><span class="p">,</span>
+    <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">run_train</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">make_accelerator</span><span class="p">(</span><span class="n">settings</span><span class="p">))</span>
+
+<span class="c1">#</span>
+<span class="c1"># Make predictions on the meshes in the test manifest</span>
+<span class="c1">#</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlsimkit.learn.surface.schema.inference</span><span class="w"> </span><span class="kn">import</span> <span class="n">InferenceSettings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mlsimkit.learn.surface.inference</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_predict</span>
+
+<span class="n">inference_settings</span> <span class="o">=</span> <span class="n">InferenceSettings</span><span class="p">(</span>
+    <span class="n">model_path</span><span class="o">=</span><span class="s2">&quot;notebook_example/training_output/best_model.pt&quot;</span><span class="p">,</span>
+    <span class="n">manifest_path</span><span class="o">=</span><span class="n">manifests</span><span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">],</span>
+    <span class="n">inference_results_dir</span><span class="o">=</span><span class="s2">&quot;notebook_example/predictions&quot;</span><span class="p">,</span>
+    <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+
+<span class="n">run_predict</span><span class="p">(</span><span class="n">inference_settings</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You will now have training and predicted outputs. For example,</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>%<span class="w"> </span>find<span class="w"> </span>notebook_example/predictions
+notebook_example/predictions
+notebook_example/predictions/pMean_errors_by_geometry.csv
+notebook_example/predictions/results
+notebook_example/predictions/results/predicted_boundary_7_mapped.vtp
+notebook_example/predictions/results/predicted_boundary_5_mapped.vtp
+notebook_example/predictions/results/predicted_boundary_3_mapped.vtp
+notebook_example/predictions/error_metrics.csv
+</pre></div>
+</div>
+<p>To get the original vs. predict files, load the training or validation manifest into a dataset:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">SurfaceDataset</span><span class="p">(</span><span class="s2">&quot;notebook_example/validate.manifest&quot;</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
+
+<span class="c1"># Original mesh file</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">data_files</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="c1"># prints [&#39;.../datasets/ahmed-sample/mapped_vtps/boundary_6_mapped.vtp&#39;]</span>
+
+<span class="c1"># Prediction mesh results</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">predicted_file</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="c1"># prints &#39;.../notebook_example/training_output/best_model_predictions/validation/results/predicted_boundary_6_mapped.vtp&#39;</span>
+</pre></div>
+</div>
+<p>To learn more, see <a class="reference internal" href="../dev/guide.html#dev-guide-dataset-interaction"><span class="std std-ref">Programmatic Dataset Interaction</span></a>.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><!--
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/mlsimkit-sidebar.png" alt="MLSimKit logo" />
+  </a>
+</p>
+-->
+
+<h4><a href="../index.html">AI Surrogate Models in Engineering on AWS</a></h4>
+<p>
+  Tools to develop and use ML predictive models as surrogates for physics-based simulations.
+</p>
+
+<h4>Useful Links</h4>
+<ul>
+  <li><a href="install.html">Install</a></li>
+  <li><a href="quickstart-kpi.html">Quickstart KPI</a></li>
+  <li><a href="quickstart-slices.html">Quickstart Slices</a></li>
+  <li><a href="quickstart-surface.html">Quickstart Surfaces</a></li>
+  <li><a href="troubleshooting.html">Troubleshooting</a></li>
+</ul>
+
+<div id="native-ribbon">
+</div>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart-kpi.html">Quickstart with KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart-surface.html">Quickstart with Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart-slices.html">Quickstart with Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-kpi-windsor.html">KPI Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-surface-ahmed.html">Surface Variable Prediction Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial-slices-windsor.html">Slice Prediction Tutorial</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/ahmed.html">AhmedML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/windsor.html">WindsorML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/drivaer.html">DrivAerML Dataset</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="user-guide-kpi.html">Model User Guide – KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide-surface.html">Model User Guide – Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide-slice.html">Model User Guide – Slice Prediction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Using the MLSimKit SDK Interactively (Notebooks, IPython)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#running-the-surface-training-pipeline">Running the Surface Training Pipeline</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mlflow-guide.html">Tracking Experiments and Results with MLFLow</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/guide.html">Code Structure and Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/learn.html">Learning Module (<code class="docutils literal notranslate"><span class="pre">mlsimkit.learn</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/cli-toolkit.html">Creating Custom CLI Commands</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/api.html">MLSimKit SDK API</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="user-guide-slice.html" title="previous chapter">Model User Guide – Slice Prediction</a></li>
+      <li>Next: <a href="mlflow-guide.html" title="next chapter">Tracking Experiments and Results with MLFLow</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;Copyright 2025 Amazon.com, Inc. or its affiliates. All Rights Reserved..
+      
+      |
+      <a href="../_sources/user/notebook-guide.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

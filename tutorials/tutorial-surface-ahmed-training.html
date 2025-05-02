@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>2. Training Surface Variable Prediction on the AhmedML Dataset &#8212; AI Surrogate Models for Engineering on AWS 0.1.dev1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=9de7e953" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=06097142" />
+    <script src="../_static/documentation_options.js?v=6aee1ebc"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="3. Using Surface Variable Prediction on New Geometries" href="tutorial-surface-ahmed-prediction.html" />
+    <link rel="prev" title="1. Downloading AhmedML data for Surface Variable Prediction (43G)" href="tutorial-surface-ahmed-data-access.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="training-surface-variable-prediction-on-the-ahmedml-dataset">
+<span id="tutorial-surface-ahmed-training"></span><h1><span class="section-number">2. </span>Training Surface Variable Prediction on the AhmedML Dataset<a class="headerlink" href="#training-surface-variable-prediction-on-the-ahmedml-dataset" title="Link to this heading">¶</a></h1>
+<p>This section guides you through the steps to train a surface variable prediction model on the <a class="reference internal" href="../datasets/ahmed.html#datasets-ahmed"><span class="std std-ref">AhmedML Dataset</span></a>. If you haven’t already accessed the AhmedML dataset, <a class="reference internal" href="tutorial-surface-ahmed-data-access.html#tutorial-surface-ahmed-data-access"><span class="std std-ref">follow these instructions</span></a>.</p>
+<p>The surface variable prediction pipeline consists of the following main steps:</p>
+<ol class="arabic simple">
+<li><p>Create the manifest</p></li>
+<li><p>Preprocess the geometries and surface variable values for training and testing</p></li>
+<li><p>Train the surface variable prediction model</p></li>
+<li><p>Test the trained model on a test dataset</p></li>
+</ol>
+<p>Before we begin, navigate to the <code class="docutils literal notranslate"><span class="pre">tutorials/surface/ahmed</span></code> folder, which contains the necessary scripts and configuration files for this tutorial:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>tutorials/surface/ahmed/
+├──<span class="w"> </span>download-dataset
+├──<span class="w"> </span>logging.yaml
+├──<span class="w"> </span>prediction.yaml
+├──<span class="w"> </span>readme.txt
+├──<span class="w"> </span>run-clean
+├──<span class="w"> </span>run-create-manifest-prediction
+├──<span class="w"> </span>run-create-manifest-training
+├──<span class="w"> </span>run-prediction
+├──<span class="w"> </span>run-training-pipeline
+└──<span class="w"> </span>training.yaml
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">download-dataset</span></code>: Script to help download the dataset from S3</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">logging.yaml</span></code>: Configuration file for logging settings.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">training.yaml</span></code>: Configuration file for the training and testing pipeline.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">prediction.yaml</span></code>: Configuration file for prediction on new geometries.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">run-create-manifest-training</span></code>: Script to create the training and testing data manifest.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">run-create-manifest-prediction</span></code>: Script to create the new geometry prediction data manifest.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">run-training</span></code>: Script to run the entire training and testing pipeline.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">run-prediction</span></code>: Script to run the prediction step on new geometries.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">readme.txt</span></code>: Additional instructions and information about the tutorial.</p></li>
+</ul>
+<p>The process involves creating the data manifest, understanding the configuration file, running the training and testing pipeline, and reviewing the results.</p>
+<p>Let’s go through each step in detail.</p>
+<section id="creating-the-manifest">
+<h2><span class="section-number">2.1. </span>Creating the Manifest<a class="headerlink" href="#creating-the-manifest" title="Link to this heading">¶</a></h2>
+<p>A manifest describes the paths to a dataset and is used to share data between tasks. The manifest format is <a class="reference external" href="https://jsonlines.org/">JSON Lines</a> where each line corresponds to one simulation run.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Ensure the dataset is on a filesystem: use the <code class="docutils literal notranslate"><span class="pre">./download-dataset</span></code> command or <a class="reference internal" href="tutorial-surface-ahmed-data-access.html#tutorial-surface-ahmed-data-access"><span class="std std-ref">follow these instructions</span></a>.</p>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">run-create-manifest-training</span></code> script generates the required manifest for the AhmedML dataset. To create the manifest, run the script pointing to your dataset location:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./run-create-manifest-training<span class="w"> </span>/path/to/ahmed/dataset
+</pre></div>
+</div>
+<p>This will generate a manifest:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">training.manifest</span></code>: Lists of surface variable data files (and optionally geometry files) used for training, validation, and testing</p></li>
+</ul>
+<p>You can customize the manifests by editing <code class="docutils literal notranslate"><span class="pre">run-create-manifest-training</span></code> script. By default, all runs in <a class="reference internal" href="../datasets/ahmed.html#datasets-ahmed"><span class="std std-ref">AhmedML Dataset</span></a> and all surface variables in <code class="docutils literal notranslate"><span class="pre">boundary_*.vtp</span></code> files are included:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+
+<span class="c1"># ...</span>
+
+<span class="nv">dataset_prefix</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+
+<span class="c1"># Get a list of run folders for training</span>
+<span class="nv">train_run_folders</span><span class="o">=(</span><span class="k">$(</span>ls<span class="w"> </span>-d<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$dataset_prefix</span><span class="s2">/run_&quot;</span>*<span class="k">)</span><span class="o">)</span>
+
+<span class="c1"># Uncomment to get a list of just the first 20 runs (if you want to reduce the dataset size for testing)</span>
+<span class="c1"># train_run_folders=($(ls -d &quot;$dataset_prefix/run_&quot;* | head -20))</span>
+
+<span class="c1"># Create train.manifest including the surface variable data</span>
+mlsimkit-manifest<span class="w"> </span>create<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;training.manifest&quot;</span><span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;name=data_files,file_glob=*.vtp&quot;</span><span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;name=geometry_files,file_glob=*.stl&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">train_run_folders</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>A manifest is a JSON Lines (<code class="docutils literal notranslate"><span class="pre">.manifest</span></code>) file that lists the paths to surface variable data files (e.g., <code class="docutils literal notranslate"><span class="pre">boundary_*.vtp</span></code>) and optionally geometry files (e.g., <code class="docutils literal notranslate"><span class="pre">ahmed_*.stl</span></code>). Each line in the manifest represents a single data file entry, containing the following keys:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;data_files&quot;</span></code>: A list of relative or absolute paths to the surface variable data files (e.g., <code class="docutils literal notranslate"><span class="pre">.vtp</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;geometry_files&quot;</span></code>: A list of relative or absolute paths to the corresponding geometry files (e.g., <code class="docutils literal notranslate"><span class="pre">.stl</span></code>)</p></li>
+</ul>
+<p>Here’s an example manifest entry:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;data_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;file:///data/ahmed/run_1/boundary_1.vtp&quot;</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;geometry_files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;file:///data/ahmed/run_1/ahmed_1.stl&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This entry lists the path to a surface variable data file (<code class="docutils literal notranslate"><span class="pre">boundary_1.vtp</span></code>) and a single geometry file (<code class="docutils literal notranslate"><span class="pre">ahmed_1.stl</span></code>).</p>
+<p>The geometry file (<code class="docutils literal notranslate"><span class="pre">.stl</span></code>) is optional, as the surface variable data file (<code class="docutils literal notranslate"><span class="pre">.vtp</span></code>) contains not only surface variable values but also geometry information. The geometry file (<code class="docutils literal notranslate"><span class="pre">.stl</span></code>) should be included if you’d like to map surface variable values from the data file (<code class="docutils literal notranslate"><span class="pre">.vtp</span></code>) to the geometry file (<code class="docutils literal notranslate"><span class="pre">.stl</span></code>) and use the mapped file for model training. There are at least two scenarios where the mapping would be helpful. The first scenario is that there are no data files (<code class="docutils literal notranslate"><span class="pre">.vtp</span></code>) associated with new geometries and the prediction on new geometries will be done on geometry files (<code class="docutils literal notranslate"><span class="pre">.stl</span></code>). In this case, it helps to train models using meshes that are similar to the meshes used in prediction. The second scenario is that using data files (<code class="docutils literal notranslate"><span class="pre">.vtp</span></code>) to train is not feasible due to memory requirements exceeding hardware capacity (models can require a large amount of memory when being trained on large data files). If geometry files (<code class="docutils literal notranslate"><span class="pre">.stl</span></code>) are coarser than data files (<code class="docutils literal notranslate"><span class="pre">.vtp</span></code>), the mapping will create coarser data files that can be used for training, leading to lower memory requirements and faster training speeds.</p>
+<p>We use a Gaussian interpolation kernel that defaults to using the three nearest points for mapping. When the geometry files have a coarser resolution than the data files, mapping the fine data file (<code class="docutils literal notranslate"><span class="pre">.vtp</span></code>) onto the coarse geometry file (<code class="docutils literal notranslate"><span class="pre">.stl</span></code>) can introduce some error. The amount of error may vary depending on the specific dataset. To evaluate the accuracy of the mapped data, two analysis techniques are employed:</p>
+<ul class="simple">
+<li><p>Visually comparing the mapped surface data with the ground truth surface data</p></li>
+<li><p>Comparing the ground truth KPIs with the KPIs calculated from the mapped surface data</p></li>
+</ul>
+<p>When visually comparing the mapped and ground truth surface variables, they appear very similar, with some over-smoothed areas in a few cases. An example comparison for the surface mean pressure of a Ahmed sample is provided below.</p>
+<a class="reference internal image-reference" href="../_images/ahmed-surface-mapped-gt-visual-comparison-run1.png"><img alt="Figure 1. Visual comparison of the mapped surface data with the ground truth surface data" src="../_images/ahmed-surface-mapped-gt-visual-comparison-run1.png" style="width: 700px; height: 240px;" />
+</a>
+<p>When comparing the KPIs, we observe very similar values for the calculated KPIs from the mapped surface data and the ground truth values. The following plot compares the drag coefficient (Cd) for the Ahmed dataset, showing the ground truth values versus the values calculated from the mapped surface data, which has a Mean Absolute Error of 0.0025.</p>
+<a class="reference internal image-reference" href="../_images/ahmed-surface-mapped-gt-kpi-comparison.png"><img alt="Figure 2. KPI comparison of the mapped surface data with the ground truth surface data" src="../_images/ahmed-surface-mapped-gt-kpi-comparison.png" style="width: 289px; height: 289px;" />
+</a>
+<p>If you observe a high error when mapping data, consider adjusting the mapping variables (<code class="docutils literal notranslate"><span class="pre">mapping_interpolation_method</span></code>, <code class="docutils literal notranslate"><span class="pre">mapping_interpolation_radius</span></code> and <code class="docutils literal notranslate"><span class="pre">mapping_interpolation_n_points</span></code>) in the preprocessing step, using a finer STL file for mapping, or disabling mapping altogether and training the model directly on the data files to reduce the error.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>By default, training is configured to produce accurate results on the full dataset and may take over an hour to complete. Instead, if you want to first verify end-to-end on the AhmedML dataset, edit <code class="docutils literal notranslate"><span class="pre">training.yaml</span></code> and reduce the number of epochs to e.g., 10. Then reduce the dataset size by editing <code class="docutils literal notranslate"><span class="pre">run-create-manifest-training</span></code> to include fewer runs and recreate the training manifest.</p>
+</div>
+</section>
+<section id="understanding-the-configuration-file">
+<h2><span class="section-number">2.2. </span>Understanding the Configuration File<a class="headerlink" href="#understanding-the-configuration-file" title="Link to this heading">¶</a></h2>
+<p>The surface variable prediction training and testing pipeline is configured using <strong>training.yaml</strong>.</p>
+<p>This file controls the training and testing pipeline, including data preprocessing, model training, and testing. Some key settings include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">output-dir</span></code>: Directory for storing training artifacts (e.g., models, plots, metrics)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">surface.manifest_uri</span></code>: Path to the data manifest</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">surface.preprocess</span></code>: Hyperparameters related to data preprocessing (including the percentage of data used for training, validation, and testing)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">surface.train</span></code>: Hyperparameters related to surface variable model training</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">surface.predict</span></code>: Hyperparameters related to surface variable model inference</p></li>
+</ul>
+<p>To get an introduction to the available configuration options, use the <code class="docutils literal notranslate"><span class="pre">mlsimkit-learn</span> <span class="pre">surface</span> <span class="pre">--help</span></code> command and the <code class="docutils literal notranslate"><span class="pre">--help</span></code> option for each sub-command. This will provide an overview of the options and their purposes, which can be helpful when configuring the training and testing pipelines.</p>
+</section>
+<section id="running-the-pipeline">
+<h2><span class="section-number">2.3. </span>Running the Pipeline<a class="headerlink" href="#running-the-pipeline" title="Link to this heading">¶</a></h2>
+<p>With the manifest created and the configuration file in place, you can run the surface variable model training pipeline using the provided script.</p>
+<p>Run the training and testing pipeline:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./run-training-pipeline
+</pre></div>
+</div>
+<p>The script executes the necessary commands using the <code class="docutils literal notranslate"><span class="pre">training.yaml</span></code> configuration file.</p>
+<p>You can also run individual commands manually if needed:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-learn<span class="w"> </span>--config<span class="w"> </span>training.yaml<span class="w"> </span>surface<span class="w"> </span>&lt;command&gt;
+</pre></div>
+</div>
+<p>For example, you may want to skip the preprocessing step when you are training with new parameters, as you can reuse the preprocessed data files.</p>
+</section>
+<section id="training-with-multiple-gpus">
+<h2><span class="section-number">2.4. </span>Training with Multiple GPUs<a class="headerlink" href="#training-with-multiple-gpus" title="Link to this heading">¶</a></h2>
+<p>MLSimKit integrates training with <a class="reference external" href="https://huggingface.co/docs/accelerate/index">Hugging Face Accelerate</a> to enable and launch multi-GPU training. This can significantly speed up the training process when multiple GPUs are available.</p>
+<p>To enable multi-GPU training, you can use the <code class="docutils literal notranslate"><span class="pre">--multi-gpu</span></code> flag when running the training script:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./run-training-pipeline<span class="w"> </span>--multi-gpu
+</pre></div>
+</div>
+<p>The script calls <code class="docutils literal notranslate"><span class="pre">mlsimkit-accelerate</span></code> which is our thin wrapper around <code class="docutils literal notranslate"><span class="pre">accelerate</span> <span class="pre">launch</span></code> that runs multiple training processess. By default, <code class="docutils literal notranslate"><span class="pre">accelerate</span> <span class="pre">launch</span></code> will automatically set a configuration for various platforms. Refer to the <a class="reference external" href="https://huggingface.co/docs/accelerate/basic_tutorials/launch#using-accelerate-launch">accelerate launch tutorial</a> for a quick overview. For the complete list of configuration options, see <code class="docutils literal notranslate"><span class="pre">accelerate</span> <span class="pre">launch</span> <span class="pre">--help</span></code>.</p>
+<p>You may pass additional arguments to Accelerate using <code class="docutils literal notranslate"><span class="pre">--launch-args</span></code>:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-accelerate<span class="w"> </span>--config<span class="w"> </span>&lt;config.yaml&gt;<span class="w"> </span>surface<span class="w"> </span>train<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>--launch-args<span class="w"> </span>&lt;additional<span class="w"> </span>accelerate<span class="w"> </span>launch<span class="w"> </span>args&gt;
+</pre></div>
+</div>
+<p>For example, the following limits to 2 GPUs:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mlsimkit-accelerate<span class="w"> </span>--config<span class="w"> </span>&lt;config.yaml&gt;<span class="w"> </span>surface<span class="w"> </span>train<span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>--launch-args<span class="w"> </span>--num_processes<span class="w"> </span><span class="m">2</span>
+</pre></div>
+</div>
+<p>We recommend using <code class="docutils literal notranslate"><span class="pre">mlsimkit-accelerate</span></code> for simplicity but you may invoke <code class="docutils literal notranslate"><span class="pre">accelerate</span> <span class="pre">launch</span></code> directly like this:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>accelerate<span class="w"> </span>launch<span class="w"> </span>--no-python<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>mlsimkit-learn<span class="w"> </span>--accelerate-mode<span class="w"> </span>surface<span class="w"> </span>train
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">accelerate</span> <span class="pre">launch</span></code> for training commands only. Non-training commands do not support multiple GPU processors.</p>
+<p>Always specify <code class="docutils literal notranslate"><span class="pre">--accelerate-mode</span></code> with <code class="docutils literal notranslate"><span class="pre">accelerate</span> <span class="pre">launch</span></code> to hide duplicate logs and avoid logging race conditions on start.</p>
+<p>Do not use <code class="docutils literal notranslate"><span class="pre">--accelerate-mode</span></code> outside <code class="docutils literal notranslate"><span class="pre">accelerate</span> <span class="pre">launch</span></code>.</p>
+</div>
+</section>
+<section id="reviewing-results">
+<h2><span class="section-number">2.5. </span>Reviewing Results<a class="headerlink" href="#reviewing-results" title="Link to this heading">¶</a></h2>
+<section id="during-training">
+<h3><span class="section-number">2.5.1. </span>During Training<a class="headerlink" href="#during-training" title="Link to this heading">¶</a></h3>
+<p>The training pipeline generates two plots to help you monitor the surface variable model training. They can be found in the <code class="docutils literal notranslate"><span class="pre">outputs/training/training_output/</span></code> directory.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">model_loss.png</span></code>: The plot that shows the training and validation losses of every epoch.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">model_loss_log.png</span></code>: The plot that shows the training and validation losses of every epoch at the log scale.</p></li>
+</ul>
+<p>Here is an example of a loss plot:</p>
+<a class="reference internal image-reference" href="../_images/ahmed-surface-loss.png"><img alt="Figure 3. An example loss plot" src="../_images/ahmed-surface-loss.png" style="width: 450px; height: 350px;" />
+</a>
+<p>You can also find quantitative metrics summarizing the surface variable model performance on the training and validation data in the <code class="docutils literal notranslate"><span class="pre">outputs/training/training_output/best_model_predictions/training/error_metrics.csv</span></code> and <code class="docutils literal notranslate"><span class="pre">outputs/training/training_output/best_model_predictions/validation/error_metrics.csv</span></code> files.</p>
+</section>
+<section id="during-testing">
+<h3><span class="section-number">2.5.2. </span>During Testing<a class="headerlink" href="#during-testing" title="Link to this heading">¶</a></h3>
+<p>The testing step generates surface variable values predicted by the trained model. The testing output is located in the <code class="docutils literal notranslate"><span class="pre">outputs/training/predictions/</span></code> directory. Given the ground truth surface variable data for the prediction geometries is available, there should be the following output files:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">error_metrics.csv</span></code>: Metrics that quantify the differences between predictions and ground truth at the dataset level where each geometry result is averaged together</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">*_errors_by_geometry.csv</span></code>: Metrics that quantify the differences between predictions and ground truth at the geometry level</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">predictions/predicted_*.vtp</span></code>: Predictions and/or errors (depending on the configuration) of surface variable values for the geometries in the test set</p></li>
+</ul>
+<p>Here is an example prediction output file that shows the predicted pressure values (visualized in ParaView):</p>
+<a class="reference internal image-reference" href="../_images/ahmed-surface-inference.png"><img alt="Figure 4. An example surface variable prediction output file" src="../_images/ahmed-surface-inference.png" style="width: 460px; height: 289px;" />
+</a>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you want to start tuning training parameters while keeping the same dataset, you can skip the preprocessing step. To do this, either edit <code class="docutils literal notranslate"><span class="pre">run-training-pipeline</span></code> script and remove <code class="docutils literal notranslate"><span class="pre">preprocess</span></code> from the command or, alternatively, call <code class="docutils literal notranslate"><span class="pre">mlsimkit-learn</span> <span class="pre">--config</span> <span class="pre">training.yaml</span> <span class="pre">surface</span> <span class="pre">...</span></code> subcommands directly.</p>
+</div>
+</section>
+</section>
+<section id="next-steps">
+<h2><span class="section-number">2.6. </span>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">¶</a></h2>
+<p>Proceed to <a class="reference internal" href="tutorial-surface-ahmed-prediction.html#tutorial-surface-ahmed-prediction"><span class="std std-ref">Using Surface Variable Prediction on New Geometries</span></a> tutorial to learn how to run surface variable prediction on new geometries without ground truth simulation data.</p>
+<p>See the <a class="reference internal" href="../user/user-guide-surface.html#user-guide-surface"><span class="std std-ref">surface variable prediction user guide</span></a> for detailed information on more configuration options and how they impact model training and performance.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><!--
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/mlsimkit-sidebar.png" alt="MLSimKit logo" />
+  </a>
+</p>
+-->
+
+<h4><a href="../index.html">AI Surrogate Models in Engineering on AWS</a></h4>
+<p>
+  Tools to develop and use ML predictive models as surrogates for physics-based simulations.
+</p>
+
+<h4>Useful Links</h4>
+<ul>
+  <li><a href="../user/install.html">Install</a></li>
+  <li><a href="../user/quickstart-kpi.html">Quickstart KPI</a></li>
+  <li><a href="../user/quickstart-slices.html">Quickstart Slices</a></li>
+  <li><a href="../user/quickstart-surface.html">Quickstart Surfaces</a></li>
+  <li><a href="../user/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+
+<div id="native-ribbon">
+</div>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/quickstart-kpi.html">Quickstart with KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/quickstart-surface.html">Quickstart with Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/quickstart-slices.html">Quickstart with Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="tutorial-kpi-windsor.html">KPI Prediction Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="tutorial-surface-ahmed.html">Surface Variable Prediction Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="tutorial-surface-ahmed-data-access.html">1. Downloading AhmedML data for Surface Variable Prediction (43G)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">2. Training Surface Variable Prediction on the AhmedML Dataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#creating-the-manifest">2.1. Creating the Manifest</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#understanding-the-configuration-file">2.2. Understanding the Configuration File</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-the-pipeline">2.3. Running the Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#training-with-multiple-gpus">2.4. Training with Multiple GPUs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reviewing-results">2.5. Reviewing Results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#next-steps">2.6. Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial-surface-ahmed-prediction.html">3. Using Surface Variable Prediction on New Geometries</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial-slices-windsor.html">Slice Prediction Tutorial</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/ahmed.html">AhmedML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/windsor.html">WindsorML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/drivaer.html">DrivAerML Dataset</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/user-guide-kpi.html">Model User Guide – KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/user-guide-surface.html">Model User Guide – Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/user-guide-slice.html">Model User Guide – Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/notebook-guide.html">Using the MLSimKit SDK Interactively (Notebooks, IPython)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/mlflow-guide.html">Tracking Experiments and Results with MLFLow</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/guide.html">Code Structure and Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/learn.html">Learning Module (<code class="docutils literal notranslate"><span class="pre">mlsimkit.learn</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/cli-toolkit.html">Creating Custom CLI Commands</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/api.html">MLSimKit SDK API</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="tutorial-surface-ahmed.html">Surface Variable Prediction Tutorial</a><ul>
+      <li>Previous: <a href="tutorial-surface-ahmed-data-access.html" title="previous chapter"><span class="section-number">1. </span>Downloading AhmedML data for Surface Variable Prediction (43G)</a></li>
+      <li>Next: <a href="tutorial-surface-ahmed-prediction.html" title="next chapter"><span class="section-number">3. </span>Using Surface Variable Prediction on New Geometries</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;Copyright 2025 Amazon.com, Inc. or its affiliates. All Rights Reserved..
+      
+      |
+      <a href="../_sources/tutorials/tutorial-surface-ahmed-training.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

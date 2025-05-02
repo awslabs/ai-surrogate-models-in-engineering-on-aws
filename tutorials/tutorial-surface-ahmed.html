@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Surface Variable Prediction Tutorial &#8212; AI Surrogate Models for Engineering on AWS 0.1.dev1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=9de7e953" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=06097142" />
+    <script src="../_static/documentation_options.js?v=6aee1ebc"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="1. Downloading AhmedML data for Surface Variable Prediction (43G)" href="tutorial-surface-ahmed-data-access.html" />
+    <link rel="prev" title="3. Using KPI Prediction on New Geometries" href="tutorial-kpi-windsor-prediction.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="surface-variable-prediction-tutorial">
+<span id="tutorial-surface-ahmed"></span><h1>Surface Variable Prediction Tutorial<a class="headerlink" href="#surface-variable-prediction-tutorial" title="Link to this heading">¶</a></h1>
+<p>This tutorial demonstrates how to run the surface variable prediction pipeline on the publicly available <a class="reference internal" href="../datasets/ahmed.html#datasets-ahmed"><span class="std std-ref">AhmedML Dataset</span></a>, which contains computational fluid dynamics (CFD) simulations for a vehicle geometry.</p>
+<p>Surface variable prediction is used to predict surface variable values of 3D geometry meshes. In computational fluid dynamics (CFD), examples of common surface variables are pressure (or pressure coefficient) and wall shear stress (or skin friction coefficient).</p>
+<p>The tutorial is divided into three parts.</p>
+<ol class="arabic simple">
+<li><p>First, we’ll <a class="reference internal" href="tutorial-surface-ahmed-data-access.html#tutorial-surface-ahmed-data-access"><span class="std std-ref">download the data</span></a> necessary for surface variable prediction.</p></li>
+<li><p>Second, we <a class="reference internal" href="tutorial-surface-ahmed-training.html#tutorial-surface-ahmed-training"><span class="std std-ref">train a surface variable prediction model</span></a> on the <a class="reference internal" href="../datasets/ahmed.html#datasets-ahmed"><span class="std std-ref">AhmedML Dataset</span></a>, including data preparation, model training, and evaluating the trained model’s performance.</p></li>
+<li><p>Third, we use the trained model to <a class="reference internal" href="tutorial-surface-ahmed-prediction.html#tutorial-surface-ahmed-prediction"><span class="std std-ref">predict surface variable values for new, unseen geometries</span></a> without ground truth simulation data.</p></li>
+</ol>
+<p>By following these tutorials, you’ll learn how to:</p>
+<ul class="simple">
+<li><p>Access the subset of data required for this use case</p></li>
+<li><p>Create data manifests for the AhmedML dataset</p></li>
+<li><p>Configure and run the surface variable prediction pipeline for training and prediction</p></li>
+<li><p>Interpret the training and prediction results, including metrics</p></li>
+<li><p>Apply the trained model to predict surface variable values for new geometries</p></li>
+</ul>
+<p>For more detailed information on the surface variable prediction use case, including how to build a model, configuration options, and advanced topics, refer to the <a class="reference internal" href="../user/user-guide-surface.html#user-guide-surface"><span class="std std-ref">surface variable prediction user guide</span></a> documentation.</p>
+<p>Let’s get started.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial-surface-ahmed-data-access.html">1. Downloading AhmedML data for Surface Variable Prediction (43G)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial-surface-ahmed-training.html">2. Training Surface Variable Prediction on the AhmedML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial-surface-ahmed-prediction.html">3. Using Surface Variable Prediction on New Geometries</a></li>
+</ul>
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper"><!--
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/mlsimkit-sidebar.png" alt="MLSimKit logo" />
+  </a>
+</p>
+-->
+
+<h4><a href="../index.html">AI Surrogate Models in Engineering on AWS</a></h4>
+<p>
+  Tools to develop and use ML predictive models as surrogates for physics-based simulations.
+</p>
+
+<h4>Useful Links</h4>
+<ul>
+  <li><a href="../user/install.html">Install</a></li>
+  <li><a href="../user/quickstart-kpi.html">Quickstart KPI</a></li>
+  <li><a href="../user/quickstart-slices.html">Quickstart Slices</a></li>
+  <li><a href="../user/quickstart-surface.html">Quickstart Surfaces</a></li>
+  <li><a href="../user/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+
+<div id="native-ribbon">
+</div>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/quickstart-kpi.html">Quickstart with KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/quickstart-surface.html">Quickstart with Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/quickstart-slices.html">Quickstart with Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="tutorial-kpi-windsor.html">KPI Prediction Tutorial</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Surface Variable Prediction Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial-surface-ahmed-data-access.html">1. Downloading AhmedML data for Surface Variable Prediction (43G)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial-surface-ahmed-training.html">2. Training Surface Variable Prediction on the AhmedML Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial-surface-ahmed-prediction.html">3. Using Surface Variable Prediction on New Geometries</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial-slices-windsor.html">Slice Prediction Tutorial</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/ahmed.html">AhmedML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/windsor.html">WindsorML Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/drivaer.html">DrivAerML Dataset</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user/user-guide-kpi.html">Model User Guide – KPI Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/user-guide-surface.html">Model User Guide – Surface Variable Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/user-guide-slice.html">Model User Guide – Slice Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/notebook-guide.html">Using the MLSimKit SDK Interactively (Notebooks, IPython)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user/mlflow-guide.html">Tracking Experiments and Results with MLFLow</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/guide.html">Code Structure and Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/learn.html">Learning Module (<code class="docutils literal notranslate"><span class="pre">mlsimkit.learn</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/cli-toolkit.html">Creating Custom CLI Commands</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/api.html">MLSimKit SDK API</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="tutorial-kpi-windsor-prediction.html" title="previous chapter"><span class="section-number">3. </span>Using KPI Prediction on New Geometries</a></li>
+      <li>Next: <a href="tutorial-surface-ahmed-data-access.html" title="next chapter"><span class="section-number">1. </span>Downloading AhmedML data for Surface Variable Prediction (43G)</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;Copyright 2025 Amazon.com, Inc. or its affiliates. All Rights Reserved..
+      
+      |
+      <a href="../_sources/tutorials/tutorial-surface-ahmed.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

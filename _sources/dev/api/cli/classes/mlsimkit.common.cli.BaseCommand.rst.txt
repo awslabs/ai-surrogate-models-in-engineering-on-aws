@@ -1,0 +1,53 @@
+﻿mlsimkit.common.cli.BaseCommand
+===============================
+
+.. currentmodule:: mlsimkit.common.cli
+
+.. autoclass:: BaseCommand
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~BaseCommand.__init__
+      ~BaseCommand.collect_usage_pieces
+      ~BaseCommand.format_epilog
+      ~BaseCommand.format_help
+      ~BaseCommand.format_help_text
+      ~BaseCommand.format_options
+      ~BaseCommand.format_usage
+      ~BaseCommand.get_help
+      ~BaseCommand.get_help_option
+      ~BaseCommand.get_help_option_names
+      ~BaseCommand.get_params
+      ~BaseCommand.get_short_help_str
+      ~BaseCommand.get_usage
+      ~BaseCommand.invoke
+      ~BaseCommand.main
+      ~BaseCommand.make_context
+      ~BaseCommand.make_parser
+      ~BaseCommand.parse_args
+      ~BaseCommand.shell_complete
+      ~BaseCommand.to_info_dict
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~BaseCommand.allow_extra_args
+      ~BaseCommand.allow_interspersed_args
+      ~BaseCommand.ignore_unknown_options
+      ~BaseCommand.callback
+      ~BaseCommand.params
+      ~BaseCommand.name
+      ~BaseCommand.context_settings
+   
+   
