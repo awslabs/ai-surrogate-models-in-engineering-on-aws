@@ -1,0 +1,37 @@
+# KPI training configuration for sample dataset
+output-dir: outputs/training          # all artifacts output to CWD/output e,g models, images, metrics
+
+debug: False                          # if True, allows exceptions to escape commands for the call stack
+
+log:
+  prefix-dir: logs              # all logs go here
+  config-file: logging.yaml     # tutorial-specific config
+
+kpi:
+  manifest_uri: training.manifest
+
+  preprocess:
+    # Override how relative paths files are found and preprocessed. By default, the current working 
+    # directory (CWD) is used. You may also specify absolute paths in the manifest and ignore 
+    # relative paths entirely.
+    manifest-base-relative-path: PackageRoot 
+
+    # Uncomment to manually control the percentage in each dataset. 
+    #train-size: 0.6
+    #valid-size: 0.2
+    #test-size: 0.2
+
+  train:
+    # Override training settings for the sample to finish quickly 
+    epochs: 10              # low number for quickstart 
+    batch-size: 1           # small for quickstart, use larger normally. See user guide.
+
+    # Uncomment to start training from a previously saved (checkpoint) model outputs
+    #checkpointing:
+    #  checkpoint-path: outputs/training/training_output/last_model.pt
+    #  best-checkpoint-path: outputs/training/training_output/best_model.pt
+    #  loss-path: outputs/training/training_output/model_loss.csv
+  
+  predict:
+    # Manifest includes labels, we want to evaluate performance
+    compare-groundtruth: true

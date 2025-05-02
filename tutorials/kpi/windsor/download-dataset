@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Check if the prefix argument is provided
+if [ -z "$1" ]; then
+    echo "Usage: $0 <target_directory>"
+    echo "Where <target_directory> is destination directory to download the Windsor dataset"
+    echo "Example: ./download-dataset /path/to/dataset"
+    exit 1
+fi
+
+target_directory="$1"
+
+# Prompt the user to choose whether to download all runs 
+read -p "Download all runs dataset (1.7G)? (y/n) " choice
+choice=$(echo "$choice" | tr '[:upper:]' '[:lower:]')
+
+if [[ "$choice" == "y" ]]; then
+    set -x
+    aws s3 sync s3://caemldatasets/windsor/dataset "$target_directory" \
+        --exclude "*" \
+        --include "run_*/windsor_*.stl" \
+        --include "run_*/force_mom_*.csv" &&
+    echo "Download complete!"
+else
+    # Set the default run prefix
+    run_prefix="*"
+    echo "Choose runs by prefix e.g., 1*, 20* (default: $run_prefix)"
+    read -r user_prefix
+    if [ -n "$user_prefix" ]; then
+        run_prefix="$user_prefix"
+    fi
+
+    # Download the runs by prefix
+    set -x
+    aws s3 sync s3://caemldatasets/windsor/dataset "$target_directory" \
+        --exclude "*" \
+        --include "run_$run_prefix/windsor_*.stl" \
+        --include "run_$run_prefix/force_mom_*.csv" &&
+    echo "Download of run_$run_prefix complete!"
+fi

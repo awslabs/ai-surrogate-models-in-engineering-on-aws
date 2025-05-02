@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Check if the prefix argument is provided
+if [ -z "$1" ]; then
+    echo "Usage: $0 <prefix>"
+    echo "Where <prefix> is the path to the root of the Windsor dataset"
+    echo "Example: ./run-create-manifest-prediction /path/to/dataset"
+    exit 1
+fi
+
+dataset_prefix="$1"
+
+# Get a list of run folders for prediction (5 random runs)
+predict_run_folders=($(ls -d "$dataset_prefix/run_"* | shuf -n 5))
+
+# Create prediction.manifest with geometry-only, no ground truth image data 
+mlsimkit-manifest create -m "prediction.manifest" -f "name=geometry_files,file_glob=*.stl" "${predict_run_folders[@]}"

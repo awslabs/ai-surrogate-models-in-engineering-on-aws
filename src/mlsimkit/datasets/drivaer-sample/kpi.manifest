@@ -1,0 +1,7 @@
+{"geometry_files": ["downsampled_stls/run1-frontwheel_0.05perc_ds.stl", "downsampled_stls/run1-rearwheel_0.05perc_ds.stl", "downsampled_stls/run1_0.01perc_ds.stl"], "kpi": [0.3115]}
+{"geometry_files": ["downsampled_stls/run2-frontwheel_0.05perc_ds.stl", "downsampled_stls/run2-rearwheel_0.05perc_ds.stl", "downsampled_stls/run2_0.01perc_ds.stl"], "kpi": [0.31623]}
+{"geometry_files": ["downsampled_stls/run3-frontwheel_0.05perc_ds.stl", "downsampled_stls/run3-rearwheel_0.05perc_ds.stl", "downsampled_stls/run3_0.01perc_ds.stl"], "kpi": [0.31682]}
+{"geometry_files": ["downsampled_stls/run4-frontwheel_0.05perc_ds.stl", "downsampled_stls/run4-rearwheel_0.05perc_ds.stl", "downsampled_stls/run4_0.01perc_ds.stl"], "kpi": [0.26672]}
+{"geometry_files": ["downsampled_stls/run5-frontwheel_0.05perc_ds.stl", "downsampled_stls/run5-rearwheel_0.05perc_ds.stl", "downsampled_stls/run5_0.01perc_ds.stl"], "kpi": [0.27158]}
+{"geometry_files": ["downsampled_stls/run6-frontwheel_0.05perc_ds.stl", "downsampled_stls/run6-rearwheel_0.05perc_ds.stl", "downsampled_stls/run6_0.01perc_ds.stl"], "kpi": [0.27429]}
+{"geometry_files": ["downsampled_stls/run7-frontwheel_0.05perc_ds.stl", "downsampled_stls/run7-rearwheel_0.05perc_ds.stl", "downsampled_stls/run7_0.01perc_ds.stl"], "kpi": [0.27036]}

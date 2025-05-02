@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Check if the prefix argument is provided
+if [ -z "$1" ]; then
+    echo "Usage: $0 <prefix>"
+    echo "Where <prefix> is the path to the root of the Ahmed dataset"
+    echo "Example: ./run-create-manifest-training /path/to/dataset/"
+    exit 1
+fi
+
+dataset_prefix="$1"
+
+# The slice type to train on. Ahmed has: CpT  UxMean
+slices_folder="CpT"		
+#slices_folder="UxMean"		
+
+# Check the image folder within Ahmed for the possible views (X or Y).
+image_files="run_*-X-*.png"   # X view (22 slice images per run)
+#image_files="run_*-Y-*.png"   # Y view (9 slice images per run)
+
+# Get a list of run folders for training.  Only training on 200 runs.
+train_run_folders=($(ls -d "$dataset_prefix/run_"* | tail -200))
+
+# Uncomment to get the entire 500 runs for training. 
+#train_run_folders=($(ls -d "$dataset_prefix/run_"*))
+
+# Create train.manifest including the slices image data
+mlsimkit-manifest create -m "training.manifest" -f "name=geometry_files,file_glob=*.stl" -f "name=slices_uri,file_glob=images/$slices_folder/$image_files" "${train_run_folders[@]}"

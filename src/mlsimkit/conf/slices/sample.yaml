@@ -1,0 +1,29 @@
+logging:
+  level: info
+
+# Uncomment to set output directory in config rather than command-line. 
+#output_dir: outputs/slices/sample
+
+slices:
+  preprocess:
+    # The path to the manifest can be local, absolute, or relative to a search path. The default search 
+    # path is the 'mlsimkit/datasets'.
+    manifest-uri: ahmed-sample/slices.manifest
+
+    # Override how relative paths files are found and preprocessed. By default, the current working 
+    # directory (CWD) is used instead. You may also specify absolute paths in the manifest 
+    # and ignore relative paths entirely. The quickstart sample manifest file are relative to 
+    # the package source root ('src/mlsimkit/')
+    manifest-base-relative-path: PackageRoot
+
+    # split the dataset into three
+    train-size: 0.6
+    valid-size: 0.2
+    test-size: 0.2
+
+  train-image-encoder:
+    batch-size: 1   # small for quickstart sample, use larger normally. See user guide.
+
+  train-prediction:
+    epochs: 10      # low number for sample quickstart
+    batch-size: 1   # small for quickstart sample, use larger normally. See user guide.

@@ -1,0 +1,46 @@
+# Slices training pipeline configuration for windsor dataset
+output-dir: outputs/training          # all artifacts output to CWD/output e,g models, images, metrics
+
+log:
+  prefix-dir: logs              # all logs go here
+  config-file: logging.yaml     # tutorial-specific config
+
+slices:
+  preprocess:
+    manifest-uri: training.manifest
+
+    resolution: [768, 384]  # resolution of output images
+
+    # split the dataset into three
+    train-size: 0.6
+    valid-size: 0.2
+    test-size: 0.2
+
+  train-image-encoder:
+    epochs: 500             # large number to improve model performance
+    batch-size: 4           # number of samples before updating model weights
+    mixed-precision: fp16   # reduce memory usage if set to true, accuracy is still okay
+    ae:
+      # Input channels depends on the number of slices image for the variable/view used for training.
+      # For example, ''velocityavg/view1_constz' has 10 RGB images
+      input-channels: 30    # 'velocityavg/view1_constz' has 10 RGB images (10 * 3 = 30)  
+      img:
+        width: 768          # prediction image resolution -- needs to match preprocess.resolution
+        height: 384         # prediction image resolution -- needs to match preprocess.resolution
+
+  train-prediction:
+    epochs: 200             # fewer required than image-encoder 
+    batch-size: 1           # out of memory error if using larger batch sizes on this data
+    mixed-precision: fp16  # reduce memory usage if set to true, accuracy is still okay
+
+  # Test/evaluate against ground truth
+  predict:
+    compare-groundtruth: true
+
+    # Commented out because the best models are automatically detected for the outputs folder. 
+    #ae-model-path: outputs/training/ae/training_output/best_model.pt
+    #mgn-model-path: outputs/training/mgn/training_output/best_model.pt
+    
+    # Commented out because the test manifest output during preprocessing is automatically 
+    # detected within pipeline. 
+    #manifest-path: outputs/training/test.manifest

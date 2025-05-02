@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Check if the prefix argument is provided
+if [ -z "$1" ]; then
+    echo "Usage: $0 <prefix>"
+    echo "Where <prefix> is the path to the root of the DrivAer dataset"
+    echo "Example: ./run-create-manifest-training /path/to/dataset/"
+    exit 1
+fi
+
+dataset_prefix="$1"
+
+# The slice type to train on. DrivAer has: CpMeanTrim kresMeanTrim magUMeanNormTrim microDragMeanTrim
+slices_prefix="CpMeanTrim"		
+
+# Check the slices folder within DrivAer for the possible view files.
+image_files="yNormal"
+
+# Get a list of run folders for training 
+train_run_folders=($(ls -d "$dataset_prefix/run_"*))
+
+# Uncomment to get a list of just the last 20 runs (if you want to reduce the dataset size for testing)
+#train_run_folders=($(ls -d "$dataset_prefix/run_"* | tail -20))
+
+# Create train.manifest including the slices image data
+mlsimkit-manifest create -m "training.manifest" -f "name=geometry_files,file_glob=*.stl" -f "name=slices_uri,file_glob=images/fig_run*_SRS_$slices_prefix*$image_files-2_${image_files}_*000.png" "${train_run_folders[@]}"

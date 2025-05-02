@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Print usage/help
+print_help() {
+    echo "Usage: $0 [--multi-gpu] [--help]"
+    echo "  --multi-gpu   Use mlsimkit-accelerate to enable multi-gpu training"
+    echo "  --help         Print this help message"
+}
+
+# Parse command-line arguments
+USE_ACCELERATE=false
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        --multi-gpu)
+            USE_ACCELERATE=true
+            ;;
+        --help)
+            print_help
+            exit 0
+            ;;
+        *)
+            echo "Unknown argument: $1"
+            print_help
+            exit 1
+            ;;
+    esac
+    shift
+done
+
+# Run the entire pipeline
+if [ "$USE_ACCELERATE" = false ]; then
+    mlsimkit-learn --config training.yaml kpi preprocess train predict
+else
+    # note: we set num_processes=1 because the size of sample dataset is fewer, and too many gpus will cause batch-size error
+    mlsimkit-learn --config training.yaml --log.prefix-dir logs/preprocess kpi preprocess &&
+    mlsimkit-accelerate --config training.yaml --log.prefix-dir logs/train kpi train --launch-args --num_processes 1 &&
+    mlsimkit-learn --config training.yaml --log.prefix-dir logs/predict kpi predict
+fi

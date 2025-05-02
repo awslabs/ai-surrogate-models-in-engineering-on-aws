@@ -1,0 +1,20 @@
+example-use-case:
+  test:
+    level: 1
+    values: [9,8,7]
+
+  preprocess:
+    level: 7
+    property-one: foo
+
+    groupB:
+      property-one: bar
+      property-two: brg
+      percentile: P99
+
+      nested:
+        the-property: hello!
+
+  train:
+    level: 3
+

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Run the prediction on STL-only manifest
+mlsimkit-learn --config prediction.yaml surface preprocess predict

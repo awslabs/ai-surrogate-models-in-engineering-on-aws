@@ -1,0 +1,27 @@
+# Surface variable prediction training configuration for Windsor dataset
+output-dir: outputs/training    # all artifacts output to CWD/output e,g models, images, metrics
+
+log:
+  prefix-dir: logs              # all logs go here
+  config-file: logging.yaml     # tutorial-specific config
+
+surface:
+  manifest_uri: training.manifest
+
+  preprocess:
+    surface_variables:
+    - name: cpavg
+    - name: cfxavg
+    map_data_to_stl: True       # map surface data to stl for model training on the stl meshes; disabling may lead
+                                # to Out-of-Memory (OOM) error during training due to the high surface data resolution
+    save_mapped_files: True
+    normalize_node_positions: True
+    save_cell_data: True
+    random_seed: 0
+
+  train:
+    epochs: 400
+    batch_size: 1
+    strength_x: 300
+    strength_y: 30
+    strength_z: 100

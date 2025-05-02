@@ -1,0 +1,7 @@
+property_one: B1.PropertyOne
+property_two: null
+percentile: P50
+nested_settings:
+  the_property: "B1.Nested"
+  hidden_property: "B1.NestedHidden"
+  excluded_property: "B1.NestedExcluded"

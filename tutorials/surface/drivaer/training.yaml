@@ -1,0 +1,30 @@
+# Surface variable prediction training configuration for DrivAer dataset
+output-dir: outputs/training    # all artifacts output to CWD/output e,g models, images, metrics
+
+log:
+  prefix-dir: logs              # all logs go here
+  config-file: logging.yaml     # tutorial-specific config
+
+surface:
+  manifest_uri: training.manifest
+
+  preprocess:
+    surface_variables:
+    - name: pMeanTrim
+    - name: wallShearStressMeanTrim
+      dimensions: [0]
+
+    map_data_to_stl: True       # map surface data to stl for model training on the stl meshes; disabling may lead
+                                # to Out-of-Memory (OOM) error during training due to the high surface data resolution
+    save_mapped_files: True
+    normalize_node_positions: True
+    save_cell_data: True
+    random_seed: 0
+
+  train:
+    epochs: 300
+    message_passing_steps: 10   # increasing the number of layers may lead to OOM error
+    batch_size: 1
+    strength_x: 1
+    strength_y: 0.3
+    strength_z: 0.3

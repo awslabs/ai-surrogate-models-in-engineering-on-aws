@@ -1,0 +1,3 @@
+{"geometry_files": ["datasets/drivaer-sample/downsampled_stls/run5-frontwheel_0.05perc_ds.stl", "datasets/drivaer-sample/downsampled_stls/run5-rearwheel_0.05perc_ds.stl", "datasets/drivaer-sample/downsampled_stls/run5_0.01perc_ds.stl"]}
+{"geometry_files": ["datasets/drivaer-sample/downsampled_stls/run6-frontwheel_0.05perc_ds.stl", "datasets/drivaer-sample/downsampled_stls/run6-rearwheel_0.05perc_ds.stl", "datasets/drivaer-sample/downsampled_stls/run6_0.01perc_ds.stl"]}
+{"geometry_files": ["datasets/drivaer-sample/downsampled_stls/run7-frontwheel_0.05perc_ds.stl", "datasets/drivaer-sample/downsampled_stls/run7-rearwheel_0.05perc_ds.stl", "datasets/drivaer-sample/downsampled_stls/run7_0.01perc_ds.stl"]}

@@ -1,0 +1,23 @@
+# KPI training configuration for Drivaer dataset
+output-dir: outputs/training    # all artifacts output to CWD/output e,g models, images, metrics
+
+log:
+  prefix-dir: logs              # all logs go here
+  config-file: logging.yaml     # tutorial-specific config
+
+kpi:
+  manifest_uri: training.manifest
+
+  preprocess:
+    downsample_remaining_perc: 20   # downsampling high-resolution geometries to accelerate the training process
+
+  train:
+    output_kpi_indices: "0"
+    epochs: 1500
+    batch_size: 16
+    opt:
+      learning_rate: 0.003
+
+  predict:
+    # Manifest includes labels, we want to evaluate performance
+    compare-groundtruth: true

@@ -1,0 +1,27 @@
+logging:
+  level: info
+
+# Uncomment to set output directory in config rather than command-line. 
+#output_dir: outputs/surface/sample
+
+surface:
+  # path is relative to mlsimkit/datasets, which is a default search path for mlsimkit-learn
+  manifest_uri: ahmed-sample/surface.manifest
+
+  preprocess:
+    # Override how relative paths files are found and preprocessed. By default, the current working 
+    # directory (CWD) is used instead. You may also specify absolute paths in the manifest 
+    # and ignore relative paths entirely.
+    manifest-base-relative-path: ManifestRoot
+    save_cell_data: True
+    surface_variables:
+    - name: pMean
+
+  train:
+    # override training settings for the sample to finish quickly 
+    epochs: 10
+    batch_size: 1
+
+    # Screenshots are rendered using 3D so required a display or
+    # virtual display like Xvfb (on Linux).
+    #save-prediction-screenshots: True

@@ -1,0 +1,23 @@
+# KPI predict-only configuration for sample dataset
+output-dir: outputs/prediction  # different folder as training pipeline (keeps preprocessing separate)
+
+log:
+  prefix-dir: logs              # all logs go into logs/
+  config-file: logging.yaml     # tutorial-specific config
+
+kpi:
+  manifest-uri: prediction.manifest            # tutorial-specific manifest that is geometry-only
+
+  preprocess:
+    manifest-base-relative-path: PackageRoot   # manifest points to the mlsimkit/dataset
+    split-manifest: False                      # use the entire manifest dataset for prediction
+
+  predict:
+    # Use the best model output by the training pipeline
+    model-path: outputs/training/training_output/best_model.pt
+
+    # Manifest is geometry only, so don't try to evaluate performance
+    compare-groundtruth: false  
+
+    # The test manifest is used by default. Uncomment to override.
+    #manifest-path: <override manifest>

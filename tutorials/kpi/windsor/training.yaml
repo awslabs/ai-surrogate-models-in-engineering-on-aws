@@ -1,0 +1,20 @@
+# KPI training configuration for Windsor dataset
+output-dir: outputs/training    # all artifacts output to CWD/output e,g models, images, metrics
+
+log:
+  prefix-dir: logs              # all logs go here
+  config-file: logging.yaml     # tutorial-specific config
+
+kpi:
+  manifest_uri: training.manifest
+
+  train:
+    output_kpi_indices: "2"
+    pooling_type: max           # "max" usually requires fewer epochs to train, however it is more prone to overfitting than "mean"
+    epochs: 100
+    opt:
+      learning_rate: 0.003
+
+  predict:
+    # Manifest includes labels, we want to evaluate performance
+    compare-groundtruth: true

@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# This script is used to package up the Sphinx HTML and LaTeX PDF documentation
+# for the MLSimKit project.
+
+# Check if one argument is provided
+if [ "$#" -ne 1 ]; then
+    echo "Error: Incorrect number of arguments provided. Usage: $0 <output_folder>"
+    exit 1
+fi
+
+# Get the script directory (relative path)
+script_dir=$(dirname "$0")
+
+# Get the current working directory (absolute path)
+cwd=$(pwd)
+
+# Set the output directory as an absolute path
+output_dir="$cwd/$1"
+
+# Get the docs/ directory (known relative to script)
+docs_dir="$script_dir/../docs"
+
+# Create the output directory if it doesn't exist
+mkdir -p "$output_dir" || { echo "Error: Failed to create output directory $output_dir"; exit 1; }
+
+# Change to the docs directory
+cd "$docs_dir" || { echo "Error: Failed to change directory to $docs_dir"; exit 1; }
+
+# Generate HTML docs
+make html || { echo "Error: Failed to build HTML documentation"; exit 1; }
+
+# Get version for filenames
+VERSION=$(python -c "import mlsimkit; print(mlsimkit.__version__)" 2>/dev/null) || { echo "Error: Failed to get MLSimKit version"; exit 1; }
+echo "MLSimKit version=$VERSION"
+
+# Zip HTML with entrypoint as 'mlsimkit-user-guide/index.html'
+mkdir -p mlsimkit-docs && mv _build/html/* mlsimkit-docs/ || { echo "Error: Failed to move HTML documentation to mlsimkit-docs directory"; exit 1; }
+zip -r "$output_dir/mlsimkit-$VERSION-user-guide.zip" mlsimkit-docs || { echo "Error: Failed to create HTML documentation ZIP file"; exit 1; }
+
+# Move HTML to public for gitlab pages/online docs (public/index.html)
+mv mlsimkit-docs/* "$output_dir/" || { echo "Error: Failed to move HTML documentation to public directory"; exit 1; }
+
+# Generate PDF 
+make latexpdf && cp _build/latex/mlsimkit.pdf "$output_dir/mlsimkit-$VERSION-user-guide.pdf" || { echo "Error: Failed to build or copy LaTeX PDF documentation"; exit 1; }
+
+echo "Documentation packaging completed successfully."

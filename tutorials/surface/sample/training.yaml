@@ -1,0 +1,35 @@
+# Surface variable prediction training configuration for the sample dataset
+output-dir: outputs/training          # all artifacts output to CWD/outputs e,g models, images, metrics
+
+debug: False                          # if True, allows exceptions to escape commands for the call stack
+
+log:
+  prefix-dir: logs              # all logs go here
+  config-file: logging.yaml     # tutorial-specific config
+
+surface:
+  manifest_uri: training.manifest
+
+  preprocess:
+    # Override how relative paths files are found and preprocessed. By default, the current working 
+    # directory (CWD) is used. You may also specify absolute paths in the manifest and ignore 
+    # relative paths entirely.
+    manifest-base-relative-path: PackageRoot
+    surface_variables:
+    - name: pMean
+    save_cell_data: True
+
+  train:
+    # Override training settings for the sample to finish quickly 
+    epochs: 5              # low number for quickstart 
+    batch_size: 1
+
+    # Screenshots are rendered using 3D so required a display or
+    # virtual display like Xvfb (on Linux).
+    #save-prediction-screenshots: True
+
+#  predict:
+    # Screenshots are rendered using 3D so required a display or
+    # virtual display like Xvfb (on Linux).
+    #save-prediction-screenshots: True
+      

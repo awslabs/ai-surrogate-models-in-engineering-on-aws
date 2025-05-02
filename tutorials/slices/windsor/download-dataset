@@ -1,0 +1,69 @@
+#!/bin/bash
+
+# Check if the prefix argument is provided
+if [ -z "$1" ]; then
+    echo "Usage: $0 <target_directory>"
+    echo "Where <target_directory> is destination directory to download the Windsor dataset"
+    echo "Example: ./download-dataset /path/to/dataset"
+    exit 1
+fi
+
+target_directory="$1"
+
+# Define variables and views
+variables=(pressureavg rstress_xx rstress_yy rstress_zz velocityxavg "All Variables")
+views=(view1_constz_scan view2_constx_scan view3_consty_scan "All Views")
+
+# Prompt the user to choose whether to download all or a single variable-view
+read -p "Download entire dataset (48G)? (y/n) " choice
+choice=$(echo "$choice" | tr '[:upper:]' '[:lower:]')
+
+if [[ "$choice" == "y" ]]; then
+    # Download all variables and views
+    set -x
+    aws s3 sync s3://caemldatasets/windsor/dataset "$target_directory" \
+        --exclude "*" \
+        --include "run_*/windsor_*.stl" \
+        --include "run_*/images/*" &&
+    echo "Download complete!"
+else
+    # Prompt the user to select a variable
+    echo "Select a variable or all variables:"
+    select variable in "${variables[@]}"; do
+        if [[ -n "$variable" ]]; then
+            break
+        fi
+    done
+
+    if [ "$variable" == "All Variables" ]; then
+        variable="*"
+    fi    
+
+    # Prompt the user to select a view
+    echo "Select a view or all views:"
+    select view in "${views[@]}"; do
+        if [[ -n "$view" ]]; then
+            break
+        fi
+    done
+
+    if [ "$view" == "All Views" ]; then
+        view="*"
+    fi
+
+    # Set the default run prefix
+    run_prefix="*"
+    echo "Choose runs by prefix e.g., 1*, 20* (default: $run_prefix)"
+    read -r user_prefix
+    if [ -n "$user_prefix" ]; then
+        run_prefix="$user_prefix"
+    fi
+
+    # Download the selected variable-view combination for the specified run prefix
+    set -x
+    aws s3 sync s3://caemldatasets/windsor/dataset "$target_directory" \
+        --exclude "*" \
+        --include "run_$run_prefix/windsor_*.stl" \
+        --include "run_$run_prefix/images/$variable/$view*" &&
+    echo "Download of $variable/$view for run_$run_prefix complete!"
+fi

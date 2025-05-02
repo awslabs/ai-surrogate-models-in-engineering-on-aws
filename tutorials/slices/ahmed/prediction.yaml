@@ -1,0 +1,19 @@
+# Slices predict-only configuration for windsor dataset
+output-dir: outputs/predictions # different folder as training pipeline
+
+log:
+  prefix-dir: logs              # all logs go here
+  config-file: logging.yaml     # tutorial-specific config
+
+slices:
+  predict:
+    # Use the manifest with geometry only
+    manifest-path: prediction.manifest
+    # Manifest is geometry only, so don't try evaluate performance
+    compare-groundtruth: false  
+
+    # Use the best models output by the training pipeline.
+    # These files are NOT automatically detected because the output-dir is 
+    # different to the training pipeline.
+    ae-model-path: outputs/training/ae/training_output/best_model.pt
+    mgn-model-path: outputs/training/mgn/training_output/best_model.pt

@@ -1,0 +1,27 @@
+logging:
+  level: error
+
+test:
+  # defaults can reference yaml files with '+'
+  defaults:
+    settings: +settings/settingsA
+
+  # override defaults
+  settings:
+    level: 1
+
+preprocess:
+  defaults:
+    settings: +settings/settingsB
+    groupB: +groupB/b1
+
+  settings:
+    level: 2
+
+train:
+  defaults:
+    settings: +settings/settingsB
+
+  settings:
+    level: 3
+

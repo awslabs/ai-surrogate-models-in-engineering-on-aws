@@ -1,0 +1,66 @@
+# Slices training configuration for sample dataset
+output-dir: outputs/training          # all artifacts output to CWD/output e,g models, images, metrics
+
+log:
+  prefix-dir: logs              # all logs go here
+  config-file: logging.yaml     # tutorial-specific config
+
+slices:
+  preprocess:
+    # Use the manifest packaged with the source in 'mlsimkit/datasets'. The path to the manifest can be absolute 
+    # or relative. If the relative file is not found based on the current working directory, we search 
+    # 'mlsimkit/datasets'.
+    manifest-uri: ahmed-sample/slices.manifest
+
+    # Override how relative paths files are found and preprocessed. By default, the current working 
+    # directory (CWD) is used instead. You may also specify absolute paths in the manifest 
+    # and ignore relative paths entirely. The quickstart sample manifest file are relative to 
+    # the package source root ('src/mlsimkit/')
+    manifest-base-relative-path: PackageRoot
+
+    resolution: [128, 128]   # resolution of output images
+
+    # Split the dataset into three datasets for training, validating and testing
+    train-size: 0.6
+    valid-size: 0.2
+    test-size: 0.2
+
+  train-image-encoder:
+    batch-size: 1           # small for quickstart, use larger normally. See user guide.
+    input-channels: 30      # sample dataset has 10 slices per run, 10x3 (img.depth)
+    mixed-precision: fp16   # uncomment to reduce memory usage, use "no" or comment out for fp32
+    img:
+      width: 128            # train to output images at this resolution, must match preprocess.resolution
+      height: 128
+      depth: 3              # rgb
+
+    # Uncomment to start training from a previously saved (checkpoint) model
+    # from the image autoencoder ("ae") model outputs
+    #checkpointing:
+    #  checkpoint-path: outputs/training/ae/training_output/last_model.pt
+    #  best-checkpoint-path: outputs/training/ae/training_output/best_model.pt
+    #  loss-path: outputs/training/ae/training_output/model_loss.csv
+
+  train-prediction:
+    epochs: 10              # low number for quickstart 
+    batch-size: 1           # small for quickstart, use larger normally. See user guide.
+    mixed-precision: fp16   # uncomment to reduce memory usage, use "no" or comment out for fp32
+
+    # Uncomment to start training from a previously saved (checkpoint) model
+    # from the prediction mesh graph ("mgn") outputs 
+    #checkpointing:
+    #  checkpoint-path: outputs/training/mgn/training_output/last_model.pt
+    #  best-checkpoint-path: outputs/training/mgn/training_output/best_model.pt
+    #  loss-path: outputs/training/mgn/training_output/model_loss.csv
+
+  # Test/evaluate against ground truth
+  predict:
+    compare-groundtruth: True
+
+    # Commented out because the best models are automatically detected for the outputs folder. 
+    #ae-model-path: outputs/training/ae/training_output/best_model.pt
+    #mgn-model-path: outputs/training/mgn/training_output/best_model.pt
+    
+    # Commented out because the test manifest output during preprocessing is automatically 
+    # detected within pipeline. 
+    #manifest-path: outputs/training/test.manifest

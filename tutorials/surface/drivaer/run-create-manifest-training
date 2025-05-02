@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Check if the prefix argument is provided
+if [ -z "$1" ]; then
+    echo "Usage: $0 <prefix>"
+    echo "Where <prefix> is the path to the root of the DrivAer dataset"
+    echo "Example: ./run-create-manifest-training /path/to/dataset/"
+    exit 1
+fi
+
+dataset_prefix="$1"
+
+# Get a list of run folders for training
+train_run_folders=($(ls -d "$dataset_prefix/run_"*))
+
+# Uncomment to get a list of just the first 20 runs (if you want to reduce the dataset size for testing)
+# train_run_folders=($(ls -d "$dataset_prefix/run_"* | head -20))
+
+# Create train.manifest including the surface variable data
+mlsimkit-manifest create -m "training.manifest" -f "name=data_files,file_glob=boundary*.vtp" -f "name=geometry_files,file_glob=*.stl" "${train_run_folders[@]}"

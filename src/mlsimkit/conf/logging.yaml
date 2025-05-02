@@ -1,0 +1,146 @@
+#
+# Logging configuration using Python3 format. 
+# See https://docs.python.org/3/library/logging.config.html
+#
+# Loggers follow module namespaces hierarchically. 
+#
+# NOTE: Use `mlsimkit.common.logging.FileHandler` so parent directories
+#       are created automatically and so --log-prefix-dir 
+#       is prepended to the filename.
+#
+version: 1
+disable_existing_loggers: False
+
+formatters:
+  simple:
+    format: '[%(levelname)s] %(message)s'
+
+  # also include timestamp and logger name 
+  detailed:
+    format: '%(asctime)s - %(levelname)s [%(name)s] %(message)s'
+
+  # also include filename and line number
+  debug:
+    format: '%(asctime)s - %(levelname)s [%(filename)s:%(lineno)d][%(name)s] %(message)s'
+
+handlers:
+  #
+  # Log simple messages to the console
+  # --log-level overrides the 'console' handler
+  #
+  console:
+    class: logging.StreamHandler
+    level: INFO
+    formatter: simple
+    stream: ext://sys.stdout      # default is sys.stderr
+
+  #
+  # Log all messages as detailed, appending and rotating 
+  #
+  rotating_debug_file:
+    level: DEBUG
+    formatter: debug
+    filename: example_use_case/debug.log
+    class: mlsimkit.common.logging.FileHandler
+    rotate: True
+    maxBytes: 10485760 # 10MB
+    backupCount: 20
+    encoding: utf8
+  
+  #
+  # Log detailed messages at info level and above to a file
+  #
+  mlsimkit.learn.example:
+    level: INFO
+    formatter: detailed
+    class: mlsimkit.common.logging.FileHandler
+    filename: example_use_case/example.log
+    rotate: False         # don't rotate (default, shown for visibility)
+    exist_ok: True        # don't error if file already exists  (default, show for visibility)
+    mkdirs: True          # always make parent folders (default, shown for visibility)
+    mode: 'w'             # truncates any existing file (default is 'a')
+
+  mlsimkit.learn.example.training:
+    level: INFO
+    formatter: detailed
+    class: mlsimkit.common.logging.FileHandler
+    filename: example_use_case/training.log
+
+  mlsimkit.learn.kpi.preprocessing:
+    level: INFO
+    formatter: detailed
+    class: mlsimkit.common.logging.FileHandler
+    filename: kpi/preprocessing.log
+    mode: 'w'    # truncates any existing file
+
+  mlsimkit.learn.kpi.training:
+    level: INFO
+    formatter: detailed
+    class: mlsimkit.common.logging.FileHandler
+    filename: kpi/training.log
+    mode: 'w'    # truncates any existing file
+
+  mlsimkit.learn.kpi.inference:
+    level: INFO
+    formatter: detailed
+    class: mlsimkit.common.logging.FileHandler
+    filename: kpi/inference.log
+    mode: 'w'    # truncates any existing file
+
+  mlsimkit.learn.slices:
+    level: DEBUG
+    formatter: detailed
+    class: mlsimkit.common.logging.FileHandler
+    filename: slices/debug.log
+    mode: 'w'    # truncates any existing file
+
+root:
+  level: NOTSET
+  handlers: [console]
+
+loggers:
+  #
+  # Command-specific loggers
+  #
+  mlsimkit.learn.example_use_case:
+    level: DEBUG
+    propagate: no
+    handlers: [console, rotating_debug_file, mlsimkit.learn.example]
+
+  #
+  # Uncomment to log example-use-case training to a dedicated file (training.log)
+  # 
+  #mlsimkit.learn.example_use_case.training:
+  #  level: DEBUG
+  #  propagate: no
+  #  handlers: [console, rotating_debug_file, mlsimkit.learn.example.training]
+
+  #
+  # MGN KPI loggers
+  #
+  # TODO: consider moving these into use case folders and/or programmatically
+  #       setting up handlers to avoid massive .yaml configs. keeping it
+  #       now to demonstrate the capability, next step automate it. 
+  #
+  mlsimkit.learn.kpi.preprocessing:
+    level: DEBUG
+    propagate: no
+    handlers: [console, mlsimkit.learn.kpi.preprocessing]
+
+  mlsimkit.learn.kpi.training:
+    level: DEBUG
+    propagate: no
+    handlers: [console, mlsimkit.learn.kpi.training]
+
+  mlsimkit.learn.kpi.inference:
+    level: DEBUG
+    propagate: no
+    handlers: [console, mlsimkit.learn.kpi.inference]
+
+  #
+  # Slices loggers
+  # 
+  mlsimkit.learn.slices:
+    level: DEBUG
+    propagate: no
+    handlers: [console, mlsimkit.learn.slices]

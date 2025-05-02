@@ -1,0 +1,29 @@
+experiment: 
+  name: My Experiment
+
+logging:
+  level: error
+
+test:
+  defaults:
+    - settings: group1 
+
+  #settings:
+  #  property_one: "value1"
+  #  level: 1
+  #  #this_property_is_required: "hello"
+
+  more_settings:
+    nested_settings:
+      the_property: "NestedFromConfig"
+
+preprocess:
+  settings:
+    property_one: "value2"
+    level: 2
+
+train:
+  settings:
+    property_one: "value3"
+    level: 3
+
