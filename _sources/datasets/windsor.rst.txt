@@ -3,23 +3,34 @@
 WindsorML Dataset
 ======================
 
-The WindsorML dataset is a publicly available dataset `licensed as CC BY-SA 4.0 <https://caemldatasets.s3.amazonaws.com/windsor/dataset/LICENSE.txt>`_ and distributed separately to MLSimKit. It is a collection of high-fidelity CFD simulations showing different geometric variants of a body for automotive aerodynamics modeling. Please see the `README <https://caemldatasets.s3.amazonaws.com/windsor/dataset/README.txt>`_ for additional details.
+The WindsorML dataset is a `publicly available dataset in Hugging Face <https://huggingface.co/datasets/neashton/windsorml>`_ licensed as CC BY-SA 4.0 and distributed separately to MLSimKit. It is a collection of high-fidelity CFD simulations showing different geometric variants of a body for automotive aerodynamics modeling. Please see the `Hugging Face dataset <https://huggingface.co/datasets/neashton/windsorml>`_ for additional details.
 
 Downloading the training data (170G)
 -------------------------------------
 
-The Windsor dataset is hosted in an S3 bucket.
-
-Use the following `AWS CLI <https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html>`_ command to download the data required for the training tutorials:
+You can download the data required for the training tutorials using Python with the ``huggingface_hub`` package:
 
 .. code-block:: shell
 
-   aws s3 sync s3://caemldatasets/windsor/dataset /path/to/dataset \
-      --exclude "*" \
-      --include "run_*/windsor_*.stl" \
-      --include "run_*/images/*" \
-      --include "run_*/boundary*.vtu" \
-      --include "run_*/force_mom_*.csv"
+   pip install huggingface_hub
+
+Then use this Python code to download the dataset:
+
+.. code-block:: python
+
+   from huggingface_hub import snapshot_download
+
+   snapshot_download(
+       repo_id="neashton/windsorml",
+       repo_type="dataset",
+       local_dir="/path/to/dataset",
+       allow_patterns=[
+           "run_*/windsor_*.stl",
+           "run_*/images/*",
+           "run_*/boundary*.vtu",
+           "run_*/force_mom_*.csv"
+       ]
+   )
 
 Replace ``/path/to/dataset`` to your own directory. 
 

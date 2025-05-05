@@ -3,21 +3,33 @@
 DrivAerML Dataset 
 ======================
 
-The DrivAerML dataset is a publicly available dataset `licensed as CC BY-SA 4.0 <https://caemldatasets.s3.amazonaws.com/drivaer/dataset/LICENSE.txt>`_ and distributed separately to MLSimKit. It is a collection of high-fidelity CFD simulations showing different geometric variants of a body for automotive aerodynamics modeling. Please see the `README <https://caemldatasets.s3.amazonaws.com/drivaer/dataset/README.txt>`_ for additional details.
+The DrivAerML dataset is a `publicly available dataset in Hugging Face <https://huggingface.co/datasets/neashton/drivaerml>`_ licensed as CC BY-SA 4.0 and distributed separately to MLSimKit. It is a collection of high-fidelity CFD simulations showing different geometric variants of a body for automotive aerodynamics modeling. Please see the `Hugging Face dataset <https://huggingface.co/datasets/neashton/drivaerml>`_ for additional details.
+
 
 Downloading the training data (354G)
 -------------------------------------
 
-The Drivaer dataset is hosted in an S3 bucket.
-
-Use the following `AWS CLI <https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html>`_ command to download the data required for the training tutorials:
+You can download the data required for the training tutorials using Python with the ``huggingface_hub`` package:
 
 .. code-block:: shell
 
-   aws s3 sync s3://caemldatasets/drivaer/dataset /path/to/dataset \
-      --exclude "*" \
-      --include "run_*/drivaer_*.stl" \
-      --include "run_*/boundary_*.vtp"
+   pip install huggingface_hub
+
+Then use this Python code to download the dataset:
+
+.. code-block:: python
+
+   from huggingface_hub import snapshot_download
+
+   snapshot_download(
+       repo_id="neashton/drivaerml",
+       repo_type="dataset",
+       local_dir="/path/to/dataset",
+       allow_patterns=[
+           "run_*/drivaer_*.stl",
+           "run_*/boundary_*.vtp"
+       ]
+   )
 
 Replace ``/path/to/dataset`` to your own directory. 
 

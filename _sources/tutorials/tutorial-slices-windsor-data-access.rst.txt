@@ -3,11 +3,7 @@
 Downloading WindsorML data for Slice Prediction (48G)
 =============================================================
 
-The :ref:`datasets-windsor` is a publicly available dataset hosted in an S3 bucket. 
-
-.. note::
-
-    We use the `AWS CLI <https://docs.aws.amazon.com/cli/>`_. If you don't already have this installed, please follow the `install guide <https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html>`_ and `configure credentials <https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html>`_.
+The :ref:`datasets-windsor` is a publicly available dataset hosted in Hugging Face datasets.
 
 Download Commands
 -----------------
@@ -43,20 +39,30 @@ Please note that you need at least 18 data samples to run the tutorials with the
     Choose runs by prefix e.g., 1*, 20* (default: *)
     1*
 
-The download command wraps the AWS CLI ``s3 sync`` command, which you may want to customize for specific downloads. For example, the following command downloads the training data for all runs:
+The download command wraps the Hugging Face ``snapshot_download`` function, which you may want to customize for specific downloads. For example, the following code downloads the training data for all runs:
 
-.. code-block:: shell
+.. code-block:: python
 
-   aws s3 sync s3://caemldatasets/windsor/dataset /path/to/dataset \
-      --exclude "*" \
-      --include "run_*/windsor_*.stl" \
-      --include "run_*/images/*"
+   from huggingface_hub import snapshot_download
 
-.. note:: 
+   snapshot_download(
+       repo_id="neashton/windsorml",
+       repo_type="dataset",
+       local_dir="/path/to/dataset",
+       allow_patterns=[
+           "run_*/windsor_*.stl",
+           "run_*/images/*"
+       ]
+   )
 
-   Follow the `AWS CLI documentation <https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html>`_ to configure credentials if you get the following error::
+.. note::
 
-       fatal error: An error occurred (InvalidToken) when calling the ListObjectsV2 operation: The provided token is malformed or otherwise invalid.
+   If you encounter a "Too Many Requests" error like this::
+
+       huggingface_hub.errors.HfHubHTTPError: 429 Client Error: Too Many Requests
+
+   This is due to rate limiting. Wait and try again. Hugging Face uses a local cache, so already downloaded files won't need to be re-downloaded on retry.
+   If the error continues, set the function argument ``max_workers=1`` to download one file at a time.
 
 
 Next Step: Training

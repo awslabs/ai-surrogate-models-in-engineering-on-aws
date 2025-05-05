@@ -35,11 +35,7 @@
             
   <section id="downloading-windsorml-data-for-slice-prediction-48g">
 <span id="tutorial-slices-windsor-data-access"></span><h1><span class="section-number">1. </span>Downloading WindsorML data for Slice Prediction (48G)<a class="headerlink" href="#downloading-windsorml-data-for-slice-prediction-48g" title="Link to this heading">¶</a></h1>
-<p>The <a class="reference internal" href="../datasets/windsor.html#datasets-windsor"><span class="std std-ref">WindsorML Dataset</span></a> is a publicly available dataset hosted in an S3 bucket.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>We use the <a class="reference external" href="https://docs.aws.amazon.com/cli/">AWS CLI</a>. If you don’t already have this installed, please follow the <a class="reference external" href="https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html">install guide</a> and <a class="reference external" href="https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html">configure credentials</a>.</p>
-</div>
+<p>The <a class="reference internal" href="../datasets/windsor.html#datasets-windsor"><span class="std std-ref">WindsorML Dataset</span></a> is a publicly available dataset hosted in Hugging Face datasets.</p>
 <section id="download-commands">
 <h2><span class="section-number">1.1. </span>Download Commands<a class="headerlink" href="#download-commands" title="Link to this heading">¶</a></h2>
 <p>The tutorial includes a convenient command to download the training data (~48G):</p>
@@ -67,19 +63,28 @@ Choose<span class="w"> </span>runs<span class="w"> </span>by<span class="w"> </s
 <span class="m">1</span>*
 </pre></div>
 </div>
-<p>The download command wraps the AWS CLI <code class="docutils literal notranslate"><span class="pre">s3</span> <span class="pre">sync</span></code> command, which you may want to customize for specific downloads. For example, the following command downloads the training data for all runs:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>aws<span class="w"> </span>s3<span class="w"> </span>sync<span class="w"> </span>s3://caemldatasets/windsor/dataset<span class="w"> </span>/path/to/dataset<span class="w"> </span><span class="se">\</span>
-<span class="w">   </span>--exclude<span class="w"> </span><span class="s2">&quot;*&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">   </span>--include<span class="w"> </span><span class="s2">&quot;run_*/windsor_*.stl&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">   </span>--include<span class="w"> </span><span class="s2">&quot;run_*/images/*&quot;</span>
+<p>The download command wraps the Hugging Face <code class="docutils literal notranslate"><span class="pre">snapshot_download</span></code> function, which you may want to customize for specific downloads. For example, the following code downloads the training data for all runs:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">huggingface_hub</span><span class="w"> </span><span class="kn">import</span> <span class="n">snapshot_download</span>
+
+<span class="n">snapshot_download</span><span class="p">(</span>
+    <span class="n">repo_id</span><span class="o">=</span><span class="s2">&quot;neashton/windsorml&quot;</span><span class="p">,</span>
+    <span class="n">repo_type</span><span class="o">=</span><span class="s2">&quot;dataset&quot;</span><span class="p">,</span>
+    <span class="n">local_dir</span><span class="o">=</span><span class="s2">&quot;/path/to/dataset&quot;</span><span class="p">,</span>
+    <span class="n">allow_patterns</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;run_*/windsor_*.stl&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;run_*/images/*&quot;</span>
+    <span class="p">]</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Follow the <a class="reference external" href="https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html">AWS CLI documentation</a> to configure credentials if you get the following error:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fatal</span> <span class="n">error</span><span class="p">:</span> <span class="n">An</span> <span class="n">error</span> <span class="n">occurred</span> <span class="p">(</span><span class="n">InvalidToken</span><span class="p">)</span> <span class="n">when</span> <span class="n">calling</span> <span class="n">the</span> <span class="n">ListObjectsV2</span> <span class="n">operation</span><span class="p">:</span> <span class="n">The</span> <span class="n">provided</span> <span class="n">token</span> <span class="ow">is</span> <span class="n">malformed</span> <span class="ow">or</span> <span class="n">otherwise</span> <span class="n">invalid</span><span class="o">.</span>
+<p>If you encounter a “Too Many Requests” error like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">huggingface_hub</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">HfHubHTTPError</span><span class="p">:</span> <span class="mi">429</span> <span class="n">Client</span> <span class="n">Error</span><span class="p">:</span> <span class="n">Too</span> <span class="n">Many</span> <span class="n">Requests</span>
 </pre></div>
 </div>
+<p>This is due to rate limiting. Wait and try again. Hugging Face uses a local cache, so already downloaded files won’t need to be re-downloaded on retry.
+If the error continues, set the function argument <code class="docutils literal notranslate"><span class="pre">max_workers=1</span></code> to download one file at a time.</p>
 </div>
 </section>
 <section id="next-step-training">

@@ -35,17 +35,27 @@
             
   <section id="windsorml-dataset">
 <span id="datasets-windsor"></span><h1>WindsorML Dataset<a class="headerlink" href="#windsorml-dataset" title="Link to this heading">¶</a></h1>
-<p>The WindsorML dataset is a publicly available dataset <a class="reference external" href="https://caemldatasets.s3.amazonaws.com/windsor/dataset/LICENSE.txt">licensed as CC BY-SA 4.0</a> and distributed separately to MLSimKit. It is a collection of high-fidelity CFD simulations showing different geometric variants of a body for automotive aerodynamics modeling. Please see the <a class="reference external" href="https://caemldatasets.s3.amazonaws.com/windsor/dataset/README.txt">README</a> for additional details.</p>
+<p>The WindsorML dataset is a <a class="reference external" href="https://huggingface.co/datasets/neashton/windsorml">publicly available dataset in Hugging Face</a> licensed as CC BY-SA 4.0 and distributed separately to MLSimKit. It is a collection of high-fidelity CFD simulations showing different geometric variants of a body for automotive aerodynamics modeling. Please see the <a class="reference external" href="https://huggingface.co/datasets/neashton/windsorml">Hugging Face dataset</a> for additional details.</p>
 <section id="downloading-the-training-data-170g">
 <h2>Downloading the training data (170G)<a class="headerlink" href="#downloading-the-training-data-170g" title="Link to this heading">¶</a></h2>
-<p>The Windsor dataset is hosted in an S3 bucket.</p>
-<p>Use the following <a class="reference external" href="https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html">AWS CLI</a> command to download the data required for the training tutorials:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>aws<span class="w"> </span>s3<span class="w"> </span>sync<span class="w"> </span>s3://caemldatasets/windsor/dataset<span class="w"> </span>/path/to/dataset<span class="w"> </span><span class="se">\</span>
-<span class="w">   </span>--exclude<span class="w"> </span><span class="s2">&quot;*&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">   </span>--include<span class="w"> </span><span class="s2">&quot;run_*/windsor_*.stl&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">   </span>--include<span class="w"> </span><span class="s2">&quot;run_*/images/*&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">   </span>--include<span class="w"> </span><span class="s2">&quot;run_*/boundary*.vtu&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">   </span>--include<span class="w"> </span><span class="s2">&quot;run_*/force_mom_*.csv&quot;</span>
+<p>You can download the data required for the training tutorials using Python with the <code class="docutils literal notranslate"><span class="pre">huggingface_hub</span></code> package:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>huggingface_hub
+</pre></div>
+</div>
+<p>Then use this Python code to download the dataset:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">huggingface_hub</span><span class="w"> </span><span class="kn">import</span> <span class="n">snapshot_download</span>
+
+<span class="n">snapshot_download</span><span class="p">(</span>
+    <span class="n">repo_id</span><span class="o">=</span><span class="s2">&quot;neashton/windsorml&quot;</span><span class="p">,</span>
+    <span class="n">repo_type</span><span class="o">=</span><span class="s2">&quot;dataset&quot;</span><span class="p">,</span>
+    <span class="n">local_dir</span><span class="o">=</span><span class="s2">&quot;/path/to/dataset&quot;</span><span class="p">,</span>
+    <span class="n">allow_patterns</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;run_*/windsor_*.stl&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;run_*/images/*&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;run_*/boundary*.vtu&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;run_*/force_mom_*.csv&quot;</span>
+    <span class="p">]</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <p>Replace <code class="docutils literal notranslate"><span class="pre">/path/to/dataset</span></code> to your own directory.</p>
