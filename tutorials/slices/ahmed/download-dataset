@@ -20,11 +20,18 @@ choice=$(echo "$choice" | tr '[:upper:]' '[:lower:]')
 
 if [[ "$choice" == "y" ]]; then
     # Download all variables and views
-    set -x
-    aws s3 sync s3://caemldatasets/ahmed/dataset "$target_directory" \
-        --exclude "*" \
-        --include "run_*/ahmed_*.stl" \
-        --include "run_*/images/*" &&
+    python3 << EOF
+from huggingface_hub import snapshot_download
+snapshot_download(
+    repo_id='neashton/ahmedml',
+    repo_type='dataset',
+    local_dir='$target_directory',
+    allow_patterns=[
+        'run_*/ahmed_*.stl',
+        'run_*/images/*'
+    ]
+)
+EOF
     echo "Download complete!"
 else
     # Prompt the user to select a variable
@@ -60,10 +67,17 @@ else
     fi
 
     # Download the selected variable-view combination for the specified run prefix
-    set -x
-    aws s3 sync s3://caemldatasets/ahmed/dataset "$target_directory" \
-        --exclude "*" \
-        --include "run_$run_prefix/ahmed_*.stl" \
-        --include "run_$run_prefix/images/$variable/run_*-$view-*.png" &&
+    python3 << EOF
+from huggingface_hub import snapshot_download
+snapshot_download(
+    repo_id='neashton/ahmedml',
+    repo_type='dataset',
+    local_dir='$target_directory',
+    allow_patterns=[
+        'run_$run_prefix/ahmed_*.stl',
+        'run_$run_prefix/images/$variable/run_*-$view-*.png'
+    ]
+)
+EOF
     echo "Download of $variable/$view for run_$run_prefix complete!"
 fi

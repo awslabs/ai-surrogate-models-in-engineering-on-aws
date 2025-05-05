@@ -15,11 +15,18 @@ read -p "Download all runs dataset (354G)? (y/n) " choice
 choice=$(echo "$choice" | tr '[:upper:]' '[:lower:]')
 
 if [[ "$choice" == "y" ]]; then
-    set -x
-    aws s3 sync s3://caemldatasets/drivaer/dataset "$target_directory" \
-        --exclude "*" \
-        --include "run_*/boundary_*.vtp" \
-        --include "run_*/drivaer_*.stl" &&
+    python3 << EOF
+from huggingface_hub import snapshot_download
+snapshot_download(
+    repo_id='neashton/drivaerml',
+    repo_type='dataset',
+    local_dir='$target_directory',
+    allow_patterns=[
+        'run_*/boundary_*.vtp',
+        'run_*/drivaer_*.stl'
+    ]
+)
+EOF
     echo "Download complete!"
 else
     # Set the default run prefix
@@ -31,10 +38,17 @@ else
     fi
 
     # Download the runs by prefix
-    set -x
-    aws s3 sync s3://caemldatasets/drivaer/dataset "$target_directory" \
-        --exclude "*" \
-        --include "run_$run_prefix/boundary_*.vtp" \
-        --include "run_$run_prefix/drivaer_*.stl" &&
+    python3 << EOF
+from huggingface_hub import snapshot_download
+snapshot_download(
+    repo_id='neashton/drivaerml',
+    repo_type='dataset',
+    local_dir='$target_directory',
+    allow_patterns=[
+        'run_$run_prefix/boundary_*.vtp',
+        'run_$run_prefix/drivaer_*.stl'
+    ]
+)
+EOF
     echo "Download of run_$run_prefix complete!"
 fi

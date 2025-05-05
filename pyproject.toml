@@ -29,6 +29,7 @@ dependencies = [
     "matplotlib>=3.8",
     "opencv-python~=4.9.0",
     "accelerate>=0.29",
+    "huggingface-hub>=0.30.2",
     "gunicorn>=22.0",           # transitive dependency minimum for pip-audit
     "werkzeug>=3.0.3",          # transitive dependency minimum for pip-audit
     "jinja2>=3.1.4",            # transitive dependency minimum for pip-audit

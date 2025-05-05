@@ -3,7 +3,7 @@
 Install
 =========================
 
-ML for Simulation Toolkit requires Python >= 3.9 and Pip. It is tested on Ubuntu 22.04 with Cuda 12.1. Running on MacOS and Windows is not tested but may work because there are no OS-specific codes or dependencies. 
+ML for Simulation Toolkit requires Python >= 3.9, < 3.13 and Pip. It is tested on Ubuntu 22.04 with Cuda 12.1. Running on MacOS and Windows is not tested but may work because there are no OS-specific codes or dependencies.
 
 A GPU is recommended for following the tutorials but you can get started with the packaged sample data using CPU-only.
 
@@ -18,7 +18,7 @@ Install from Source
 
 Extract the source distributable (e.g, ``.tar.gz`` or ``.zip``) to a directory e.g, ``mlsimkit``.
 
-First, check your Python version is 3.9 or greater: ``python3 --version`` and upgrade if possible.
+First, check your Python version via: ``python3 --version`` and upgrade if possible (up to Python 3.12).
 
 We use `pip <https://pip.pypa.io/en/stable/>`_ to install Python dependencies. Check if pip is already installed: ``python3 -m pip --version``. If not, we recommend installing pip via their `get-pip steps <https://pip.pypa.io/en/stable/installation/#get-pip-py>`_:
 

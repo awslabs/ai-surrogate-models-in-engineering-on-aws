@@ -20,11 +20,18 @@ choice=$(echo "$choice" | tr '[:upper:]' '[:lower:]')
 
 if [[ "$choice" == "y" ]]; then
     # Download all variables and views
-    set -x
-    aws s3 sync s3://caemldatasets/drivaer/dataset "$target_directory" \
-        --exclude "*" \
-        --include "run_*/drivaer_*.stl" \
-        --include "run_*/images/fig_run*_SRS_*Normal-2_*Normal_*000.png" &&
+    python3 << EOF
+from huggingface_hub import snapshot_download
+snapshot_download(
+    repo_id='neashton/drivaerml',
+    repo_type='dataset',
+    local_dir='$target_directory',
+    allow_patterns=[
+        'run_*/drivaer_*.stl',
+        'run_*/images/fig_run*_SRS_*Normal-2_*Normal_*000.png'
+    ]
+)
+EOF
     echo "Download complete!"
 else
     # Prompt the user to select a variable
@@ -60,10 +67,17 @@ else
     fi
 
     # Download the selected variable-view combination for the specified run prefix
-    set -x
-    aws s3 sync s3://caemldatasets/drivaer/dataset "$target_directory" \
-        --exclude "*" \
-        --include "run_$run_prefix/drivaer_*.stl" \
-        --include "run_$run_prefix/images/fig_run*_SRS_$variable*$view-2_${view}_*000.png" &&
+    python3 << EOF
+from huggingface_hub import snapshot_download
+snapshot_download(
+    repo_id='neashton/drivaerml',
+    repo_type='dataset',
+    local_dir='$target_directory',
+    allow_patterns=[
+        'run_$run_prefix/drivaer_*.stl',
+        'run_$run_prefix/images/fig_run*_SRS_$variable*$view-2_${view}_*000.png'
+    ]
+)
+EOF
     echo "Download of $variable*$view for run_$run_prefix complete!"
 fi
