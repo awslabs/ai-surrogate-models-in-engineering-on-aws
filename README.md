@@ -6,6 +6,10 @@ The toolkit is a collection of commands and SDKs that insert into the traditiona
 
 ## Getting started
 
+### Documentation
+
+[https://awslabs.github.io/ai-surrogate-models-in-engineering-on-aws/](https://awslabs.github.io/ai-surrogate-models-in-engineering-on-aws/)
+
 ### Environment setup
 ML for Simulation Toolkit requires Python  >= 3.9, < 3.13. It is tested on Cuda >= 12.1. CPU-only usage is supported. 
 
