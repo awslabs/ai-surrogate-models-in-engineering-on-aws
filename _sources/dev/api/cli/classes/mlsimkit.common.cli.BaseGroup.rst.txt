@@ -56,9 +56,9 @@
       ~BaseGroup.group_class
       ~BaseGroup.ignore_unknown_options
       ~BaseGroup.commands
-      ~BaseGroup.callback
-      ~BaseGroup.params
       ~BaseGroup.name
       ~BaseGroup.context_settings
+      ~BaseGroup.callback
+      ~BaseGroup.params
    
    

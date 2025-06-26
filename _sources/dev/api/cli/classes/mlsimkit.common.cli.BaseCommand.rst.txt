@@ -45,9 +45,9 @@
       ~BaseCommand.allow_extra_args
       ~BaseCommand.allow_interspersed_args
       ~BaseCommand.ignore_unknown_options
-      ~BaseCommand.callback
-      ~BaseCommand.params
       ~BaseCommand.name
       ~BaseCommand.context_settings
+      ~BaseCommand.callback
+      ~BaseCommand.params
    
    
