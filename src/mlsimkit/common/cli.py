@@ -1136,6 +1136,8 @@ class PydanticOptions:
             multiple = False
 
             if isclass(opt_type) and issubclass(opt_type, Enum):
+                if default is not None and isinstance(default, Enum):
+                    default = default.value # work-around Click 8.2.0 breaking change
                 opt_type = click.Choice([e.name if cli.use_enum_name else e.value for e in opt_type])
             elif issubclass(_GenericAlias, type(opt_type)):
                 if issubclass(list, get_origin(opt_type)):
